@@ -188,6 +188,24 @@
       padding-top: 10px;
       display:none;
     }
+    .subLabel{
+      font-size:11px;
+      color: var(--muted);
+      margin: 0 0 4px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .origJaNote{
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--muted);
+      margin: 0 0 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(17,17,17,.04);
+      border: 1px solid var(--line);
+    }
     .en{
       font-size: 15px;
       line-height: 1.5;
@@ -233,7 +251,14 @@
       cursor:pointer;
       user-select:none;
     }
-    .ja{ font-size: 22px; line-height:1.5; margin: 0; }
+    .ja{
+      font-size: 22px;
+      line-height:1.5;
+      margin: 0;
+    }
+    .tapOrigWrap{
+      margin-top: 12px;
+    }
     .tapHint{ font-size: 12px; color: var(--muted); margin-top: 10px; }
 
     .ratings{
@@ -380,12 +405,12 @@
         <div class="panelHead">
           <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
             <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; flex:1;">
-              <input id="searchInput" type="search" placeholder="日本語 / 英語で検索" style="flex:1; min-width: 220px;">
+              <input id="searchInput" type="search" placeholder="学習用日本語 / 元の日本語 / 英語で検索" style="flex:1; min-width: 220px;">
               <button class="btn secondary" id="clearSearchBtn">クリア</button>
             </div>
             <button class="btn" id="goMemorizeFromListBtn">今日のフレーズへ</button>
           </div>
-          <div class="hint">カードを押すと答えが開きます。「▶︎音声」をタップで音声が流れます。</div>
+          <div class="hint">カードを押すと答えが開きます。元の日本語は補足表示です。「▶︎音声」で音声が流れます。</div>
         </div>
         <div class="panelBody">
           <div class="list" id="list"></div>
@@ -403,6 +428,12 @@
         <div class="panelBody">
           <div id="tapCard" class="tapCard">
             <p class="ja" id="jaText">—</p>
+
+            <div class="tapOrigWrap" id="tapOrigWrap" style="display:none;">
+              <div class="subLabel">元の日本語</div>
+              <p class="origJaNote" id="origJaText" style="margin-bottom:0;"></p>
+            </div>
+
             <div id="answer" style="display:none; margin-top: 14px;">
               <p class="en" id="enText">—</p>
               <p class="ipa" id="ipaText"></p>
@@ -683,6 +714,10 @@
       return s;
     }
 
+    function hasOriginalJa(card){
+      return !!(card.originalJa && card.originalJa.trim() && card.originalJa.trim() !== card.ja.trim());
+    }
+
     let cards = [];
     let progress = {};
     let current = null;
@@ -704,6 +739,8 @@
 
     const tapCardEl = document.getElementById("tapCard");
     const jaEl = document.getElementById("jaText");
+    const tapOrigWrapEl = document.getElementById("tapOrigWrap");
+    const origJaEl = document.getElementById("origJaText");
     const enEl = document.getElementById("enText");
     const ipaEl = document.getElementById("ipaText");
     const answerEl = document.getElementById("answer");
@@ -800,6 +837,7 @@
       if (!q) return base;
       return base.filter(c =>
         (c.ja||"").toLowerCase().includes(q) ||
+        (c.originalJa||"").toLowerCase().includes(q) ||
         (c.en||"").toLowerCase().includes(q)
       );
     }
@@ -958,6 +996,19 @@
         const ans=document.createElement("div");
         ans.className="answerBox";
 
+        if (hasOriginalJa(c)){
+          const origLabel=document.createElement("div");
+          origLabel.className="subLabel";
+          origLabel.textContent="元の日本語";
+
+          const orig=document.createElement("p");
+          orig.className="origJaNote";
+          orig.textContent=c.originalJa;
+
+          ans.appendChild(origLabel);
+          ans.appendChild(orig);
+        }
+
         const en=document.createElement("p");
         en.className="en";
         en.textContent=c.en;
@@ -1031,7 +1082,10 @@
 
       if (!card){
         jaEl.textContent="今日は暗記がありません 🎉";
-        enEl.textContent=""; ipaEl.textContent="";
+        tapOrigWrapEl.style.display="none";
+        origJaEl.textContent="";
+        enEl.textContent="";
+        ipaEl.textContent="";
         metaEl.textContent="";
         playBtn.disabled=true;
         addToLearningBtn.style.display="none";
@@ -1043,6 +1097,15 @@
       const introduced = !!st.introducedOn;
 
       jaEl.textContent=card.ja;
+
+      if (hasOriginalJa(card)){
+        tapOrigWrapEl.style.display="block";
+        origJaEl.textContent=card.originalJa;
+      } else {
+        tapOrigWrapEl.style.display="none";
+        origJaEl.textContent="";
+      }
+
       enEl.textContent=card.en;
       ipaEl.textContent=card.ipa||"";
       playBtn.disabled=!card.audioUrl;
@@ -1164,6 +1227,7 @@
         idx:Number(r.idx),
         theme:(r.theme??"").trim(),
         ja:(r.ja??"").trim(),
+        originalJa:(r.originalJa??"").trim(),
         en:(r.en??"").trim(),
         ipa:(r.ipa??"").trim(),
         audioUrl:(r.audioUrl??"").trim(),
@@ -1316,6 +1380,7 @@
       setActiveNav("today");
       showStudyView();
       jaEl.textContent="cards.csv をrepo直下に置いたか確認してください。";
+      tapOrigWrapEl.style.display="none";
     });
   </script>
 </body>
