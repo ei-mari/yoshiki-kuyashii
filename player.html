@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>音声トレーナー | 悔しいフレーズリスト</title>
+  <style>
+    :root{
+      --bg:#f5f6f8; --card:#fff; --text:#111; --muted:rgba(17,17,17,.62);
+      --line:rgba(17,17,17,.08); --shadow:0 10px 30px rgba(0,0,0,.06);
+      --radius:16px;
+    }
+    body{
+      margin:0; background:var(--bg); color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP",sans-serif;
+    }
+    .wrap{ max-width:760px; margin:0 auto; padding:16px; }
+    .title{ font-size:22px; font-weight:900; margin:6px 0 10px; }
+    .pill{ font-size:12px; background:rgba(17,17,17,.06); padding:7px 10px; border-radius:999px; color:var(--muted); }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:10px 0 14px; }
+    .btn{ border:0; padding:10px 12px; border-radius:12px; background:#111; color:#fff; font-weight:900; cursor:pointer; }
+    .btn.secondary{ background:rgba(17,17,17,.06); color:#111; }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; }
+    select{
+      padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:#fff;
+    }
+    .panel{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+    .panelHead{ padding:14px; border-bottom:1px solid var(--line); }
+    .panelBody{ padding:14px; }
+    .deckBar{ display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch; padding:4px 2px 8px; }
+    .deckTab{
+      flex:0 0 auto; border:1px solid var(--line); background:rgba(255,255,255,.9);
+      border-radius:999px; padding:10px 12px; font-weight:900; cursor:pointer; white-space:nowrap;
+      box-shadow: 0 6px 16px rgba(0,0,0,.05);
+    }
+    .deckTab.active{ background:#111; color:#fff; border-color:#111; }
+
+    .now{ border:1px solid var(--line); border-radius:16px; padding:14px; background:#fff; }
+    .ja{ font-size:18px; font-weight:900; line-height:1.5; margin:0 0 10px; }
+    .en{ font-size:15px; line-height:1.55; margin:0 0 10px; color: rgba(17,17,17,.9); }
+    .meta{ font-size:12px; color:var(--muted); margin:0; }
+    .hint{ font-size:12px; color:var(--muted); margin-top:10px; }
+    .small{ font-size:12px; color:var(--muted); }
+
+    .toast{
+      position:fixed; left:50%; transform:translateX(-50%); bottom:20px;
+      background:rgba(17,17,17,.92); color:#fff; padding:10px 12px; border-radius:999px;
+      font-size:13px; display:none;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">音声トレーナー</div>
+
+    <div class="row">
+      <span class="pill" id="status">loading…</span>
+      <span class="pill" id="filterInfo">Deck: All</span>
+      <a class="btn secondary" href="./index.html">← 戻る</a>
+    </div>
+
+    <div class="panel">
+      <div class="panelHead">
+        <div class="deckBar" id="deckBar"></div>
+
+        <div class="row" style="margin-top:10px;">
+          <button class="btn" id="startBtn">▶︎ Start</button>
+          <button class="btn secondary" id="pauseBtn" disabled>Pause</button>
+          <button class="btn secondary" id="shuffleBtn" disabled>Shuffle: OFF</button>
+          <button class="btn secondary" id="prevBtn" disabled>◀︎ Prev</button>
+          <button class="btn secondary" id="nextBtn" disabled>Next ▶︎</button>
+          <button class="btn secondary" id="replayBtn" disabled>↻ もう一度</button>
+        </div>
+
+        <div class="row" style="margin-top:6px;">
+          <label class="small">間隔
+            <select id="gapSel" style="margin-left:6px;"></select>
+          </label>
+
+          <label class="small">
+            <input id="loopToggle" type="checkbox" style="transform: translateY(1px); margin-right:6px;">
+            ループ
+          </label>
+        </div>
+
+        <div class="hint">
+          ※ iPhoneの制限で、最初は必ず「Start」をタップして開始します（その後は連続再生OK）。
+        </div>
+      </div>
+
+      <div class="panelBody">
+        <div class="now">
+          <p class="ja" id="nowJa">—</p>
+          <p class="en" id="nowEn">—</p>
+          <p class="meta" id="nowMeta">—</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script>
+    const CSV_URL = "./cards.csv";
+    const LS_KEY = "yoshiki_kuyashii_audio_settings_v1";
+
+    const deckBar = document.getElementById("deckBar");
+    const statusEl = document.getElementById("status");
+    const filterInfo = document.getElementById("filterInfo");
+
+    const startBtn = document.getElementById("startBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const shuffleBtn  = document.getElementById("shuffleBtn");
+    const prevBtn  = document.getElementById("prevBtn");
+    const nextBtn  = document.getElementById("nextBtn");
+    const replayBtn = document.getElementById("replayBtn");
+
+    const gapSel = document.getElementById("gapSel");
+    const loopToggle = document.getElementById("loopToggle");
+
+    const nowJa = document.getElementById("nowJa");
+    const nowEn = document.getElementById("nowEn");
+    const nowMeta = document.getElementById("nowMeta");
+
+    const toast = document.getElementById("toast");
+
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.style.display = "block";
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(()=>toast.style.display="none", 900);
+    }
+
+    function buildGapOptions(){
+      gapSel.innerHTML = "";
+      for (let s=0; s<=30; s++){
+        const opt = document.createElement("option");
+        opt.value = String(s);
+        opt.textContent = `${s}秒`;
+        gapSel.appendChild(opt);
+      }
+    }
+    buildGapOptions();
+
+    function saveSettings(){
+      const s = {
+        deck: settings.deck,
+        gapSec: Number(gapSel.value || 5),
+        shuffle: !!settings.shuffle,
+        loop: !!loopToggle.checked
+      };
+      localStorage.setItem(LS_KEY, JSON.stringify(s));
+    }
+
+    function loadSettings(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch { return null; }
+    }
+
+    let settings = { deck: "all", shuffle: false };
+    const saved = loadSettings();
+    if (saved){
+      settings.deck = saved.deck ?? "all";
+      settings.shuffle = !!saved.shuffle;
+    }
+
+    gapSel.value = String(saved?.gapSec ?? 5);
+    loopToggle.checked = saved?.loop ?? false;
+
+    let cards = [];
+    let playlist = [];
+    let idx = -1;
+
+    const audio = new Audio();
+    audio.preload = "auto";
+
+    let running = false;
+    let gapTimer = null;
+
+    function clearGap(){
+      if (gapTimer) clearTimeout(gapTimer);
+      gapTimer = null;
+    }
+
+    function deckRange(deckNum){
+      const start = (deckNum - 1) * 5 + 1;
+      const end = deckNum * 5;
+      return { start, end };
+    }
+
+    function inDeck(unitNum){
+      if (settings.deck === "all") return true;
+      const dn = Number(settings.deck);
+      const {start, end} = deckRange(dn);
+      return unitNum >= start && unitNum <= end;
+    }
+
+    function updateShuffleButton(){
+      shuffleBtn.textContent = settings.shuffle ? "Shuffle: ON" : "Shuffle: OFF";
+    }
+
+    function buildPlaylist(keepCurrent=false){
+      const base = cards.filter(c => c.audioUrl && inDeck(c.unit));
+      base.sort((a,b)=> (a.unit-b.unit) || (a.idx-b.idx));
+
+      let arr = base.slice();
+
+      if (settings.shuffle){
+        const currentId = keepCurrent && playlist[idx]?.id ? playlist[idx].id : null;
+        if (currentId){
+          const cur = arr.find(x => x.id === currentId);
+          arr = arr.filter(x => x.id !== currentId);
+          for (let i=arr.length-1; i>0; i--){
+            const j = Math.floor(Math.random()*(i+1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+          }
+          if (cur) arr.unshift(cur);
+          idx = 0;
+        } else {
+          for (let i=arr.length-1; i>0; i--){
+            const j = Math.floor(Math.random()*(i+1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+          }
+        }
+      }
+
+      playlist = arr;
+
+      statusEl.textContent = `tracks ${playlist.length}`;
+      const deckLabel = settings.deck === "all" ? "All" : `Deck ${String(Number(settings.deck)).padStart(2,"0")}`;
+      filterInfo.textContent = `Deck: ${deckLabel}`;
+
+      const hasTracks = playlist.length > 0;
+      shuffleBtn.disabled = !hasTracks;
+      prevBtn.disabled = !hasTracks;
+      nextBtn.disabled = !hasTracks;
+      replayBtn.disabled = !(hasTracks && idx >= 0);
+      updateShuffleButton();
+    }
+
+    function renderDeckTabs(){
+      const maxUnit = Math.max(1, ...cards.map(c=>c.unit));
+      const deckCount = Math.ceil(maxUnit / 5);
+
+      deckBar.innerHTML = "";
+      const make = (label, value) => {
+        const b = document.createElement("button");
+        b.className = "deckTab" + (settings.deck===value ? " active" : "");
+        b.textContent = label;
+        b.onclick = ()=>{
+          settings.deck = value;
+          saveSettings();
+          renderDeckTabs();
+          idx = -1;
+          running = false;
+          audio.pause();
+          clearGap();
+          setNow(-1);
+          buildPlaylist(false);
+          setButtonsIdle();
+          showToast("Deck変更");
+        };
+        deckBar.appendChild(b);
+      };
+
+      make("All", "all");
+      for (let d=1; d<=deckCount; d++){
+        make(`Deck ${String(d).padStart(2,"0")}`, String(d));
+      }
+    }
+
+    function setNow(i){
+      const t = playlist[i];
+      if (!t){
+        nowJa.textContent = "—";
+        nowEn.textContent = "—";
+        nowMeta.textContent = "—";
+        replayBtn.disabled = true;
+        return;
+      }
+      nowJa.textContent = t.ja || "(no ja)";
+      nowEn.textContent = t.en || "";
+      nowMeta.textContent = `UNIT ${String(t.unit).padStart(3,"0")} • ${t.id}`;
+      replayBtn.disabled = false;
+    }
+
+    async function playAt(i){
+      clearGap();
+      idx = i;
+
+      if (!playlist[idx]){
+        running = false;
+        setButtonsIdle();
+        return;
+      }
+
+      setNow(idx);
+
+      const t = playlist[idx];
+
+      try{
+        audio.src = t.audioUrl;
+        audio.currentTime = 0;
+        await audio.play();
+      } catch (e){
+        showToast("再生できません（次へ）");
+        gapTimer = setTimeout(()=>next(), 800);
+      }
+    }
+
+    function scheduleNextAfterGap(){
+      clearGap();
+      const gap = Math.max(0, Number(gapSel.value || 5)) * 1000;
+      gapTimer = setTimeout(()=> next(), gap);
+    }
+
+    function setButtonsRunning(){
+      startBtn.disabled = true;
+      pauseBtn.disabled = false;
+      shuffleBtn.disabled = (playlist.length === 0);
+      prevBtn.disabled = (playlist.length === 0);
+      nextBtn.disabled = (playlist.length === 0);
+      replayBtn.disabled = (idx < 0);
+      startBtn.textContent = "▶︎ Start";
+    }
+
+    function setButtonsIdle(){
+      startBtn.disabled = (playlist.length === 0);
+      pauseBtn.disabled = true;
+      shuffleBtn.disabled = (playlist.length === 0);
+      prevBtn.disabled = (playlist.length === 0);
+      nextBtn.disabled = (playlist.length === 0);
+      replayBtn.disabled = (idx < 0);
+      startBtn.textContent = (idx >= 0 ? "▶︎ Resume" : "▶︎ Start");
+    }
+
+    function start(){
+      if (playlist.length === 0){
+        showToast("音声が見つかりません");
+        return;
+      }
+      running = true;
+      setButtonsRunning();
+
+      const startIndex = (idx >=0 && idx < playlist.length) ? idx : 0;
+      playAt(startIndex);
+    }
+
+    function pause(){
+      clearGap();
+      audio.pause();
+      running = false;
+      setButtonsIdle();
+      showToast("Pause");
+    }
+
+    function next(){
+      clearGap();
+      if (playlist.length === 0) return;
+
+      let n = idx + 1;
+      if (n >= playlist.length){
+        if (loopToggle.checked){
+          n = 0;
+        } else {
+          running = false;
+          setButtonsIdle();
+          showToast("完了");
+          return;
+        }
+      }
+      running = true;
+      setButtonsRunning();
+      playAt(n);
+    }
+
+    function prev(){
+      clearGap();
+      if (playlist.length === 0) return;
+      const p = Math.max(0, idx - 1);
+      running = true;
+      setButtonsRunning();
+      playAt(p);
+    }
+
+    function replay(){
+      if (idx < 0) return;
+      running = true;
+      setButtonsRunning();
+      playAt(idx);
+    }
+
+    function toggleShuffle(){
+      if (playlist.length === 0) return;
+
+      settings.shuffle = !settings.shuffle;
+      saveSettings();
+      updateShuffleButton();
+
+      const keep = (idx >= 0);
+      buildPlaylist(keep);
+
+      if (keep) setNow(idx);
+      else setNow(-1);
+
+      showToast(settings.shuffle ? "Shuffle ON" : "Shuffle OFF");
+    }
+
+    audio.addEventListener("ended", ()=>{
+      scheduleNextAfterGap();
+    });
+
+    audio.addEventListener("error", ()=>{
+      showToast("読み込みエラー（次へ）");
+      clearGap();
+      gapTimer = setTimeout(()=>next(), 800);
+    });
+
+    startBtn.addEventListener("click", ()=>{
+      saveSettings();
+      start();
+    });
+    pauseBtn.addEventListener("click", pause);
+    nextBtn.addEventListener("click", ()=>{ saveSettings(); next(); });
+    prevBtn.addEventListener("click", prev);
+    replayBtn.addEventListener("click", replay);
+    shuffleBtn.addEventListener("click", toggleShuffle);
+
+    gapSel.addEventListener("change", ()=>{
+      saveSettings();
+      showToast("間隔を保存");
+    });
+    loopToggle.addEventListener("change", ()=>{
+      saveSettings();
+      showToast(loopToggle.checked ? "ループON" : "ループOFF");
+    });
+
+    async function loadCsv(){
+      statusEl.textContent="loading…";
+      const res = await fetch(CSV_URL, { cache:"no-store" });
+      if (!res.ok) throw new Error("CSV fetch failed");
+      const text = await res.text();
+
+      const parsed = Papa.parse(text, { header:true, skipEmptyLines:true });
+      cards = (parsed.data||[]).map(r=>({
+        unit:Number(r.unit),
+        idx:Number(r.idx),
+        id:(r.id??"").trim(),
+        ja:(r.ja??"").trim(),
+        en:(r.en??"").trim(),
+        audioUrl:(r.audioUrl??"").trim()
+      })).filter(c=>c.id && Number.isFinite(c.unit) && Number.isFinite(c.idx));
+
+      renderDeckTabs();
+      buildPlaylist(false);
+      setNow(-1);
+      setButtonsIdle();
+      updateShuffleButton();
+    }
+
+    loadCsv().catch(err=>{
+      console.error(err);
+      statusEl.textContent="CSV読み込み失敗";
+      nowJa.textContent="cards.csv が見つからないか、読み込めませんでした。";
+      nowEn.textContent="";
+      nowMeta.textContent="";
+      startBtn.disabled = true;
+      pauseBtn.disabled = true;
+      shuffleBtn.disabled = true;
+      prevBtn.disabled = true;
+      nextBtn.disabled = true;
+      replayBtn.disabled = true;
+    });
+  </script>
+</body>
+</html>
