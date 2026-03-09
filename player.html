@@ -6,46 +6,157 @@
   <title>音声トレーナー | 悔しいフレーズリスト</title>
   <style>
     :root{
-      --bg:#f5f6f8; --card:#fff; --text:#111; --muted:rgba(17,17,17,.62);
-      --line:rgba(17,17,17,.08); --shadow:0 10px 30px rgba(0,0,0,.06);
+      --bg:#f5f6f8;
+      --card:#fff;
+      --text:#111;
+      --muted:rgba(17,17,17,.62);
+      --line:rgba(17,17,17,.08);
+      --shadow:0 10px 30px rgba(0,0,0,.06);
       --radius:16px;
     }
     body{
-      margin:0; background:var(--bg); color:var(--text);
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP",sans-serif;
     }
     .wrap{ max-width:760px; margin:0 auto; padding:16px; }
     .title{ font-size:22px; font-weight:900; margin:6px 0 10px; }
-    .pill{ font-size:12px; background:rgba(17,17,17,.06); padding:7px 10px; border-radius:999px; color:var(--muted); }
-    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:10px 0 14px; }
-    .btn{ border:0; padding:10px 12px; border-radius:12px; background:#111; color:#fff; font-weight:900; cursor:pointer; }
-    .btn.secondary{ background:rgba(17,17,17,.06); color:#111; }
-    .btn:disabled{ opacity:.45; cursor:not-allowed; }
-    select{
-      padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:#fff;
+    .pill{
+      font-size:12px;
+      background:rgba(17,17,17,.06);
+      padding:7px 10px;
+      border-radius:999px;
+      color:var(--muted);
     }
-    .panel{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
-    .panelHead{ padding:14px; border-bottom:1px solid var(--line); }
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin:10px 0 14px;
+    }
+    .btn{
+      border:0;
+      padding:10px 12px;
+      border-radius:12px;
+      background:#111;
+      color:#fff;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .btn.secondary{
+      background:rgba(17,17,17,.06);
+      color:#111;
+    }
+    .btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+    }
+    select{
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+    }
+    .panel{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .panelHead{
+      padding:14px;
+      border-bottom:1px solid var(--line);
+    }
     .panelBody{ padding:14px; }
-    .deckBar{ display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch; padding:4px 2px 8px; }
+
+    .deckBar{
+      display:flex;
+      gap:8px;
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
+      padding:4px 2px 8px;
+    }
     .deckTab{
-      flex:0 0 auto; border:1px solid var(--line); background:rgba(255,255,255,.9);
-      border-radius:999px; padding:10px 12px; font-weight:900; cursor:pointer; white-space:nowrap;
+      flex:0 0 auto;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.9);
+      border-radius:999px;
+      padding:10px 12px;
+      font-weight:900;
+      cursor:pointer;
+      white-space:nowrap;
       box-shadow: 0 6px 16px rgba(0,0,0,.05);
     }
-    .deckTab.active{ background:#111; color:#fff; border-color:#111; }
+    .deckTab.active{
+      background:#111;
+      color:#fff;
+      border-color:#111;
+    }
 
-    .now{ border:1px solid var(--line); border-radius:16px; padding:14px; background:#fff; }
-    .ja{ font-size:18px; font-weight:900; line-height:1.5; margin:0 0 10px; }
-    .en{ font-size:15px; line-height:1.55; margin:0 0 10px; color: rgba(17,17,17,.9); }
-    .meta{ font-size:12px; color:var(--muted); margin:0; }
-    .hint{ font-size:12px; color:var(--muted); margin-top:10px; }
-    .small{ font-size:12px; color:var(--muted); }
+    .now{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      background:#fff;
+    }
+    .ja{
+      font-size:18px;
+      font-weight:900;
+      line-height:1.5;
+      margin:0 0 10px;
+    }
+    .subLabel{
+      font-size:11px;
+      color:var(--muted);
+      margin:0 0 4px;
+      font-weight:800;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .origJaNote{
+      font-size:13px;
+      line-height:1.55;
+      color:var(--muted);
+      margin:0 0 12px;
+      padding:10px 12px;
+      border-radius:12px;
+      background:rgba(17,17,17,.04);
+      border:1px solid var(--line);
+    }
+    .en{
+      font-size:15px;
+      line-height:1.55;
+      margin:0 0 10px;
+      color:rgba(17,17,17,.9);
+    }
+    .meta{
+      font-size:12px;
+      color:var(--muted);
+      margin:0;
+    }
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:10px;
+    }
+    .small{
+      font-size:12px;
+      color:var(--muted);
+    }
 
     .toast{
-      position:fixed; left:50%; transform:translateX(-50%); bottom:20px;
-      background:rgba(17,17,17,.92); color:#fff; padding:10px 12px; border-radius:999px;
-      font-size:13px; display:none;
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:20px;
+      background:rgba(17,17,17,.92);
+      color:#fff;
+      padding:10px 12px;
+      border-radius:999px;
+      font-size:13px;
+      display:none;
     }
   </style>
 </head>
@@ -84,13 +195,19 @@
         </div>
 
         <div class="hint">
-          ※ iPhoneの制限で、最初は必ず「Start」をタップして開始します（その後は連続再生OK）。
+          ※ iPhoneでは最初に「Start」をタップして開始してください。
         </div>
       </div>
 
       <div class="panelBody">
         <div class="now">
           <p class="ja" id="nowJa">—</p>
+
+          <div id="origJaWrap" style="display:none;">
+            <div class="subLabel">元の日本語</div>
+            <p class="origJaNote" id="nowOriginalJa"></p>
+          </div>
+
           <p class="en" id="nowEn">—</p>
           <p class="meta" id="nowMeta">—</p>
         </div>
@@ -111,15 +228,17 @@
 
     const startBtn = document.getElementById("startBtn");
     const pauseBtn = document.getElementById("pauseBtn");
-    const shuffleBtn  = document.getElementById("shuffleBtn");
-    const prevBtn  = document.getElementById("prevBtn");
-    const nextBtn  = document.getElementById("nextBtn");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
     const replayBtn = document.getElementById("replayBtn");
 
     const gapSel = document.getElementById("gapSel");
     const loopToggle = document.getElementById("loopToggle");
 
     const nowJa = document.getElementById("nowJa");
+    const origJaWrap = document.getElementById("origJaWrap");
+    const nowOriginalJa = document.getElementById("nowOriginalJa");
     const nowEn = document.getElementById("nowEn");
     const nowMeta = document.getElementById("nowMeta");
 
@@ -158,7 +277,9 @@
         const raw = localStorage.getItem(LS_KEY);
         if (!raw) return null;
         return JSON.parse(raw);
-      } catch { return null; }
+      } catch {
+        return null;
+      }
     }
 
     let settings = { deck: "all", shuffle: false };
@@ -195,12 +316,16 @@
     function inDeck(unitNum){
       if (settings.deck === "all") return true;
       const dn = Number(settings.deck);
-      const {start, end} = deckRange(dn);
+      const { start, end } = deckRange(dn);
       return unitNum >= start && unitNum <= end;
     }
 
     function updateShuffleButton(){
       shuffleBtn.textContent = settings.shuffle ? "Shuffle: ON" : "Shuffle: OFF";
+    }
+
+    function hasOriginalJa(card){
+      return !!(card.originalJa && card.originalJa.trim() && card.originalJa.trim() !== card.ja.trim());
     }
 
     function buildPlaylist(keepCurrent=false){
@@ -243,13 +368,13 @@
     }
 
     function renderDeckTabs(){
-      const maxUnit = Math.max(1, ...cards.map(c=>c.unit));
+      const maxUnit = Math.max(1, ...cards.map(c => c.unit));
       const deckCount = Math.ceil(maxUnit / 5);
 
       deckBar.innerHTML = "";
       const make = (label, value) => {
         const b = document.createElement("button");
-        b.className = "deckTab" + (settings.deck===value ? " active" : "");
+        b.className = "deckTab" + (settings.deck === value ? " active" : "");
         b.textContent = label;
         b.onclick = ()=>{
           settings.deck = value;
@@ -277,12 +402,24 @@
       const t = playlist[i];
       if (!t){
         nowJa.textContent = "—";
+        nowOriginalJa.textContent = "";
+        origJaWrap.style.display = "none";
         nowEn.textContent = "—";
         nowMeta.textContent = "—";
         replayBtn.disabled = true;
         return;
       }
+
       nowJa.textContent = t.ja || "(no ja)";
+
+      if (hasOriginalJa(t)){
+        nowOriginalJa.textContent = t.originalJa;
+        origJaWrap.style.display = "block";
+      } else {
+        nowOriginalJa.textContent = "";
+        origJaWrap.style.display = "none";
+      }
+
       nowEn.textContent = t.en || "";
       nowMeta.textContent = `UNIT ${String(t.unit).padStart(3,"0")} • ${t.id}`;
       replayBtn.disabled = false;
@@ -315,7 +452,7 @@
     function scheduleNextAfterGap(){
       clearGap();
       const gap = Math.max(0, Number(gapSel.value || 5)) * 1000;
-      gapTimer = setTimeout(()=> next(), gap);
+      gapTimer = setTimeout(()=>next(), gap);
     }
 
     function setButtonsRunning(){
@@ -346,7 +483,7 @@
       running = true;
       setButtonsRunning();
 
-      const startIndex = (idx >=0 && idx < playlist.length) ? idx : 0;
+      const startIndex = (idx >= 0 && idx < playlist.length) ? idx : 0;
       playAt(startIndex);
     }
 
@@ -440,20 +577,21 @@
     });
 
     async function loadCsv(){
-      statusEl.textContent="loading…";
+      statusEl.textContent = "loading…";
       const res = await fetch(CSV_URL, { cache:"no-store" });
       if (!res.ok) throw new Error("CSV fetch failed");
       const text = await res.text();
 
       const parsed = Papa.parse(text, { header:true, skipEmptyLines:true });
-      cards = (parsed.data||[]).map(r=>({
+      cards = (parsed.data || []).map(r=>({
         unit:Number(r.unit),
         idx:Number(r.idx),
-        id:(r.id??"").trim(),
-        ja:(r.ja??"").trim(),
-        en:(r.en??"").trim(),
-        audioUrl:(r.audioUrl??"").trim()
-      })).filter(c=>c.id && Number.isFinite(c.unit) && Number.isFinite(c.idx));
+        id:(r.id ?? "").trim(),
+        ja:(r.ja ?? "").trim(),
+        originalJa:(r.originalJa ?? "").trim(),
+        en:(r.en ?? "").trim(),
+        audioUrl:(r.audioUrl ?? "").trim()
+      })).filter(c => c.id && Number.isFinite(c.unit) && Number.isFinite(c.idx));
 
       renderDeckTabs();
       buildPlaylist(false);
@@ -464,10 +602,12 @@
 
     loadCsv().catch(err=>{
       console.error(err);
-      statusEl.textContent="CSV読み込み失敗";
-      nowJa.textContent="cards.csv が見つからないか、読み込めませんでした。";
-      nowEn.textContent="";
-      nowMeta.textContent="";
+      statusEl.textContent = "CSV読み込み失敗";
+      nowJa.textContent = "cards.csv が見つからないか、読み込めませんでした。";
+      nowOriginalJa.textContent = "";
+      origJaWrap.style.display = "none";
+      nowEn.textContent = "";
+      nowMeta.textContent = "";
       startBtn.disabled = true;
       pauseBtn.disabled = true;
       shuffleBtn.disabled = true;
