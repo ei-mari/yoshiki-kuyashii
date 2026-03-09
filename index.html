@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>悔しいフレーズリスト</title>
+  <style>
+    :root{
+      --bg:#f5f6f8;
+      --card:#ffffff;
+      --text:#111;
+      --muted:rgba(17,17,17,.62);
+      --line:rgba(17,17,17,.08);
+      --shadow: 0 10px 30px rgba(0,0,0,.06);
+      --shadow2: 0 6px 16px rgba(0,0,0,.06);
+      --radius: 16px;
+    }
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP",sans-serif;
+    }
+    .wrap{ max-width:760px; margin:0 auto; padding:16px; padding-bottom: 96px; }
+
+    .titleRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin: 6px 0 10px;
+    }
+    .appTitle{
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      margin:0;
+    }
+    .audioLink{
+      text-decoration:none;
+      font-weight:900;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.92);
+      color:#111;
+      box-shadow: 0 6px 16px rgba(0,0,0,.05);
+      white-space:nowrap;
+    }
+
+    .topbar{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      margin: 0 0 10px;
+      justify-content:space-between;
+    }
+    .leftTop{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .pill{
+      font-size:12px;
+      background: rgba(17,17,17,.06);
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .deckBarWrap{ margin: 0 0 14px; }
+    .deckBar{
+      display:flex;
+      gap:8px;
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 4px 2px 8px;
+    }
+    .deckTab{
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.9);
+      border-radius: 999px;
+      padding: 10px 12px;
+      font-weight: 900;
+      cursor:pointer;
+      box-shadow: 0 6px 16px rgba(0,0,0,.05);
+      color:#111;
+      white-space: nowrap;
+    }
+    .deckTab.active{
+      background:#111;
+      color:#fff;
+      border-color:#111;
+    }
+
+    .panel{
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panelHead{
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panelBody{ padding: 14px; }
+    .hint{ font-size:12px; color: var(--muted); margin-top: 10px; }
+
+    .btn{
+      border:0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background:#111;
+      color:#fff;
+      font-weight:650;
+      cursor:pointer;
+      box-shadow: var(--shadow2);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .btn.secondary{
+      background: rgba(17,17,17,.06);
+      color:#111;
+      box-shadow:none;
+    }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; box-shadow:none; }
+
+    input[type="search"], input[type="number"], input[type="file"]{
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .list{ display:flex; flex-direction:column; gap:10px; }
+    .item{
+      width:100%;
+      text-align:left;
+      border: 1px solid var(--line);
+      background:#fff;
+      border-radius: 14px;
+      padding: 12px 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.04);
+      cursor:pointer;
+    }
+    .itemRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .itemTitle{
+      font-size:16px;
+      line-height:1.4;
+      letter-spacing:.2px;
+      margin: 0 0 8px;
+    }
+    .itemSub{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      font-size:12px;
+      color: var(--muted);
+    }
+    .tag{
+      font-size:11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(17,17,17,.06);
+      color:#111;
+    }
+    .tag.preview{ background: rgba(255, 191, 0, .22); }
+
+    .learnMini{
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      background: rgba(17,17,17,.04);
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-weight: 900;
+      cursor:pointer;
+      white-space: nowrap;
+    }
+
+    .answerBox{
+      margin-top: 10px;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      display:none;
+    }
+    .en{
+      font-size: 15px;
+      line-height: 1.5;
+      margin: 0 0 6px;
+    }
+    .ipa{
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0;
+    }
+    .answerActions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top: 10px;
+    }
+    .audioMini{
+      border: 0;
+      border-radius: 12px;
+      padding: 9px 10px;
+      font-weight: 900;
+      cursor:pointer;
+      background:#111;
+      color:#fff;
+      box-shadow: 0 6px 16px rgba(0,0,0,.08);
+    }
+    .audioMini:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .meta{ font-size: 13px; color: var(--muted); margin-top: 10px; }
+
+    .tapCard{
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(0,0,0,.05);
+      cursor:pointer;
+      user-select:none;
+    }
+    .ja{ font-size: 22px; line-height:1.5; margin: 0; }
+    .tapHint{ font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+    .ratings{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    @media (max-width:520px){
+      .ratings{ grid-template-columns: 1fr; }
+    }
+    .rateBox{
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px;
+      background: rgba(17,17,17,.02);
+    }
+    .rateBox .btn{ width: 100%; justify-content:center; box-shadow:none; }
+    .nextHint{ margin-top: 8px; font-size: 12px; color: var(--muted); text-align:center; }
+
+    .overlay{
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.35);
+      display:none;
+      z-index: 999;
+    }
+    .sheet{
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      background: #fff;
+      border-radius: 18px 18px 0 0;
+      box-shadow: 0 -20px 40px rgba(0,0,0,.18);
+      transform: translateY(110%);
+      transition: transform .18s ease;
+      z-index: 1000;
+      max-height: 82vh;
+      overflow: auto;
+    }
+    .sheet.open{ transform: translateY(0); }
+    .sheetHead{
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .sheetTitle{ font-weight: 900; letter-spacing:.2px; }
+    .sheetBody{ padding: 14px; }
+    .secTitle{
+      font-size: 12px;
+      color: var(--muted);
+      margin: 14px 0 8px;
+      text-transform: uppercase;
+      letter-spacing:.08em;
+    }
+    .row2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    @media (max-width:520px){ .row2{ grid-template-columns: 1fr; } }
+    .danger{
+      border: 1px solid rgba(255,0,0,.18);
+      background: rgba(255,0,0,.04);
+      padding: 10px;
+      border-radius: 14px;
+    }
+    .checkRow{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(17,17,17,.02);
+    }
+    .checkRow input{ margin-top: 2px; }
+    .checkText{ font-size: 14px; }
+    .checkDesc{ font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .bottomNav{
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: saturate(180%) blur(12px);
+      border-top: 1px solid var(--line);
+      padding: 10px 12px max(10px, env(safe-area-inset-bottom));
+      z-index: 1100;
+    }
+    .navRow{
+      max-width:760px;
+      margin: 0 auto;
+      display:flex;
+      gap:10px;
+    }
+    .navBtn{
+      flex: 1;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px 10px;
+      font-weight: 900;
+      cursor:pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,.06);
+    }
+    .navBtn.active{
+      background:#111;
+      color:#fff;
+      border-color:#111;
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 92px;
+      background: rgba(17,17,17,.92);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      z-index: 1200;
+      display:none;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="titleRow">
+      <div class="appTitle">悔しいフレーズリスト</div>
+      <a class="audioLink" href="./player.html">🎧 音声トレーナー</a>
+    </div>
+
+    <div class="topbar">
+      <div class="leftTop">
+        <span class="pill" id="status">loading…</span>
+        <span class="pill" id="filterInfo">Deck: All • New/日: 10</span>
+      </div>
+    </div>
+
+    <div class="deckBarWrap">
+      <div id="deckBar" class="deckBar"></div>
+    </div>
+
+    <div class="panel">
+      <div id="listView">
+        <div class="panelHead">
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; flex:1;">
+              <input id="searchInput" type="search" placeholder="日本語 / 英語で検索" style="flex:1; min-width: 220px;">
+              <button class="btn secondary" id="clearSearchBtn">クリア</button>
+            </div>
+            <button class="btn" id="goMemorizeFromListBtn">今日のフレーズへ</button>
+          </div>
+          <div class="hint">カードを押すと答えが開きます。「▶︎音声」をタップで音声が流れます。</div>
+        </div>
+        <div class="panelBody">
+          <div class="list" id="list"></div>
+        </div>
+      </div>
+
+      <div id="studyView" style="display:none;">
+        <div class="panelHead">
+          <div class="actions">
+            <button class="btn secondary" id="backBtn">← 一覧</button>
+            <button class="btn" id="playBtn">▶︎ 音声</button>
+            <button class="btn secondary" id="addToLearningBtn" style="margin-left:auto;">練習に追加</button>
+          </div>
+        </div>
+        <div class="panelBody">
+          <div id="tapCard" class="tapCard">
+            <p class="ja" id="jaText">—</p>
+            <div id="answer" style="display:none; margin-top: 14px;">
+              <p class="en" id="enText">—</p>
+              <p class="ipa" id="ipaText"></p>
+            </div>
+          </div>
+
+          <div class="ratings" id="ratings" style="display:none;">
+            <div class="rateBox">
+              <button class="btn" id="againBtn">Again</button>
+              <div class="nextHint" id="againHint">—</div>
+            </div>
+            <div class="rateBox">
+              <button class="btn secondary" id="hardBtn">Hard</button>
+              <div class="nextHint" id="hardHint">—</div>
+            </div>
+            <div class="rateBox">
+              <button class="btn secondary" id="goodBtn">Good</button>
+              <div class="nextHint" id="goodHint">—</div>
+            </div>
+            <div class="rateBox">
+              <button class="btn secondary" id="easyBtn">Easy</button>
+              <div class="nextHint" id="easyHint">—</div>
+            </div>
+          </div>
+
+          <div class="meta" id="meta"></div>
+          <div class="tapHint">カードをタップすると表⇄裏が切り替わります。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="sheet" id="sheet">
+    <div class="sheetHead">
+      <div class="sheetTitle">設定</div>
+      <button class="btn secondary" id="closeSheetBtn">閉じる</button>
+    </div>
+    <div class="sheetBody">
+      <div class="secTitle">Learning</div>
+
+      <div class="checkRow" style="margin-bottom:10px;">
+        <input type="checkbox" id="autoPlayToggle">
+        <div>
+          <div class="checkText"><b>裏を開いた瞬間に音声を自動再生</b></div>
+          <div class="checkDesc">カードをタップして裏を表示した瞬間に、音声（audioUrl）を再生します。</div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div>
+          <div class="pill" style="display:inline-block;margin-bottom:8px;">New/日</div>
+          <input id="newPerDayInput" type="number" min="0" max="200">
+          <div class="hint">1日に導入する新規カード数です。</div>
+        </div>
+        <div>
+          <div class="pill" style="display:inline-block;margin-bottom:8px;">Learning steps</div>
+          <div class="pill" style="display:inline-block;">1分 → 10分 →（卒業）</div>
+          <div class="hint">卒業後はReview（日）で間隔が伸びます。</div>
+        </div>
+      </div>
+
+      <div class="secTitle">Data</div>
+      <div class="row2">
+        <button class="btn secondary" id="reloadBtn">CSV再読み込み</button>
+        <button class="btn secondary" id="exportBtn">進捗Export</button>
+      </div>
+
+      <div style="margin-top:10px;">
+        <label class="btn secondary" style="display:inline-flex; gap:8px; align-items:center; cursor:pointer;">
+          進捗Import
+          <input id="importProgress" type="file" accept="application/json" style="display:none;">
+        </label>
+      </div>
+
+      <div style="margin-top:14px;" class="danger">
+        <div class="secTitle" style="margin-top:0;">Danger zone</div>
+        <button class="btn secondary" id="resetBtn">学習データをリセット</button>
+        <div class="hint">localStorageの進捗が消えます（必要なら先にExportしてください）</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottomNav">
+    <div class="navRow">
+      <button class="navBtn" id="navList">一覧</button>
+      <button class="navBtn" id="navToday">暗記</button>
+      <button class="navBtn" id="navSettings">設定</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script>
+    const LEARNING_STEPS_MIN = [1, 10];
+    const GRADUATING_DAYS = 1;
+    const EASY_GRADUATING_DAYS = 4;
+
+    const CSV_URL = "./cards.csv";
+
+    const LS_PROGRESS_KEY = "yoshiki_kuyashii_progress_v1";
+    const LS_SETTINGS_KEY = "yoshiki_kuyashii_settings_v1";
+
+    const defaultSettings = { newPerDay: 10, deck: "all", autoPlayOnFlip: true };
+
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem(LS_SETTINGS_KEY);
+        return raw ? { ...defaultSettings, ...JSON.parse(raw) } : { ...defaultSettings };
+      } catch { return { ...defaultSettings }; }
+    }
+    function saveSettings(s) { localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(s)); }
+    let settings = loadSettings();
+
+    const MIN = 60 * 1000;
+    const HOUR = 60 * MIN;
+    const DAY = 24 * HOUR;
+
+    function todayKey(d = new Date()){
+      const y=d.getFullYear();
+      const m=String(d.getMonth()+1).padStart(2,"0");
+      const day=String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
+    }
+    function addDaysTs(nowTs, days){ return nowTs + days * DAY; }
+    function addMinutesTs(nowTs, minutes){ return nowTs + minutes * MIN; }
+    function clampMin(n,min){ return n<min?min:n; }
+
+    function formatRelative(ms, dueAt){
+      if (ms <= 0) return "今すぐ";
+      if (ms < HOUR) return `${Math.ceil(ms / MIN)}分後`;
+      if (ms < DAY) return `${Math.ceil(ms / HOUR)}時間後`;
+      const days = Math.ceil(ms / DAY);
+      if (days <= 30) return `${days}日後`;
+      const d = new Date(dueAt);
+      const y=d.getFullYear();
+      const m=String(d.getMonth()+1).padStart(2,"0");
+      const dd=String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${dd}`;
+    }
+
+    function downloadText(filename, text){
+      const blob=new Blob([text],{type:"application/json;charset=utf-8"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url; a.download=filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+    function showToast(msg){
+      const t=document.getElementById("toast");
+      t.textContent=msg;
+      t.style.display="block";
+      clearTimeout(showToast._timer);
+      showToast._timer=setTimeout(()=>t.style.display="none",850);
+    }
+
+    function deckRange(deckNum){
+      const start = (deckNum - 1) * 5 + 1;
+      const end = deckNum * 5;
+      return { start, end };
+    }
+    function deckLabel(deckNum){
+      return `Deck ${String(deckNum).padStart(2,"0")}`;
+    }
+    function setFilterInfo() {
+      const d = settings.deck === "all" ? "All" : deckLabel(Number(settings.deck));
+      document.getElementById("filterInfo").textContent = `Deck: ${d} • New/日: ${settings.newPerDay}`;
+    }
+
+    const audio = new Audio();
+    function safePlayFromUrl(url){
+      try{ audio.pause(); audio.currentTime = 0; } catch {}
+      audio.src = url;
+      audio.preload = "auto";
+      audio.play().catch(()=>{});
+    }
+
+    function sm2ReviewUpdate(state, quality){
+      let ease=state.ease ?? 2.5;
+      let reps=state.reps ?? 0;
+      let intervalDays=state.intervalDays ?? 0;
+      let lapses=state.lapses ?? 0;
+
+      ease = ease + (0.1 - (5-quality)*(0.08 + (5-quality)*0.02));
+      ease = clampMin(ease, 1.3);
+
+      if (quality < 3){
+        reps = 0;
+        lapses += 1;
+        intervalDays = 1;
+      } else {
+        reps += 1;
+        if (reps === 1) intervalDays = 1;
+        else if (reps === 2) intervalDays = 6;
+        else intervalDays = Math.max(1, Math.round(intervalDays * ease));
+      }
+      return { ...state, ease, reps, intervalDays, lapses };
+    }
+
+    function scheduleNext(state, rating, nowTs){
+      const s = { ...state };
+      s.ease ??= 2.5;
+      s.reps ??= 0;
+      s.intervalDays ??= 0;
+      s.lapses ??= 0;
+      s.stepIndex ??= 0;
+      s.phase ??= "new";
+      s.dueAt ??= nowTs;
+
+      function graduate(days){
+        s.phase = "review";
+        s.stepIndex = 0;
+        s.reps = 0;
+        s.intervalDays = days;
+        s.dueAt = addDaysTs(nowTs, days);
+        s.lastReviewedAt = nowTs;
+        return s;
+      }
+
+      if (s.phase === "new" || s.phase === "learning"){
+        s.phase = "learning";
+
+        if (rating === "again"){
+          s.stepIndex = 0;
+          s.dueAt = addMinutesTs(nowTs, LEARNING_STEPS_MIN[0]);
+          s.lastReviewedAt = nowTs;
+          return s;
+        }
+        if (rating === "hard"){
+          const idx = Math.min(s.stepIndex, LEARNING_STEPS_MIN.length - 1);
+          s.dueAt = addMinutesTs(nowTs, LEARNING_STEPS_MIN[idx]);
+          s.lastReviewedAt = nowTs;
+          return s;
+        }
+        if (rating === "good"){
+          if (s.stepIndex < LEARNING_STEPS_MIN.length - 1){
+            s.stepIndex += 1;
+            s.dueAt = addMinutesTs(nowTs, LEARNING_STEPS_MIN[s.stepIndex]);
+            s.lastReviewedAt = nowTs;
+            return s;
+          }
+          return graduate(GRADUATING_DAYS);
+        }
+        if (rating === "easy"){
+          return graduate(EASY_GRADUATING_DAYS);
+        }
+      }
+
+      if (s.phase === "review"){
+        if (rating === "again"){
+          s.lapses += 1;
+          s.phase = "learning";
+          s.stepIndex = 0;
+          s.ease = Math.max(1.3, (s.ease ?? 2.5) - 0.2);
+          s.reps = 0;
+          s.intervalDays = 0;
+          s.dueAt = addMinutesTs(nowTs, LEARNING_STEPS_MIN[0]);
+          s.lastReviewedAt = nowTs;
+          return s;
+        }
+
+        const q = (rating === "hard") ? 3 : (rating === "good") ? 4 : 5;
+        const updated = sm2ReviewUpdate(s, q);
+        s.ease = updated.ease;
+        s.reps = updated.reps;
+        s.intervalDays = updated.intervalDays;
+        s.lapses = updated.lapses;
+        s.dueAt = addDaysTs(nowTs, s.intervalDays);
+        s.lastReviewedAt = nowTs;
+        return s;
+      }
+
+      s.dueAt = addMinutesTs(nowTs, 10);
+      return s;
+    }
+
+    let cards = [];
+    let progress = {};
+    let current = null;
+    let revealed = false;
+    const expanded = new Set();
+
+    const statusEl = document.getElementById("status");
+    const deckBarEl = document.getElementById("deckBar");
+    const goMemorizeFromListBtn = document.getElementById("goMemorizeFromListBtn");
+
+    const listViewEl = document.getElementById("listView");
+    const studyViewEl = document.getElementById("studyView");
+    const listEl = document.getElementById("list");
+
+    const searchInputEl = document.getElementById("searchInput");
+    const clearSearchBtn = document.getElementById("clearSearchBtn");
+
+    const backBtn = document.getElementById("backBtn");
+
+    const tapCardEl = document.getElementById("tapCard");
+    const jaEl = document.getElementById("jaText");
+    const enEl = document.getElementById("enText");
+    const ipaEl = document.getElementById("ipaText");
+    const answerEl = document.getElementById("answer");
+    const ratingsEl = document.getElementById("ratings");
+    const metaEl = document.getElementById("meta");
+
+    const playBtn = document.getElementById("playBtn");
+    const addToLearningBtn = document.getElementById("addToLearningBtn");
+
+    const againBtn = document.getElementById("againBtn");
+    const hardBtn = document.getElementById("hardBtn");
+    const goodBtn = document.getElementById("goodBtn");
+    const easyBtn = document.getElementById("easyBtn");
+
+    const againHint = document.getElementById("againHint");
+    const hardHint = document.getElementById("hardHint");
+    const goodHint = document.getElementById("goodHint");
+    const easyHint = document.getElementById("easyHint");
+
+    const navListBtn = document.getElementById("navList");
+    const navTodayBtn = document.getElementById("navToday");
+    const navSettingsBtn = document.getElementById("navSettings");
+
+    const overlayEl = document.getElementById("overlay");
+    const sheetEl = document.getElementById("sheet");
+    const closeSheetBtn = document.getElementById("closeSheetBtn");
+
+    const autoPlayToggle = document.getElementById("autoPlayToggle");
+    const newPerDayInputEl = document.getElementById("newPerDayInput");
+    const reloadBtn = document.getElementById("reloadBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const exportBtn = document.getElementById("exportBtn");
+    const importProgressEl = document.getElementById("importProgress");
+
+    function goList(){ location.hash="#list"; }
+    function goMemorize(){ location.hash="#today"; }
+    function goCard(id){ location.hash=`#card=${encodeURIComponent(id)}`; }
+
+    function showListView(){ listViewEl.style.display="block"; studyViewEl.style.display="none"; }
+    function showStudyView(){ listViewEl.style.display="none"; studyViewEl.style.display="block"; }
+
+    function setActiveNav(tab){
+      navListBtn.classList.toggle("active", tab==="list");
+      navTodayBtn.classList.toggle("active", tab==="today");
+      navSettingsBtn.classList.toggle("active", tab==="settings");
+    }
+
+    function loadProgress(){
+      try{
+        const raw=localStorage.getItem(LS_PROGRESS_KEY);
+        progress = raw ? JSON.parse(raw) : {};
+      }catch{ progress={}; }
+    }
+    function saveProgress(){ localStorage.setItem(LS_PROGRESS_KEY, JSON.stringify(progress)); }
+
+    function ensureStateForCard(id){
+      const now = Date.now();
+      if (!progress[id]){
+        progress[id] = {
+          introducedOn: null,
+          phase: "new",
+          stepIndex: 0,
+          dueAt: now,
+          ease: 2.5,
+          reps: 0,
+          intervalDays: 0,
+          lapses: 0,
+          lastReviewedAt: null
+        };
+        return;
+      }
+      const p = progress[id];
+      if (p.phase == null) p.phase = (p.introducedOn ? "review" : "new");
+      if (p.stepIndex == null) p.stepIndex = 0;
+      if (p.dueAt == null) p.dueAt = now;
+
+      p.ease ??= 2.5;
+      p.reps ??= 0;
+      p.intervalDays ??= 0;
+      p.lapses ??= 0;
+      if (p.lastReviewedAt === undefined) p.lastReviewedAt = null;
+    }
+
+    function inDeck(unitNum){
+      if (settings.deck === "all") return true;
+      const deckNum = Number(settings.deck);
+      const {start, end} = deckRange(deckNum);
+      return unitNum >= start && unitNum <= end;
+    }
+
+    function getFilteredCards(){
+      const q = (searchInputEl.value||"").trim().toLowerCase();
+      const base = cards.filter(c => inDeck(Number(c.unit)));
+      if (!q) return base;
+      return base.filter(c =>
+        (c.ja||"").toLowerCase().includes(q) ||
+        (c.en||"").toLowerCase().includes(q)
+      );
+    }
+
+    function countIntroducedToday(scopeCards){
+      const t=todayKey();
+      let n=0;
+      for (const c of scopeCards){
+        if (progress[c.id]?.introducedOn === t) n++;
+      }
+      return n;
+    }
+    function remainingNewSlots(scopeCards){
+      const used = countIntroducedToday(scopeCards);
+      return Math.max(0, Number(settings.newPerDay) - used);
+    }
+
+    function introduceCard(card){
+      const now = Date.now();
+      const t=todayKey();
+      const st=progress[card.id];
+      st.introducedOn = t;
+      st.phase = "learning";
+      st.stepIndex = 0;
+      st.dueAt = now;
+      saveProgress();
+    }
+
+    function introduceNewCardsAuto(maxCount, scopeCards){
+      const slots = remainingNewSlots(scopeCards);
+      const count = Math.min(slots, maxCount);
+      if (count<=0) return 0;
+
+      const locked = scopeCards
+        .filter(c => !progress[c.id]?.introducedOn)
+        .slice()
+        .sort((a,b)=>(a.unit-b.unit)||(a.idx-b.idx));
+
+      let introduced=0;
+      for (const c of locked){
+        if (introduced>=count) break;
+        introduceCard(c);
+        introduced++;
+      }
+      return introduced;
+    }
+
+    function readyList(scopeCards){
+      const now = Date.now();
+      const list=[];
+      for (const c of scopeCards){
+        const st=progress[c.id];
+        if (!st?.introducedOn) continue;
+        if ((st.dueAt ?? Infinity) <= now) list.push(c);
+      }
+      return list;
+    }
+    function pickNextReadyCard(scopeCards){
+      const due=readyList(scopeCards);
+      if (due.length===0) return null;
+      return due[Math.floor(Math.random()*due.length)];
+    }
+
+    function renderStatus(){
+      const scope=getFilteredCards();
+      const ready = readyList(scope).length;
+      const newLeft = remainingNewSlots(scope);
+      statusEl.textContent = `Ready ${ready} • New残 ${newLeft}`;
+      setFilterInfo();
+    }
+
+    function renderDeckTabs(deckCount){
+      deckBarEl.innerHTML = "";
+
+      function addTab(label, value){
+        const btn = document.createElement("button");
+        btn.className = "deckTab" + ((settings.deck === value) ? " active" : "");
+        btn.type = "button";
+        btn.textContent = label;
+        btn.onclick = () => {
+          settings.deck = value;
+          saveSettings(settings);
+
+          expanded.clear();
+          introduceNewCardsAuto(9999, getFilteredCards());
+
+          renderDeckTabs(deckCount);
+          renderByHash();
+          showToast("Deck変更");
+        };
+        deckBarEl.appendChild(btn);
+      }
+
+      addTab("All", "all");
+      for (let d=1; d<=deckCount; d++){
+        addTab(`Deck ${String(d).padStart(2,"0")}`, String(d));
+      }
+    }
+
+    function renderList(){
+      const scope = getFilteredCards().slice().sort((a,b)=>(a.unit-b.unit)||(a.idx-b.idx));
+      listEl.innerHTML="";
+      if (scope.length===0){
+        const div=document.createElement("div");
+        div.style.color="rgba(17,17,17,.62)";
+        div.textContent="該当するカードがありません。";
+        listEl.appendChild(div);
+        return;
+      }
+
+      for (const c of scope){
+        const introduced = !!progress[c.id]?.introducedOn;
+
+        const item=document.createElement("div");
+        item.className = "item";
+        item.tabIndex = 0;
+
+        const row=document.createElement("div");
+        row.className="itemRow";
+
+        const left=document.createElement("div");
+        left.style.flex = "1";
+
+        const title=document.createElement("div");
+        title.className="itemTitle";
+        title.textContent=c.ja;
+
+        const sub=document.createElement("div");
+        sub.className="itemSub";
+
+        const unit=document.createElement("span");
+        unit.textContent=`UNIT ${String(c.unit).padStart(3,"0")} • ${c.id}`;
+        sub.appendChild(unit);
+
+        if (!introduced){
+          const tag=document.createElement("span");
+          tag.className="tag preview";
+          tag.textContent="プレビュー";
+          sub.appendChild(tag);
+        }
+
+        left.appendChild(title);
+        left.appendChild(sub);
+
+        const learnBtn=document.createElement("button");
+        learnBtn.className="learnMini";
+        learnBtn.textContent="練習へ";
+        learnBtn.onclick = (e) => {
+          e.stopPropagation();
+          goCard(c.id);
+        };
+
+        row.appendChild(left);
+        row.appendChild(learnBtn);
+
+        const ans=document.createElement("div");
+        ans.className="answerBox";
+
+        const en=document.createElement("p");
+        en.className="en";
+        en.textContent=c.en;
+
+        const ipa=document.createElement("p");
+        ipa.className="ipa";
+        ipa.textContent=c.ipa || "";
+
+        const actions=document.createElement("div");
+        actions.className="answerActions";
+
+        const audioBtn=document.createElement("button");
+        audioBtn.className="audioMini";
+        audioBtn.textContent="▶︎ 音声";
+        audioBtn.disabled = !c.audioUrl;
+        audioBtn.onclick = (e) => {
+          e.stopPropagation();
+          if (c.audioUrl) safePlayFromUrl(c.audioUrl);
+        };
+
+        actions.appendChild(audioBtn);
+
+        ans.appendChild(en);
+        ans.appendChild(ipa);
+        ans.appendChild(actions);
+
+        item.onclick = () => {
+          const isOpen = expanded.has(c.id);
+          if (isOpen) expanded.delete(c.id);
+          else expanded.add(c.id);
+          ans.style.display = expanded.has(c.id) ? "block" : "none";
+        };
+
+        ans.style.display = expanded.has(c.id) ? "block" : "none";
+
+        item.appendChild(row);
+        item.appendChild(ans);
+
+        listEl.appendChild(item);
+      }
+    }
+
+    function updateRatingHints(){
+      if (!current){
+        againHint.textContent = hardHint.textContent = goodHint.textContent = easyHint.textContent = "—";
+        return;
+      }
+      const st = progress[current.id];
+      if (!st?.introducedOn){
+        againHint.textContent = hardHint.textContent = goodHint.textContent = easyHint.textContent = "練習に追加後";
+        return;
+      }
+
+      const now = Date.now();
+      const a = scheduleNext({ ...st }, "again", now);
+      const h = scheduleNext({ ...st }, "hard",  now);
+      const g = scheduleNext({ ...st }, "good",  now);
+      const e = scheduleNext({ ...st }, "easy",  now);
+
+      againHint.textContent = `→ ${formatRelative(a.dueAt - now, a.dueAt)}`;
+      hardHint.textContent  = `→ ${formatRelative(h.dueAt - now, h.dueAt)}`;
+      goodHint.textContent  = `→ ${formatRelative(g.dueAt - now, g.dueAt)}`;
+      easyHint.textContent  = `→ ${formatRelative(e.dueAt - now, e.dueAt)}`;
+    }
+
+    function renderCard(card){
+      current=card;
+      revealed=false;
+      answerEl.style.display="none";
+      ratingsEl.style.display="none";
+
+      if (!card){
+        jaEl.textContent="今日は暗記がありません 🎉";
+        enEl.textContent=""; ipaEl.textContent="";
+        metaEl.textContent="";
+        playBtn.disabled=true;
+        addToLearningBtn.style.display="none";
+        updateRatingHints();
+        return;
+      }
+
+      const st=progress[card.id];
+      const introduced = !!st.introducedOn;
+
+      jaEl.textContent=card.ja;
+      enEl.textContent=card.en;
+      ipaEl.textContent=card.ipa||"";
+      playBtn.disabled=!card.audioUrl;
+
+      const phase = introduced ? (st.phase || "review") : "preview";
+      metaEl.textContent = `UNIT ${String(card.unit).padStart(3,"0")} • ${card.id}` + (introduced ? ` • ${phase}` : " • プレビュー");
+
+      addToLearningBtn.style.display = introduced ? "none" : "inline-flex";
+      addToLearningBtn.disabled = remainingNewSlots(getFilteredCards()) <= 0;
+
+      updateRatingHints();
+    }
+
+    function flipCard(){
+      if (!current) return;
+      const showing = answerEl.style.display !== "none";
+
+      if (showing){
+        answerEl.style.display="none";
+        ratingsEl.style.display="none";
+        revealed=false;
+      } else {
+        answerEl.style.display="block";
+        revealed=true;
+
+        const introduced = !!progress[current.id]?.introducedOn;
+        ratingsEl.style.display = introduced ? "grid" : "none";
+
+        if (settings.autoPlayOnFlip && current.audioUrl) {
+          safePlayFromUrl(current.audioUrl);
+        }
+      }
+      updateRatingHints();
+    }
+
+    function grade(rating){
+      if (!current) return;
+      const st = progress[current.id];
+
+      if (!st?.introducedOn){
+        alert("このカードはプレビューです。「練習に追加」すると採点できます。");
+        return;
+      }
+
+      const now = Date.now();
+      progress[current.id] = scheduleNext(st, rating, now);
+      saveProgress();
+
+      renderStatus();
+
+      const scope=getFilteredCards();
+      const next = pickNextReadyCard(scope);
+      if (next){
+        renderCard(next);
+      } else {
+        goList();
+      }
+    }
+
+    function renderByHash(){
+      const h = location.hash || "#today";
+      renderStatus();
+
+      if (h === "#list"){
+        setActiveNav("list");
+        showListView();
+        renderList();
+        return;
+      }
+
+      if (h === "#today"){
+        setActiveNav("today");
+        const scope=getFilteredCards();
+        let next = pickNextReadyCard(scope);
+        if (!next){
+          const added = introduceNewCardsAuto(1, scope);
+          if (added>0) next = pickNextReadyCard(scope);
+        }
+        showStudyView();
+        renderCard(next || null);
+        return;
+      }
+
+      if (h.startsWith("#card=")){
+        setActiveNav("today");
+        const id = decodeURIComponent(h.slice(6));
+        const card = cards.find(c=>c.id===id);
+        showStudyView();
+        renderCard(card || null);
+        return;
+      }
+
+      goMemorize();
+    }
+
+    function openSheet(){
+      overlayEl.style.display="block";
+      sheetEl.classList.add("open");
+      document.body.style.overflow="hidden";
+      setActiveNav("settings");
+    }
+    function closeSheet(){
+      overlayEl.style.display="none";
+      sheetEl.classList.remove("open");
+      document.body.style.overflow="";
+      const h = location.hash || "#today";
+      setActiveNav(h==="#list" ? "list" : "today");
+    }
+
+    async function loadCsv(){
+      statusEl.textContent="loading…";
+      const res = await fetch(CSV_URL, { cache:"no-store" });
+      if (!res.ok) throw new Error(`CSV fetch failed: ${res.status}`);
+      const text = await res.text();
+
+      const parsed = Papa.parse(text, { header:true, skipEmptyLines:true });
+      cards = (parsed.data||[]).map(r=>({
+        unit:Number(r.unit),
+        idx:Number(r.idx),
+        theme:(r.theme??"").trim(),
+        ja:(r.ja??"").trim(),
+        en:(r.en??"").trim(),
+        ipa:(r.ipa??"").trim(),
+        audioUrl:(r.audioUrl??"").trim(),
+        id:(r.id??"").trim(),
+      })).filter(c=>c.id && c.ja && c.en);
+
+      for (const c of cards) ensureStateForCard(c.id);
+      saveProgress();
+
+      const maxUnit = Math.max(1, ...cards.map(c => Number(c.unit) || 1));
+      const deckCount = Math.ceil(maxUnit / 5);
+      renderDeckTabs(deckCount);
+
+      newPerDayInputEl.value = settings.newPerDay;
+      autoPlayToggle.checked = !!settings.autoPlayOnFlip;
+
+      introduceNewCardsAuto(9999, getFilteredCards());
+
+      renderByHash();
+    }
+
+    window.addEventListener("hashchange", renderByHash);
+
+    navListBtn.addEventListener("click", goList);
+    navTodayBtn.addEventListener("click", goMemorize);
+    navSettingsBtn.addEventListener("click", openSheet);
+
+    backBtn.addEventListener("click", goList);
+    goMemorizeFromListBtn.addEventListener("click", goMemorize);
+
+    tapCardEl.addEventListener("click", ()=>flipCard());
+
+    playBtn.addEventListener("click", (e)=>{
+      e.stopPropagation();
+      if (current?.audioUrl) safePlayFromUrl(current.audioUrl);
+    });
+
+    addToLearningBtn.addEventListener("click", (e)=>{
+      e.stopPropagation();
+      if (!current) return;
+      const scope=getFilteredCards();
+      if (remainingNewSlots(scope) <= 0){
+        alert("今日の新規枠がありません。設定でNew/日を増やすか、明日以降にしてください。");
+        return;
+      }
+      introduceCard(current);
+      renderStatus();
+      renderCard(current);
+      if (revealed) ratingsEl.style.display = "grid";
+      showToast("練習に追加");
+    });
+
+    againBtn.addEventListener("click", ()=>grade("again"));
+    hardBtn.addEventListener("click", ()=>grade("hard"));
+    goodBtn.addEventListener("click", ()=>grade("good"));
+    easyBtn.addEventListener("click", ()=>grade("easy"));
+
+    searchInputEl.addEventListener("input", ()=>{
+      if ((location.hash||"#today")==="#list") renderList();
+      renderStatus();
+    });
+    clearSearchBtn.addEventListener("click", ()=>{
+      searchInputEl.value="";
+      renderByHash();
+    });
+
+    closeSheetBtn.addEventListener("click", closeSheet);
+    overlayEl.addEventListener("click", closeSheet);
+
+    autoPlayToggle.addEventListener("change", ()=>{
+      settings.autoPlayOnFlip = !!autoPlayToggle.checked;
+      saveSettings(settings);
+      showToast(settings.autoPlayOnFlip ? "自動再生: ON" : "自動再生: OFF");
+    });
+
+    newPerDayInputEl.addEventListener("change", ()=>{
+      const v = Number(newPerDayInputEl.value);
+      settings.newPerDay = Number.isFinite(v) ? Math.max(0, Math.min(200, v)) : defaultSettings.newPerDay;
+      newPerDayInputEl.value = settings.newPerDay;
+      saveSettings(settings);
+      introduceNewCardsAuto(9999, getFilteredCards());
+      renderByHash();
+      showToast(`New/日 = ${settings.newPerDay}`);
+    });
+
+    reloadBtn.addEventListener("click", async ()=>{
+      await loadCsv();
+      showToast("CSV再読み込み");
+    });
+
+    exportBtn.addEventListener("click", ()=>{
+      const payload = { version: 1, exportedAt: new Date().toISOString(), progress, settings };
+      downloadText("yoshiki_kuyashii_progress.json", JSON.stringify(payload, null, 2));
+      showToast("Export完了");
+    });
+
+    importProgressEl.addEventListener("change", async (e)=>{
+      const file=e.target.files?.[0];
+      if (!file) return;
+      const text=await file.text();
+      try{
+        const obj=JSON.parse(text);
+        if (!obj?.progress) throw new Error("invalid");
+        progress=obj.progress;
+        if (obj.settings){
+          settings = { ...defaultSettings, ...obj.settings };
+          saveSettings(settings);
+          newPerDayInputEl.value = settings.newPerDay;
+          autoPlayToggle.checked = !!settings.autoPlayOnFlip;
+        }
+        saveProgress();
+
+        for (const c of cards) ensureStateForCard(c.id);
+        saveProgress();
+
+        introduceNewCardsAuto(9999, getFilteredCards());
+        expanded.clear();
+
+        const maxUnit = Math.max(1, ...cards.map(c => Number(c.unit) || 1));
+        const deckCount = Math.ceil(maxUnit / 5);
+        renderDeckTabs(deckCount);
+
+        renderByHash();
+        showToast("Import完了");
+      }catch{
+        alert("インポート失敗：ファイルが違う可能性があります");
+      }finally{
+        importProgressEl.value="";
+      }
+    });
+
+    resetBtn.addEventListener("click", ()=>{
+      if (!confirm("学習データ（localStorage）を消します。OK？（先にExport推奨）")) return;
+      localStorage.removeItem(LS_PROGRESS_KEY);
+      loadProgress();
+      for (const c of cards) ensureStateForCard(c.id);
+      saveProgress();
+      introduceNewCardsAuto(9999, getFilteredCards());
+      expanded.clear();
+      renderByHash();
+      showToast("リセットしました");
+    });
+
+    loadProgress();
+    setFilterInfo();
+    if (!location.hash) location.hash = "#today";
+    loadCsv().catch(err=>{
+      console.error(err);
+      statusEl.textContent="CSV読み込み失敗";
+      setActiveNav("today");
+      showStudyView();
+      jaEl.textContent="cards.csv をrepo直下に置いたか確認してください。";
+    });
+  </script>
+</body>
+</html>
