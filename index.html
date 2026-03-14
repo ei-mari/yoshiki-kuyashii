@@ -392,7 +392,7 @@
     <div class="topbar">
       <div class="leftTop">
         <span class="pill" id="status">loading…</span>
-        <span class="pill" id="filterInfo">Deck: All • New/日: 10</span>
+        <span class="pill" id="filterInfo">Unit: All • New/日: 10</span>
       </div>
     </div>
 
@@ -594,17 +594,12 @@
       showToast._timer=setTimeout(()=>t.style.display="none",850);
     }
 
-    function deckRange(deckNum){
-      const start = (deckNum - 1) * 5 + 1;
-      const end = deckNum * 5;
-      return { start, end };
-    }
-    function deckLabel(deckNum){
-      return `Deck ${String(deckNum).padStart(2,"0")}`;
+    function deckLabel(unitNum){
+      return `Unit ${unitNum}`;
     }
     function setFilterInfo() {
       const d = settings.deck === "all" ? "All" : deckLabel(Number(settings.deck));
-      document.getElementById("filterInfo").textContent = `Deck: ${d} • New/日: ${settings.newPerDay}`;
+      document.getElementById("filterInfo").textContent = `Unit: ${d} • New/日: ${settings.newPerDay}`;
     }
 
     const audio = new Audio();
@@ -826,9 +821,7 @@
 
     function inDeck(unitNum){
       if (settings.deck === "all") return true;
-      const deckNum = Number(settings.deck);
-      const {start, end} = deckRange(deckNum);
-      return unitNum >= start && unitNum <= end;
+      return unitNum === Number(settings.deck);
     }
 
     function getFilteredCards(){
@@ -909,7 +902,7 @@
       setFilterInfo();
     }
 
-    function renderDeckTabs(deckCount){
+    function renderDeckTabs(units){
       deckBarEl.innerHTML = "";
 
       function addTab(label, value){
@@ -924,16 +917,16 @@
           expanded.clear();
           introduceNewCardsAuto(9999, getFilteredCards());
 
-          renderDeckTabs(deckCount);
+          renderDeckTabs(units);
           renderByHash();
-          showToast("Deck変更");
+          showToast("Unit変更");
         };
         deckBarEl.appendChild(btn);
       }
 
       addTab("All", "all");
-      for (let d=1; d<=deckCount; d++){
-        addTab(`Deck ${String(d).padStart(2,"0")}`, String(d));
+      for (const unit of units){
+        addTab(`Unit ${unit}`, String(unit));
       }
     }
 
@@ -1237,9 +1230,14 @@
       for (const c of cards) ensureStateForCard(c.id);
       saveProgress();
 
-      const maxUnit = Math.max(1, ...cards.map(c => Number(c.unit) || 1));
-      const deckCount = Math.ceil(maxUnit / 5);
-      renderDeckTabs(deckCount);
+      const units = [...new Set(cards.map(c => Number(c.unit)).filter(Boolean))].sort((a,b)=>a-b);
+
+      if (settings.deck !== "all" && !units.includes(Number(settings.deck))) {
+        settings.deck = "all";
+        saveSettings(settings);
+      }
+
+      renderDeckTabs(units);
 
       newPerDayInputEl.value = settings.newPerDay;
       autoPlayToggle.checked = !!settings.autoPlayOnFlip;
@@ -1346,9 +1344,14 @@
         introduceNewCardsAuto(9999, getFilteredCards());
         expanded.clear();
 
-        const maxUnit = Math.max(1, ...cards.map(c => Number(c.unit) || 1));
-        const deckCount = Math.ceil(maxUnit / 5);
-        renderDeckTabs(deckCount);
+        const units = [...new Set(cards.map(c => Number(c.unit)).filter(Boolean))].sort((a,b)=>a-b);
+
+        if (settings.deck !== "all" && !units.includes(Number(settings.deck))) {
+          settings.deck = "all";
+          saveSettings(settings);
+        }
+
+        renderDeckTabs(units);
 
         renderByHash();
         showToast("Import完了");
