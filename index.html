@@ -181,6 +181,33 @@
       cursor:pointer;
       white-space: nowrap;
     }
+    .itemRight{
+      flex: 0 0 auto;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .starMini{
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      background: rgba(17,17,17,.04);
+      border-radius: 12px;
+      width: 38px;
+      height: 36px;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1;
+      cursor:pointer;
+      color:#111;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .starMini.active{
+      background:#111;
+      border-color:#111;
+      color:#fff;
+    }
 
     .answerBox{
       margin-top: 10px;
@@ -240,6 +267,19 @@
     }
 
     .actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .starBtn{
+      width: 42px;
+      justify-content: center;
+      padding: 10px 0;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .starBtn.active{
+      background:#111;
+      border-color:#111;
+      color:#fff;
+    }
     .meta{ font-size: 13px; color: var(--muted); margin-top: 10px; }
 
     .tapCard{
@@ -423,6 +463,7 @@
             <button class="btn secondary" id="backBtn">← 一覧</button>
             <button class="btn" id="playBtn">▶︎ 音声</button>
             <button class="btn secondary" id="addToLearningBtn" style="margin-left:auto;">練習に追加</button>
+            <button class="btn secondary starBtn" id="toggleStarBtn" title="レビューに追加 / 解除">☆</button>
           </div>
         </div>
         <div class="panelBody">
@@ -598,7 +639,9 @@
       return `Unit ${unitNum}`;
     }
     function setFilterInfo() {
-      const d = settings.deck === "all" ? "All" : deckLabel(Number(settings.deck));
+      const d = settings.deck === "all"
+        ? "All"
+        : (settings.deck === "review" ? "REVIEW ★" : deckLabel(Number(settings.deck)));
       document.getElementById("filterInfo").textContent = `Unit: ${d} • New/日: ${settings.newPerDay}`;
     }
 
@@ -744,6 +787,7 @@
 
     const playBtn = document.getElementById("playBtn");
     const addToLearningBtn = document.getElementById("addToLearningBtn");
+    const toggleStarBtn = document.getElementById("toggleStarBtn");
 
     const againBtn = document.getElementById("againBtn");
     const hardBtn = document.getElementById("hardBtn");
@@ -803,7 +847,8 @@
           reps: 0,
           intervalDays: 0,
           lapses: 0,
-          lastReviewedAt: null
+          lastReviewedAt: null,
+          starred: false
         };
         return;
       }
@@ -817,16 +862,29 @@
       p.intervalDays ??= 0;
       p.lapses ??= 0;
       if (p.lastReviewedAt === undefined) p.lastReviewedAt = null;
+      if (p.starred === undefined) p.starred = false;
     }
 
-    function inDeck(unitNum){
+    function isStarred(id){
+      return !!progress[id]?.starred;
+    }
+
+    function toggleStar(id){
+      ensureStateForCard(id);
+      progress[id].starred = !progress[id].starred;
+      saveProgress();
+      return progress[id].starred;
+    }
+
+    function inDeck(card){
       if (settings.deck === "all") return true;
-      return unitNum === Number(settings.deck);
+      if (settings.deck === "review") return isStarred(card.id);
+      return Number(card.unit) === Number(settings.deck);
     }
 
     function getFilteredCards(){
       const q = (searchInputEl.value||"").trim().toLowerCase();
-      const base = cards.filter(c => inDeck(Number(c.unit)));
+      const base = cards.filter(c => inDeck(c));
       if (!q) return base;
       return base.filter(c =>
         (c.ja||"").toLowerCase().includes(q) ||
@@ -919,12 +977,13 @@
 
           renderDeckTabs(units);
           renderByHash();
-          showToast("Unit変更");
+          showToast(value === "review" ? "REVIEW表示" : "Unit変更");
         };
         deckBarEl.appendChild(btn);
       }
 
       addTab("All", "all");
+      addTab("REVIEW ★", "review");
       for (const unit of units){
         addTab(`Unit ${unit}`, String(unit));
       }
@@ -983,8 +1042,27 @@
           goCard(c.id);
         };
 
+        const starBtn=document.createElement("button");
+        starBtn.type = "button";
+        starBtn.className = "starMini" + (isStarred(c.id) ? " active" : "");
+        starBtn.textContent = isStarred(c.id) ? "★" : "☆";
+        starBtn.title = isStarred(c.id) ? "★を外す" : "★を付ける";
+        starBtn.onclick = (e) => {
+          e.stopPropagation();
+          const nowStarred = toggleStar(c.id);
+          if (!nowStarred && settings.deck === "review") expanded.delete(c.id);
+          renderStatus();
+          renderList();
+          showToast(nowStarred ? "★ 追加" : "★ 削除");
+        };
+
+        const right=document.createElement("div");
+        right.className="itemRight";
+        right.appendChild(starBtn);
+        right.appendChild(learnBtn);
+
         row.appendChild(left);
-        row.appendChild(learnBtn);
+        row.appendChild(right);
 
         const ans=document.createElement("div");
         ans.className="answerBox";
@@ -1067,6 +1145,22 @@
       easyHint.textContent  = `→ ${formatRelative(e.dueAt - now, e.dueAt)}`;
     }
 
+    function renderStarButton(card){
+      if (!toggleStarBtn) return;
+      if (!card){
+        toggleStarBtn.disabled = true;
+        toggleStarBtn.textContent = "☆";
+        toggleStarBtn.classList.remove("active");
+        toggleStarBtn.title = "レビューに追加 / 解除";
+        return;
+      }
+      const starred = isStarred(card.id);
+      toggleStarBtn.disabled = false;
+      toggleStarBtn.textContent = starred ? "★" : "☆";
+      toggleStarBtn.classList.toggle("active", starred);
+      toggleStarBtn.title = starred ? "★を外す" : "★を付ける";
+    }
+
     function renderCard(card){
       current=card;
       revealed=false;
@@ -1082,6 +1176,7 @@
         metaEl.textContent="";
         playBtn.disabled=true;
         addToLearningBtn.style.display="none";
+        renderStarButton(null);
         updateRatingHints();
         return;
       }
@@ -1104,10 +1199,11 @@
       playBtn.disabled=!card.audioUrl;
 
       const phase = introduced ? (st.phase || "review") : "preview";
-      metaEl.textContent = `UNIT ${String(card.unit).padStart(3,"0")} • ${card.id}` + (introduced ? ` • ${phase}` : " • プレビュー");
+      metaEl.textContent = `UNIT ${String(card.unit).padStart(3,"0")} • ${card.id}` + (introduced ? ` • ${phase}` : " • プレビュー") + (isStarred(card.id) ? " • ★" : "");
 
       addToLearningBtn.style.display = introduced ? "none" : "inline-flex";
       addToLearningBtn.disabled = remainingNewSlots(getFilteredCards()) <= 0;
+      renderStarButton(card);
 
       updateRatingHints();
     }
@@ -1232,7 +1328,7 @@
 
       const units = [...new Set(cards.map(c => Number(c.unit)).filter(Boolean))].sort((a,b)=>a-b);
 
-      if (settings.deck !== "all" && !units.includes(Number(settings.deck))) {
+      if (settings.deck !== "all" && settings.deck !== "review" && !units.includes(Number(settings.deck))) {
         settings.deck = "all";
         saveSettings(settings);
       }
@@ -1276,6 +1372,31 @@
       renderCard(current);
       if (revealed) ratingsEl.style.display = "grid";
       showToast("練習に追加");
+    });
+
+    toggleStarBtn.addEventListener("click", (e)=>{
+      e.stopPropagation();
+      if (!current) return;
+      const nowStarred = toggleStar(current.id);
+      renderStatus();
+
+      if ((location.hash || "#today") === "#list"){
+        renderList();
+      }
+
+      if ((location.hash || "#today") === "#today" && settings.deck === "review" && !nowStarred){
+        const scope = getFilteredCards();
+        const next = pickNextReadyCard(scope);
+        renderCard(next || null);
+      } else {
+        renderStarButton(current);
+        const st = progress[current.id];
+        const introduced = !!st?.introducedOn;
+        const phase = introduced ? (st.phase || "review") : "preview";
+        metaEl.textContent = `UNIT ${String(current.unit).padStart(3,"0")} • ${current.id}` + (introduced ? ` • ${phase}` : " • プレビュー") + (nowStarred ? " • ★" : "");
+      }
+
+      showToast(nowStarred ? "★ 追加" : "★ 削除");
     });
 
     againBtn.addEventListener("click", ()=>grade("again"));
@@ -1346,7 +1467,7 @@
 
         const units = [...new Set(cards.map(c => Number(c.unit)).filter(Boolean))].sort((a,b)=>a-b);
 
-        if (settings.deck !== "all" && !units.includes(Number(settings.deck))) {
+        if (settings.deck !== "all" && settings.deck !== "review" && !units.includes(Number(settings.deck))) {
           settings.deck = "all";
           saveSettings(settings);
         }

@@ -166,7 +166,7 @@
 
     <div class="row">
       <span class="pill" id="status">loading…</span>
-      <span class="pill" id="filterInfo">Deck: All</span>
+      <span class="pill" id="filterInfo">Unit: All</span>
       <a class="btn secondary" href="./index.html">← 戻る</a>
     </div>
 
@@ -220,7 +220,9 @@
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
     const CSV_URL = "./cards.csv";
-    const LS_KEY = "yoshiki_kuyashii_audio_settings_v1";
+    const LS_AUDIO_KEY = "yoshiki_kuyashii_audio_settings_v1";
+    const LS_MAIN_SETTINGS_KEY = "yoshiki_kuyashii_settings_v1";
+    const LS_PROGRESS_KEY = "yoshiki_kuyashii_progress_v1";
 
     const deckBar = document.getElementById("deckBar");
     const statusEl = document.getElementById("status");
@@ -262,6 +264,38 @@
     }
     buildGapOptions();
 
+    function loadMainSettings(){
+      try{
+        const raw = localStorage.getItem(LS_MAIN_SETTINGS_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function saveMainDeck(deckValue){
+      const base = loadMainSettings() || {};
+      base.deck = deckValue;
+      localStorage.setItem(LS_MAIN_SETTINGS_KEY, JSON.stringify(base));
+    }
+
+    function loadProgress(){
+      try{
+        const raw = localStorage.getItem(LS_PROGRESS_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch {
+        return {};
+      }
+    }
+
+    let progress = loadProgress();
+    function refreshProgress(){
+      progress = loadProgress();
+    }
+    function isStarred(id){
+      return !!progress[id]?.starred;
+    }
+
     function saveSettings(){
       const s = {
         deck: settings.deck,
@@ -269,12 +303,12 @@
         shuffle: !!settings.shuffle,
         loop: !!loopToggle.checked
       };
-      localStorage.setItem(LS_KEY, JSON.stringify(s));
+      localStorage.setItem(LS_AUDIO_KEY, JSON.stringify(s));
     }
 
     function loadSettings(){
       try{
-        const raw = localStorage.getItem(LS_KEY);
+        const raw = localStorage.getItem(LS_AUDIO_KEY);
         if (!raw) return null;
         return JSON.parse(raw);
       } catch {
@@ -284,9 +318,13 @@
 
     let settings = { deck: "all", shuffle: false };
     const saved = loadSettings();
+    const mainSaved = loadMainSettings();
     if (saved){
       settings.deck = saved.deck ?? "all";
       settings.shuffle = !!saved.shuffle;
+    }
+    if (mainSaved?.deck != null){
+      settings.deck = String(mainSaved.deck);
     }
 
     gapSel.value = String(saved?.gapSec ?? 5);
@@ -307,17 +345,16 @@
       gapTimer = null;
     }
 
-    function deckRange(deckNum){
-      const start = (deckNum - 1) * 5 + 1;
-      const end = deckNum * 5;
-      return { start, end };
+    function inDeck(card){
+      if (settings.deck === "all") return true;
+      if (settings.deck === "review") return isStarred(card.id);
+      return Number(card.unit) === Number(settings.deck);
     }
 
-    function inDeck(unitNum){
-      if (settings.deck === "all") return true;
-      const dn = Number(settings.deck);
-      const { start, end } = deckRange(dn);
-      return unitNum >= start && unitNum <= end;
+    function unitFilterLabel(){
+      if (settings.deck === "all") return "All";
+      if (settings.deck === "review") return "REVIEW ★";
+      return `Unit ${Number(settings.deck)}`;
     }
 
     function updateShuffleButton(){
@@ -329,7 +366,8 @@
     }
 
     function buildPlaylist(keepCurrent=false){
-      const base = cards.filter(c => c.audioUrl && inDeck(c.unit));
+      refreshProgress();
+      const base = cards.filter(c => c.audioUrl && inDeck(c));
       base.sort((a,b)=> (a.unit-b.unit) || (a.idx-b.idx));
 
       let arr = base.slice();
@@ -356,8 +394,7 @@
       playlist = arr;
 
       statusEl.textContent = `tracks ${playlist.length}`;
-      const deckLabel = settings.deck === "all" ? "All" : `Deck ${String(Number(settings.deck)).padStart(2,"0")}`;
-      filterInfo.textContent = `Deck: ${deckLabel}`;
+      filterInfo.textContent = `Unit: ${unitFilterLabel()}`;
 
       const hasTracks = playlist.length > 0;
       shuffleBtn.disabled = !hasTracks;
@@ -367,9 +404,23 @@
       updateShuffleButton();
     }
 
+    function normalizeDeckSetting(units){
+      if (settings.deck === "all" || settings.deck === "review") return false;
+      const n = Number(settings.deck);
+      if (!units.includes(n)){
+        settings.deck = "all";
+        return true;
+      }
+      return false;
+    }
+
     function renderDeckTabs(){
-      const maxUnit = Math.max(1, ...cards.map(c => c.unit));
-      const deckCount = Math.ceil(maxUnit / 5);
+      const units = [...new Set(cards.map(c => Number(c.unit)).filter(Number.isFinite))].sort((a,b)=>a-b);
+      const normalized = normalizeDeckSetting(units);
+      if (normalized){
+        saveSettings();
+        saveMainDeck(settings.deck);
+      }
 
       deckBar.innerHTML = "";
       const make = (label, value) => {
@@ -379,6 +430,7 @@
         b.onclick = ()=>{
           settings.deck = value;
           saveSettings();
+          saveMainDeck(value);
           renderDeckTabs();
           idx = -1;
           running = false;
@@ -387,14 +439,15 @@
           setNow(-1);
           buildPlaylist(false);
           setButtonsIdle();
-          showToast("Deck変更");
+          showToast(value === "review" ? "REVIEW表示" : "Unit変更");
         };
         deckBar.appendChild(b);
       };
 
       make("All", "all");
-      for (let d=1; d<=deckCount; d++){
-        make(`Deck ${String(d).padStart(2,"0")}`, String(d));
+      make("REVIEW ★", "review");
+      for (const u of units){
+        make(`Unit ${u}`, String(u));
       }
     }
 
