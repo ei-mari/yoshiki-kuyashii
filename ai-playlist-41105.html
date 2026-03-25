@@ -1,0 +1,1845 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Playlist 41105 | 暗唱トレーナー</title>
+  <style>
+    :root{
+      --bg1:#f7efe7;
+      --bg2:#eef3f8;
+      --card:#ffffff;
+      --text:#101114;
+      --muted:rgba(16,17,20,.64);
+      --line:rgba(16,17,20,.10);
+      --shadow:0 14px 40px rgba(16,17,20,.08);
+      --shadow2:0 8px 20px rgba(16,17,20,.08);
+      --radius:20px;
+      --accent:#0f172a;
+      --accent2:#9b5b3d;
+      --star:#b56a14;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP",sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(155,91,61,.16), transparent 34%),
+        radial-gradient(circle at 85% 12%, rgba(15,23,42,.08), transparent 30%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+    }
+    a{ color:inherit; }
+    .wrap{
+      max-width:1120px;
+      margin:0 auto;
+      padding:18px 16px 92px;
+    }
+    .hero{
+      background:rgba(255,255,255,.74);
+      border:1px solid rgba(255,255,255,.68);
+      box-shadow:var(--shadow);
+      backdrop-filter:saturate(160%) blur(14px);
+      border-radius:28px;
+      padding:18px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:before{
+      content:"";
+      position:absolute;
+      inset:auto -80px -70px auto;
+      width:220px;
+      height:220px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(155,91,61,.18), transparent 68%);
+      pointer-events:none;
+    }
+    .topRow{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+    }
+    .eyebrow{
+      margin:0 0 8px;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.18em;
+      color:var(--accent2);
+    }
+    h1{
+      margin:0;
+      font-size:clamp(28px, 4vw, 46px);
+      line-height:1.06;
+      letter-spacing:-.03em;
+    }
+    .lede{
+      margin:12px 0 0;
+      color:var(--muted);
+      line-height:1.7;
+      max-width:820px;
+    }
+    .navRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .chip, .linkBtn, .btn, .sectionTab{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.92);
+      color:var(--text);
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:900;
+      cursor:pointer;
+      text-decoration:none;
+      box-shadow:var(--shadow2);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+    .chip.active, .sectionTab.active, .btn.active{
+      background:var(--accent);
+      color:#fff;
+      border-color:var(--accent);
+    }
+    .heroBar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+      align-items:center;
+    }
+    .status{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+    .pill{
+      font-size:12px;
+      background:rgba(16,17,20,.06);
+      color:var(--muted);
+      padding:7px 10px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+    .controls{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap:12px;
+    }
+    @media (max-width:860px){
+      .controls{ grid-template-columns:1fr; }
+    }
+    .controlGroup{
+      background:rgba(255,255,255,.82);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:12px;
+    }
+    .controlRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+    .controlRow + .controlRow{ margin-top:10px; }
+    input[type="search"], input[type="number"], select{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:14px;
+      padding:10px 12px;
+      font:inherit;
+      min-height:42px;
+    }
+    input[type="search"]{ flex:1; min-width:240px; }
+    .sectionBarWrap{
+      margin:16px 0 10px;
+    }
+    .sectionBar{
+      display:flex;
+      gap:8px;
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
+      padding:4px 2px 8px;
+    }
+    .sectionTab{
+      flex:0 0 auto;
+      padding:10px 13px;
+    }
+    .panelGrid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width:980px){
+      .panelGrid{ grid-template-columns:1fr; }
+    }
+    .panel{
+      background:rgba(255,255,255,.88);
+      border:1px solid rgba(255,255,255,.75);
+      box-shadow:var(--shadow);
+      border-radius:26px;
+      overflow:hidden;
+    }
+    .panelHead{
+      padding:16px;
+      border-bottom:1px solid var(--line);
+    }
+    .panelBody{ padding:16px; }
+    .nowCard{
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.84));
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+      min-height:230px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      justify-content:space-between;
+    }
+    .nowMeta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+    .tag{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(16,17,20,.06);
+      color:var(--muted);
+    }
+    .nowSentence{
+      margin:0;
+      font-size:clamp(24px, 3vw, 38px);
+      line-height:1.42;
+      letter-spacing:-.02em;
+      white-space:pre-wrap;
+    }
+    .nowSentence.hidden{
+      color:transparent;
+      text-shadow:0 0 0 rgba(16,17,20,.14);
+      user-select:none;
+    }
+    .nowSentence.hidden::selection{ background:transparent; }
+    .nowSentence.hidden .mask{
+      display:inline-block;
+      width:100%;
+      min-height:1.2em;
+      background:repeating-linear-gradient(90deg, rgba(16,17,20,.10) 0 12px, transparent 12px 20px);
+      border-radius:10px;
+    }
+    .small{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .nowActions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      margin-top:4px;
+    }
+    .btn{
+      border:0;
+      background:var(--accent);
+      color:#fff;
+    }
+    .btn.secondary{
+      background:rgba(16,17,20,.06);
+      color:var(--text);
+      box-shadow:none;
+    }
+    .btn.star{
+      min-width:46px;
+      justify-content:center;
+      padding:10px 0;
+      font-size:18px;
+    }
+    .btn.star.active{
+      background:var(--star);
+      border-color:var(--star);
+      color:#fff;
+    }
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .item{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      box-shadow:0 8px 20px rgba(16,17,20,.05);
+    }
+    .itemTop{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      justify-content:space-between;
+    }
+    .itemSentence{
+      margin:0;
+      font-size:16px;
+      line-height:1.55;
+      flex:1;
+      letter-spacing:-.01em;
+    }
+    .itemSentence strong{
+      color:var(--accent2);
+    }
+    .itemBtns{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex:0 0 auto;
+    }
+    .miniBtn{
+      border:1px solid var(--line);
+      background:rgba(16,17,20,.04);
+      color:var(--text);
+      border-radius:12px;
+      padding:8px 10px;
+      font-weight:900;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .miniBtn.star.active{
+      background:var(--star);
+      border-color:var(--star);
+      color:#fff;
+    }
+    .itemMeta{
+      margin-top:8px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .audioBar{
+      display:flex;
+      gap:8px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .empty{
+      color:var(--muted);
+      padding:16px 0;
+    }
+    .footerNote{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.6;
+    }
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:20px;
+      background:rgba(16,17,20,.92);
+      color:#fff;
+      padding:10px 12px;
+      border-radius:999px;
+      font-size:13px;
+      z-index:999;
+      display:none;
+    }
+    .fadeIn{ animation:fadeIn .22s ease both; }
+    @keyframes fadeIn{
+      from{ opacity:0; transform:translateY(4px); }
+      to{ opacity:1; transform:translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero fadeIn">
+      <div class="topRow">
+        <div>
+          <p class="eyebrow">AI PLAYLIST 41105</p>
+          <h1>別ページの暗唱トレーナー</h1>
+          <p class="lede">
+            `#23` から `#1` までの例文を、セクション切り替え・連続再生・★レビューで回せるようにした専用ページです。
+          </p>
+        </div>
+        <nav class="navRow">
+          <a class="linkBtn" href="./index.html">もとの一覧へ</a>
+          <a class="linkBtn" href="./player.html">音声トレーナーへ</a>
+        </nav>
+      </div>
+
+      <div class="heroBar">
+        <div class="status">
+          <span class="pill" id="status">loading…</span>
+          <span class="pill" id="filterInfo">Section: All</span>
+          <span class="pill" id="starInfo">★ 0</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="controlGroup">
+          <div class="controlRow">
+            <button class="btn" id="startBtn">▶︎ Start</button>
+            <button class="btn secondary" id="pauseBtn" disabled>Pause</button>
+            <button class="btn secondary" id="prevBtn" disabled>◀︎ Prev</button>
+            <button class="btn secondary" id="nextBtn" disabled>Next ▶︎</button>
+            <button class="btn secondary" id="replayBtn" disabled>↻ Replay</button>
+            <button class="btn secondary" id="shuffleBtn" disabled>Shuffle: OFF</button>
+            <button class="btn secondary" id="hideToggleBtn">文字を隠す: OFF</button>
+          </div>
+          <div class="controlRow">
+            <label class="small">
+              Gap
+              <select id="gapSel" style="margin-left:6px"></select>
+            </label>
+            <label class="small">
+              <input id="loopToggle" type="checkbox" style="transform: translateY(1px); margin-right:6px;">
+              Loop
+            </label>
+          </div>
+        </div>
+        <div class="controlGroup">
+          <div class="controlRow">
+            <input id="searchInput" type="search" placeholder="検索: section / sentence / title" />
+            <button class="btn secondary" id="clearSearchBtn">クリア</button>
+            <button class="btn secondary" id="reviewBtn">REVIEW ★</button>
+          </div>
+          <div class="footerNote">
+            クリックでカードを選択、`★` でレビュー対象に追加できます。`Start` はフィルタに応じた順番で再生します。
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="sectionBarWrap fadeIn">
+      <div class="sectionBar" id="sectionBar"></div>
+    </div>
+
+    <main class="panelGrid fadeIn">
+      <section class="panel">
+        <div class="panelHead">
+          <div class="small">Now Playing</div>
+        </div>
+        <div class="panelBody">
+          <div class="nowCard">
+            <div class="nowMeta" id="nowMetaRow">
+              <span class="tag" id="nowSectionTag">—</span>
+              <span class="tag" id="nowIndexTag">—</span>
+              <span class="tag" id="nowStarTag">—</span>
+            </div>
+            <p class="nowSentence" id="nowSentence">—</p>
+            <div>
+              <div class="nowActions">
+                <button class="btn" id="playBtn">▶︎ Play</button>
+                <button class="btn secondary" id="toggleStarBtn">☆ Star</button>
+                <button class="btn secondary" id="copyBtn">Copy</button>
+              </div>
+              <div class="small" id="nowHint" style="margin-top:10px;">—</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panelHead">
+          <div class="small">Sentence List</div>
+        </div>
+        <div class="panelBody">
+          <div class="list" id="list"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script id="source" type="text/plain">
+  <h2>#23</h2>
+
+  I suppose I'm an early bird. It's much better for me to wake up and start my day early, but honestly, I can't stay up late. I've been this way since I was a child. I used to try to stay up late, but I would fall asleep early anyway, and that habit has stayed with me. Sometimes it's a little sad because I can't stay out late with my friends. I get sleepy easily at night, so I often go home early, even when I go out for drinks. As I get older, I find myself getting sleepy earlier and earlier, so I want to keep this lifestyle.
+
+  [open title="1"]I suppose I'm an early bird.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/I-suppose-Im-an-early-bird.-.mp3"][/audio]
+
+  [open title="2"]It's much better for me to wake up and start my day early, but honestly, I can't stay up late.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/Its-much-better-for-me-to-wake-up-and-start-my-day-early-but-honestly-I-cant-stay-up-late.-.mp3"][/audio]
+
+  [open title="3"]I've been this way since I was a child.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/Ive-been-this-way-since-I-was-a-child.-.mp3"][/audio]
+
+  [open title="4"]I used to try to stay up late, but I would fall asleep early anyway, and that habit has stayed with me.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/I-used-to-try-to-stay-up-late-but-I-would-fall-asleep-early-anyway-and-that-habit-has-stayed-with-me.-.mp3"][/audio]
+
+  [open title="5"]Sometimes it's a little sad because I can't stay out late with my friends.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/Sometimes-its-a-little-sad-because-I-cant-stay-out-late-with-my-friends.mp3"][/audio]
+
+  [open title="6"]I get sleepy easily at night, so I often go home early, even when I go out for drinks.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/I-get-sleepy-easily-at-night-so-I-often-go-home-early-even-when-I-go-out-for-drinks.mp3"][/audio]
+
+  [open title="7"]As I get older, I find myself getting sleepy earlier and earlier, so I want to keep this lifestyle.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/As-I-get-older-I-find-myself-getting-sleepy-earlier-and-earlier-so-I-want-to-keep-this-lifestyle.mp3"][/audio]
+
+  <h2>#22</h2>
+
+  Out of the four seasons, autumn is my favorite. I love seeing the trees change color. They are very beautiful. I don’t like the humid heat of summer, and winter is too cold for me. I like the clear air on autumn mornings. I also like seeing the rice plants heavy with grain. After living in Phuket and Bali, being in New Zealand feels very refreshing because I can experience all four seasons. Right now, it is autumn, so I want to enjoy this season.
+
+  [open title="1"]Out of the four seasons, autumn is my favorite.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/Out-of-the-four-seasons-autumn-is-my-favorite.-.mp3"][/audio]
+
+  [open title="2"]I love seeing the trees change color. They are very beautiful.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/I-love-seeing-the-trees-change-color.-They-are-very-beautiful.mp3"][/audio]
+
+  [open title="3"]I don’t like the humid heat of summer, and winter is too cold for me. I like the clear air on autumn mornings.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/I-dont-like-the-humid-heat-of-summer-and-winter-is-too-cold-for-me.-I-like-the-clear-air-on-autumn-mornings.-.mp3"][/audio]
+
+  [open title="4"]I also like seeing the rice plants heavy with grain.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/I-also-like-seeing-the-rice-plants-heavy-with-grain.-.mp3"][/audio]
+
+  [open title="5"]After living in Phuket and Bali, being in New Zealand feels very refreshing because I can experience all four seasons.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/After-living-in-Phuket-and-Bali-being-in-New-Zealand-feels-very-refreshing-because-I-can-experience-all-four-seasons.-.mp3"][/audio]
+
+  [open title="6"]Right now, it is autumn, so I want to enjoy this season.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/Right-now-it-is-autumn-so-I-want-to-enjoy-this-season.mp3"][/audio]
+
+  <h2>#20</h2>
+
+  I want to visit the wineries in Georgia again. Georgia has the oldest wine culture in the world. It started about 8,000 years ago. Georgian winemakers make wine using qvevri. They bury large clay pots in the ground. Natural yeast gives the wine a special taste. In Georgia, wine is not just alcohol. It is part of family life, prayer, and hospitality. The best wine region is Kakheti. The food culture is rich; the people are kind, and the cost of living is low. So I want to visit Georgia again. Last time, I had my agent book a visit to her favorite winery for me.
+
+  [open title="1"]I want to visit the wineries in Georgia again.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/I-want-to-visit-the-wineries-in-Georgia-again.-.mp3"][/audio]
+
+  [open title="2"]Georgia has the oldest wine culture in the world. It started about 8,000 years ago.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/Georgia-has-the-oldest-wine-culture-in-the-world.-It-started-about-8000-years-ago.-.mp3"][/audio]
+
+  [open title="3"]Georgian winemakers make wine using qvevri.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/Georgian-winemakers-make-wine-using-qvevri.-.mp3"][/audio]
+
+  [open title="4"]They bury large clay pots in the ground.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/They-bury-large-clay-pots-in-the-ground.-.mp3"][/audio]
+
+  [open title="5"]Natural yeast gives the wine a special taste.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/Natural-yeast-gives-the-wine-a-special-taste.mp3"][/audio]
+
+  [open title="6"]In Georgia, wine is not just alcohol.It is part of family life, prayer, and hospitality.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/In-Georgia-wine-is-not-just-alcohol.-It-is-part-of-family-life-prayer-and-hospitality.-.mp3"][/audio]
+
+  [open title="7"]The best wine region is Kakheti.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/The-best-wine-region-is-Kakheti.-.mp3"][/audio]
+
+  [open title="8"]The food culture is rich; the people are kind, and the cost of living is low. So I want to visit Georgia again.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/The-food-culture-is-rich-the-people-are-kind-and-the-cost-of-living-is-low.-So-I-want-to-visit-Georgia-again.mp3"][/audio]
+
+  [open title="9"]Last time, I had my agent book a visit to her favorite winery for me.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/Last-time-I-had-my-agent-book-a-visit-to-her-favorite-winery-for-me.mp3"][/audio]
+
+
+  <h2>#19</h2>
+  A place I will never forget is Bali.Every day, people pray in the morning, afternoon, and evening. The sight of people praying is very beautiful. The smell of incense fills the air. You can smell it everywhere. People always smile warmly. When I am in trouble, strangers come to help me. They never ignore me. For example, when I didn’t know how to ride a scooter, people who were passing by gathered around me. They started the engine for me.
+  Bali taught me the beauty of kindness and human connection.
+
+  [open title="1"]A place I will never forget is Bali.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/A-place-I-will-never-forget-is-Bali.-.mp3"][/audio]
+
+  [open title="2"]Every day, people pray in the morning, afternoon, and evening. [/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/Every-day-people-pray-in-the-morning-afternoon-and-evening.-.mp3"][/audio]
+
+  [open title="3"]The sight of people praying is very beautiful. [/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/The-sight-of-people-praying-is-very-beautiful.-.mp3"][/audio]
+
+  [open title="4"]The smell of incense fills the air. You can smell it everywhere[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/The-smell-of-incense-fills-the-air.-You-can-smell-it-everywhere.mp3"][/audio]
+
+  [open title="5"]People always smile warmly. [/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/People-always-smile-warmly.-.mp3"][/audio]
+
+  [open title="6"]When I am in trouble, strangers come to help me. They never ignore me. [/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/When-I-am-in-trouble-strangers-come-to-help-me.-They-never-ignore-me.-.mp3"][/audio]
+
+  [open title="7"]For example, when I didn’t know how to ride a scooter, people who were passing by gathered around me. They started the engine for me.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/For-example-when-I-didnt-know-how-to-ride-a-scooter-people-who-were-passing-by-gathered-around-me.-They-started-the-engine-for-me.mp3"][/audio]
+
+  [open title="8"]Bali taught me the beauty of kindness and human connection.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/Bali-taught-me-the-beauty-of-kindness-and-human-connection.mp3"][/audio]
+
+  <h2>#18 Which movie or story impacted you the most?</h2>
+
+  The most influential movie for me is The Terminal, starring Tom Hanks. I love the movie and have seen it many times. In this movie, the main character is stuck in an airport. He never gives up. He becomes friends with many people in a limited space. In the end, he gains his freedom. His never-give-up attitude gives me courage. It always inspires me when I face difficulties.
+
+  [open title="1"]The most influential movie for me is The Terminal, starring Tom Hanks. [/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/The-most-influential-movie-for-me-is-The-Terminal-starring-Tom-Hanks.-.mp3"][/audio]
+
+  [open title="2"]I love the movie and have seen it many times. [/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/I-love-the-movie-and-have-seen-it-many-times.mp3"][/audio]
+
+  [open title="3"]In this movie, the main character is stuck in an airport.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/In-this-movie-the-main-character-is-stuck-in-an-airport.-.mp3"][/audio]
+
+  [open title="4"]He never gives up, and he becomes friends with many people in a limited space.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/He-never-gives-up.-He-becomes-friends-with-many-people-in-a-limited-space.-.mp3"][/audio]
+
+  [open title="5"]In the end, he gains his freedom. [/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/In-the-end-he-gains-his-freedom.-.mp3"][/audio]
+
+  [open title="6"]His never-give-up attitude gives me courage, and it always inspires me when I face difficulties.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/03/His-never-give-up-attitude-gives-me-courage.-It-always-inspires-me-when-I-face-difficulties-1.mp3"][/audio]
+
+  <h2>#17 What kind of music have you been listening to lately?</h2>
+  Recently, I’ve often been listening to jazz. I like Yosuke Onuma. He’s also a surfer, and I’ve heard that he gets inspiration from the ocean when he writes music. Now I live near the ocean in NZ, and I go to the beach every day. When I listen to his music on my phone and watch the sunset, I feel grateful to be alive. I also feel that I’m really glad I came to Tauranga.
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/Recently-Ive-often-been-listening-to-jazz.mp3"][/audio]
+
+  [open title="1"]Recently, I’ve often been listening to jazz.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/I-like-Yosuke-Onuma.-.mp3"][/audio]
+
+  [open title="2"]I like Yosuke Onuma.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/Hes-also-a-surfer-and-Ive-heard-that-he-gets-inspiration-from-the-ocean-when-he-writes-music.-.mp3"][/audio]
+
+  [open title="3"]He’s also a surfer, and I’ve heard that he gets inspiration from the ocean when he writes music.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/Now-I-live-near-the-ocean-in-NZ-and-I-go-to-the-beach-every-day.-.mp3"][/audio]
+
+  [open title="4"]Now I live near the ocean in NZ, and I go to the beach every day.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/When-I-listen-to-his-music-on-my-phone-and-watch-the-sunset-I-feel-grateful-to-be-alive.-.mp3"][/audio]
+
+  [open title="5"]When I listen to his music on my phone and watch the sunset, I feel grateful to be alive.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/I-also-feel-that-Im-really-glad-I-came-to-Tauranga.mp3"][/audio]
+
+  [open title="6"]I also feel that I’m really glad I came to Tauranga.[/open]
+  <h2>#16 What's your favorite food?</h2>
+  My favorite food is Japanese cuisine. One of the best things about it / is the variety of fermented foods. Fermented seasonings such as miso, soy sauce, mirin, and sake create rich, complex umami flavors. Now that I live in New Zealand, I’m also interested in local fermented foods. A recent dream of mine is to create dishes using fermented seasonings from both Japan and New Zealand.
+
+  [open title="1"]My favorite food is Japanese cuisine.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/My-favorite-food-is-Japanese-cuisine.-.mp3"][/audio]
+
+  [open title="2"]One of the best things about it is the variety of fermented foods.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/One-of-the-best-things-about-it-is-the-variety-of-fermented-foods.-.mp3"][/audio]
+
+  [open title="3"]Fermented seasonings such as miso, soy sauce, mirin, and sake create rich, complex umami flavors.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/Fermented-seasonings-such-as-miso-soy-sauce-mirin-and-sake-create-rich-complex-umami-flavors.-.mp3"][/audio]
+
+  [open title="4"]Now that I live in New Zealand, I’m also interested in local fermented foods.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/Now-that-I-live-in-New-Zealand-Im-also-interested-in-local-fermented-foods.-.mp3"][/audio]
+
+  [open title="5"]A recent dream of mine is to create dishes using fermented seasonings from both Japan and New Zealand.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/A-recent-dream-of-mine-is-to-create-dishes-using-fermented-seasonings-from-both-Japan-and-New-Zealand.mp3"][/audio]
+
+  <h2>#15 <span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">What’s your goal in learning English?</span></h2>
+  I have one main goal: to speak English well enough for daily life. Now I live in New Zealand. Talking with my host mother and my mom friends is the best study time for me. When I can’t speak well or can’t ask deeper questions in a conversation, I remember it. After I get home, I look it up and practice saying it. To speak better, I learn from real conversations every day. It works very well for me. I think that if I can speak more smoothly, I can build closer relationships. Even if I make mistakes, it helps me grow and become more confident.
+
+  [open title="1"]I have one main goal: to speak English well enough for daily life.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/Main-goal-for-daily-life.-.mp3"][/audio]
+
+  &nbsp;
+
+  [open title="2"]Now I live in New Zealand. Talking with my host mother and my mom friends is the best study time for me.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/Now-I-live-in-New-Zealand.-Talking-with-my-host-mother-and-my-mom-friends-is-the-best-study-time-for-me.mp3"][/audio]
+
+  [open title="3"]When I can’t speak well or can’t ask deeper questions in a conversation, I remember it.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/When-I-cant-speak-well-or-cant-ask-deeper-questions-in-a-conversation-I-remember-it.-.mp3"][/audio]
+
+  [open title="4"]After I get home, I look it up and practice saying it.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/After-I-get-home-I-look-it-up-and-practice-saying-it.-.mp3"][/audio]
+
+  [open title="5"]To speak better, I learn from real conversations every day. It works very well for me.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/To-speak-better-I-learn-from-real-conversations-every-day.-It-works-very-well-for-me.-.mp3"][/audio]
+
+  [open title="6"]I think that if I can speak more smoothly, I can build closer relationships.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/I-think-that-if-I-can-speak-more-smoothly-I-can-build-closer-relationships.-.mp3"][/audio]
+
+  [open title="7"]Even if I make mistakes, it helps me grow and become more confident.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/Even-if-I-make-mistakes-it-helps-me-grow-and-become-more-confident.mp3"][/audio]
+
+  <h2>#14 How long can you study daily?</h2>
+  At the moment, I study every day. In the morning, I study for 30 minutes right after I wake up and memorize new vocabulary. After I take my son to school, I study again at around 10 a.m. for another 30 minutes at home. During lunch, I listen to Kiwi English podcasts or watch Nadia’s cooking videos for 30 minutes to practice listening. After that, I spend 30 minutes on grammar while I do strength training. Before bed, I review what I studied that day. That’s my daily study routine.
+  <h3>暗唱用</h3>
+
+  [open title="1"]At the moment, I study every day.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/At-the-moment-I-study-every-day.-.mp3"][/audio]
+
+  [open title="2"]In the morning, I study for 30 minutes right after I wake up and memorize new vocabulary.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/In-the-morning-I-study-for-30-minutes-right-after-I-wake-up-and-memorize-new-vocabulary.-.mp3"][/audio]
+
+  [open title="3"]After I take my son to school, I study again at around 10 a.m. for another 30 minutes at home.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/After-I-take-my-son-to-school-I-study-again-at-around-10-a.m.-for-another-30-minutes-at-home.-.mp3"][/audio]
+
+  [open title="4"]During lunch, I listen to Kiwi English podcasts or watch Nadia’s cooking videos for 30 minutes to practice listening.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/During-lunch-I-listen-to-Kiwi-English-podcasts-or-watch-Nadias-cooking-videos-for-30-minutes-to-practice-listening.-.mp3"][/audio]
+
+  [open title="5"]After that, I spend 30 minutes on grammar while I do strength training.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/After-that-I-spend-30-minutes-on-grammar-while-I-do-strength-training.-.mp3"][/audio]
+
+  [open title="6"]Before bed, I review what I studied that day. That’s my daily study routine.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/Before-bed-I-review-what-I-studied-that-day.-Thats-my-daily-study-routine.mp3"][/audio]
+
+  <h2>#13 Do you have a good memory?</h2>
+  <div>
+  <div>
+
+  I don’t think I have a very good memory. I often have trouble remembering people’s names, especially when I meet someone for the first time. I also forget English words quickly, even if I’ve studied them before. When I was younger, I could remember things more easily, but these days it feels harder. That’s why I try to write things down and go over them again and again.
+  <h3>暗唱用</h3>
+
+  [open title="1"]I don’t think I have a very good memory.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/I-dont-think-I-have-a-very-good-memory.mp3"][/audio]
+
+  [open title="2"]I often have trouble remembering people’s names, especially when I meet someone for the first time.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/I-often-have-trouble-remembering-peoples-names-especially-when-I-meet-someone-for-the-first-time.mp3"][/audio]
+
+  [open title="3"]I also forget English words quickly, even if I’ve studied them before.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/I-also-forget-English-words-quickly-even-if-Ive-studied-them-before.mp3"][/audio]
+
+  [open title="4"]When I was younger, I could remember things more easily, but these days it feels harder.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/When-I-was-younger-I-could-remember-things-more-easily-but-these-days-it-feels-harder.mp3"][/audio]
+
+  [open title="5"]That’s why I try to write things down and go over them again and again.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/02/Thats-why-I-try-to-write-things-down-and-go-over-them-again-and-again.mp3"][/audio]
+
+  &nbsp;
+
+  </div>
+  </div>
+  <h2>#8 What words do you use to encourage yourself?</h2>
+  <div>
+  <div>
+
+  When I’m feeling down, I usually tell myself, “Calm down. Take a deep breath.” When I start thinking negatively, I try to relax my body first because relaxing my body helps calm my mind. For example, the other day I felt tired and overwhelmed, so I took a short break and had something warm to drink. After that, I felt much better. A new idea came to me, and I realized I still had another chance.
+
+  </div>
+  </div>
+  <h3>暗唱用</h3>
+
+  [open title="1"]When I’m feeling down, I usually tell myself, “Calm down. Take a deep breath.”[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/12/8-1.mp3"][/audio]
+
+  [open title="2"]When I start thinking negatively, I try to relax my body first because relaxing my body helps calm my mind.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/12/8-2.mp3"][/audio]
+
+  [open title="3"]For example, the other day I felt tired and overwhelmed, so I took a short break and had something warm to drink.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/12/8-3.mp3"][/audio]
+
+  [open title="4"]After that, I felt much better.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/12/8-4.mp3"][/audio]
+
+  [open title="5"]A new idea came to me, and I realized I still had another chance.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/12/8-5.mp3"][/audio]
+
+  &nbsp;
+  <h2>#7 What do you find difficult no matter how many times you try?</h2>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">It’s hard for me to speak English naturally with the other moms at my son’s school, even though I’ve studied English for a long time.</span></p>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">Especially when they talk fast, I can’t catch everything, so I often just smile and listen.</span></p>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">My friend said it’s okay to say simple phrases like “That’s nice,” so I’m trying to follow her advice little by little.</span></p>
+
+  <h3>暗唱用</h3>
+  [open title="1"]It’s hard for me to speak English naturally with the other moms at my son’s school, even though I’ve studied English for a long time.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/Its-hard-for-me-to-speak-English-naturally-with-the-other-moms-at-my-sons-school-even-though-Ive-studied-English-for-a-long-time.-.mp3"][/audio]
+
+  [open title="2"]Especially when they talk fast, I can’t catch everything, so I often just smile and listen.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/Especially-when-they-talk-fast-I-cant-catch-everything-so-I-often-just-smile-and-listen.-.mp3"][/audio]
+
+  [open title="3"]My friend said it’s okay to say simple phrases like “That’s nice,” so I’m trying to follow her advice little by little.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/My-friend-said-its-okay-to-say-simple-phrases-like-Thats-nice-so-Im-trying-to-follow-her-advice-little-by-little.mp3"][/audio]
+  <h2>#6 Are you an optimist?</h2>
+  <div>
+  <div>
+
+  Well, it depends on the situation.
+
+  </div>
+  <div>
+
+  I wasn’t a very optimistic person before, but I became more optimistic after I started living abroad.
+
+  </div>
+  <div>
+
+  When I face problems, I try to find the positive side of things. For example, the other day I missed the bus, but a kind local person helped me out.
+
+  </div>
+  <div>
+
+  At the same time, I’m more careful when I work, so I’m not always optimistic.
+  <h3>暗唱用</h3>
+  [open title="1"]Well, it depends on the situation.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/Well-it-depends-on-the-situation.-.mp3"][/audio]
+
+  <br data-start="57" data-end="60" />[open title="2"]I wasn’t a very optimistic person before, but I became more optimistic after I started living abroad.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/I-wasnt-a-very-optimistic-person-before-but-I-became-more-optimistic-after-I-started-living-abroad.-.mp3"][/audio]
+
+  <br data-start="184" data-end="187" />[open title="3"]When I face problems, I try to find the positive side of things.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/When-I-face-problems-I-try-to-find-the-positive-side-of-things.mp3"][/audio]
+
+  &nbsp;
+
+  [open title="4"]For example, the other day I missed the bus, but a kind local person helped me out.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/For-example-the-other-day-I-missed-the-bus-but-a-kind-local-person-helped-me-out.-.mp3"][/audio]
+
+  <br data-start="383" data-end="386" />[open title="5"]At the same time, I’m more careful when I work, so I’m not always optimistic.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/At-the-same-time-Im-more-careful-when-I-work-so-Im-not-always-optimistic.-.mp3"][/audio]
+
+  </div>
+  </div>
+  <h2>#5 What makes you feel happy?</h2>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">I am happiest when I am playing the rindik.</span></p>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">I enjoy listening to gamelan music in my village because the</span> <span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">sound of the rindik makes me feel calm and happy.</span></p>
+  <p class="cvGsUA direction-ltr align-start para-style-body">Sometimes I feel nostalgic, and even tears come to my eyes.</p>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">I can’t live without it now.</span></p>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">Playing the rindik on a quiet night really relaxes me.</span></p>
+
+  <h3>暗唱用</h3>
+  [open title="1"]I am happiest when I am playing the rindik.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/I-am-happiest-when-I-am-playing-the-rindik.-.mp3"][/audio]
+
+  [open title="2"]I enjoy listening to gamelan music in my village because the sound of the rindik makes me feel calm and happy.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/I-enjoy-listening-to-gamelan-music-in-my-village-because-the-sound-of-the-rindik-makes-me-feel-calm-and-happy.-.mp3"][/audio]
+
+  [open title="3"]Sometimes I feel nostalgic, and even tears come to my eyes.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/Sometimes-I-feel-nostalgic-and-even-tears-come-to-my-eyes.-.mp3"][/audio]
+
+  [open title="4"]I can’t live without it now.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/I-cant-live-without-it-now.mp3"][/audio]
+  <h2>#12 How are you getting better at English?</h2>
+  <div>
+  <div>
+
+  To improve my English, I follow these daily routines. First, I watch movies on Netflix in English. I try to enjoy the story and listen carefully to how people speak. Second, I listen to a podcast called "Kiwi English." It helps me get used to natural English sounds and expressions. Every time I can't express myself smoothly, it motivates me to learn more.
+  <h3>暗唱用</h3>
+  </div>
+  [open title="1"]To improve my English, I follow these daily routines.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/To-improve-my-English-I-follow-these-daily-routines.-.mp3"][/audio]
+
+  [open title="2"]First, I watch movies on Netflix in English.[/open]
+
+  </div>
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/First-I-watch-movies-on-Netflix-in-English.-.mp3"][/audio]
+  <div>
+
+  [open title="3"]I try to enjoy the story and listen carefully to how people speak.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/I-try-to-enjoy-the-story-and-listen-carefully-to-how-people-speak.-.mp3"][/audio]
+
+  [open title="4"]Second, I listen to a podcast called "Kiwi English."[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/Second-I-listen-to-a-podcast-called-Kiwi-English.mp3"][/audio]
+
+  [open title="5"]It helps me get used to natural English sounds and expressions.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/It-helps-me-get-used-to-natural-English-sounds-and-expressions.-.mp3"][/audio]
+
+  [open title="6"]Every time I can't express myself smoothly, it motivates me to learn more.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/Every-time-I-cant-express-myself-smoothly-it-motivates-me-to-learn-more.-.mp3"][/audio]
+
+  </div>
+  <h2>#11 What type of location is most effective for your studying?</h2>
+  <div>
+  <div>
+  <div>
+
+  The place where I can focus best is my desk in my room. I can relax and concentrate because I’m alone. I usually drink hot tea while I study at my desk, and that’s when I feel happiest. Before exams, I often go to the library because I can study more effectively there. Studying in the library feels just as comfortable as studying in my room.
+
+  </div>
+  <h3>暗唱用</h3>
+  [open title="1"]The place where I can focus best is my desk in my room.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/The-place-where-I-can-focus-best-is-my-desk-in-my-room.-.mp3"][/audio]
+
+  [open title="2"]I can relax and concentrate because I’m alone.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/I-can-relax-and-concentrate-because-Im-alone.mp3"][/audio]
+
+  [open title="3"]I usually drink hot tea while I study at my desk, and that’s when I feel happiest.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/I-usually-drink-hot-tea-while-I-study-at-my-desk-and-thats-when-I-feel-happiest.mp3"][/audio]
+
+  [open title="4"]Before exams, I often go to the library because I can study more effectively there.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/Before-exams-I-often-go-to-the-library-because-I-can-study-more-effectively-there.-.mp3"][/audio]
+
+  [open title="5"]Studying in the library feels just as comfortable as studying in my room.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/Studying-in-the-library-feels-just-as-comfortable-as-studying-in-my-room.-.mp3"][/audio]
+
+  </div>
+  </div>
+  <h2>#10 What do you do to feel better when you're feeling stressed?</h2>
+  <div>
+  <div>
+  <div>
+
+  When I’m stressed, I usually bake cakes or cookies. The smell of baking always makes me feel happy. I take the sweets out of the oven and let them cool on a wire rack. While they’re cooling, I make some tea. Moist, freshly baked treats and a hot cup of tea really help me relax and de-stress.
+  <h3>暗唱用</h3>
+  </div>
+  </div>
+  </div>
+  [open title="1"]When I’m stressed, I usually bake cakes or cookies.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/When-Im-stressed-I-usually-bake-cakes-or-cookies.mp3"][/audio]
+
+  &nbsp;
+
+  [open title="2"]The smell of baking always makes me feel happy.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/The-smell-of-baking-always-makes-me-feel-happy.mp3"][/audio]
+
+  &nbsp;
+
+  [open title="3"]I take the sweets out of the oven and let them cool on a wire rack.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/I-take-the-sweets-out-of-the-oven-and-let-them-cool-on-a-wire-rack.mp3"][/audio]
+
+  &nbsp;
+
+  [open title="4"]While they’re cooling, I make some tea.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/While-theyre-cooling-I-make-some-tea.mp3"][/audio]
+
+  &nbsp;
+
+  [open title="5"]Moist, freshly baked treats and a hot cup of tea really help me relax and de-stress.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2026/01/Moist-freshly-baked-treats-and-a-hot-cup-of-tea-really-help-me-relax-and-de-stress.mp3"][/audio]
+
+  &nbsp;
+  <h2>#9 What do you feel stressed about?</h2>
+  <div>
+  <div>
+
+  Lately, I’ve been feeling stressed because of information overload. Every day, I get so many messages and notifications on my phone. There’s just too much to keep track of, and it leaves me exhausted. I try to cut down on my screen time, but it’s not always easy. How do you deal with it?
+  <h3>暗唱用</h3>
+  [open title="1"]Lately, I’ve been feeling stressed because of information overload.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/12/9-1.mp3"][/audio]
+
+  [open title="2"]Every day, I get so many messages and notifications on my phone.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/12/9-2.mp3"][/audio]
+
+  [open title="3"]There’s just too much to keep track of, and it leaves me exhausted.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/12/9-3.mp3"][/audio]
+
+  [open title="4"]I try to cut down on my screen time, but it’s not always easy.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/12/9-4.mp3"][/audio]
+
+  [open title="5"]How do you deal with it?[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/12/9-5.mp3"][/audio]
+
+  &nbsp;
+
+  </div>
+  </div>
+  <h2>#4 What are you hooked on?</h2>
+  <p data-pm-slice="0 0 []">I’m hooked on making jamu.</p>
+  I started making it three months ago after coming to Bali.
+
+  I use ginger, turmeric, lemongrass, honey, and lime.
+
+  I first made it when I was sick and I immediately felt better.
+
+  Even my son drank it, and his headache went away.
+
+  I like it because it’s natural and healthy.
+
+  It’s a fun hobby, and I try new recipes every week.
+  <h3>暗唱用</h3>
+  <article class="text-token-text-primary w-full focus:outline-none [--shadow-height:45px] has-data-writing-block:pointer-events-none has-data-writing-block:-mt-(--shadow-height) has-data-writing-block:pt-(--shadow-height) [&amp;:has([data-writing-block])&gt;*]:pointer-events-auto [content-visibility:auto] supports-[content-visibility:auto]:[contain-intrinsic-size:auto_100lvh] scroll-mt-[calc(var(--header-height)+min(200px,max(70px,20svh)))]" dir="auto" tabindex="-1" data-turn-id="2e7041b3-10c6-4a13-9608-0e72ad2b2faa" data-testid="conversation-turn-6" data-scroll-anchor="false" data-turn="assistant">
+  <div class="text-base my-auto mx-auto [--thread-content-margin:--spacing(4)] thread-sm:[--thread-content-margin:--spacing(6)] thread-lg:[--thread-content-margin:--spacing(16)] px-(--thread-content-margin)">
+  <div class="[--thread-content-max-width:40rem] thread-lg:[--thread-content-max-width:48rem] mx-auto max-w-(--thread-content-max-width) flex-1 group/turn-messages focus-visible:outline-hidden relative flex w-full min-w-0 flex-col agent-turn" tabindex="-1">
+  <div class="flex max-w-full flex-col grow">
+  <div class="min-h-8 text-message relative flex w-full flex-col items-end gap-2 text-start break-words whitespace-normal [.text-message+&amp;]:mt-1" dir="auto" data-message-author-role="assistant" data-message-id="2663804d-c90d-4b4e-b310-bd9fed2be58c" data-message-model-slug="gpt-5-instant">
+  <div class="flex w-full flex-col gap-1 empty:hidden first:pt-[1px]">
+  <div class="markdown prose dark:prose-invert w-full break-words light markdown-new-styling">
+  <p data-start="0" data-end="520" data-is-last-node="" data-is-only-node="">[open title="1"]I’m hooked on making jamu.[/open]</p>
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/Im-hooked-on-making-jamu.-.mp3"][/audio]
+
+  [open title="2"]I started making it three months ago after coming to Bali.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/I-started-making-it-three-months-ago-after-coming-to-Bali.-.mp3"][/audio]
+
+  [open title="3"]I use ginger, turmeric, lemongrass, honey, and lime.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/I-use-ginger-turmeric-lemongrass-honey-and-lime.-.mp3"][/audio]
+
+  [open title="4"]I first made it when I was sick and I immediately felt better.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/I-first-made-it-when-I-was-sick-and-I-immediately-felt-better.-.mp3"][/audio]
+
+  [open title="5"]Even my son drank it, and his headache went away.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/Even-my-son-drank-it-and-his-headache-went-away.-.mp3"][/audio]
+
+  [open title="6"]I like it because it’s natural and healthy.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/I-like-it-because-its-natural-and-healthy.-.mp3"][/audio]
+
+  [open title="7"]It’s a fun hobby, and I try new recipes every week.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/11/Its-a-fun-hobby-and-I-try-new-recipes-every-week.mp3"][/audio]
+  <p data-start="0" data-end="520" data-is-last-node="" data-is-only-node=""></p>
+
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </article>
+  <h2>#3 What’s been a constant activity in your life for a long time?</h2>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">Since I was little, I’ve always loved cooking.</span></p>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">As a kid, I loved helping in the kitchen.</span></p>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">Then as a teenager, I tried many new recipes.</span></p>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">Now, I teach people about healthy eating.</span></p>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">Last year, I started my online gut-health diet program.</span></p>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">It has changed many women’s lives.</span></p>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">It helps me feel happy and proud.</span></p>
+  <p class="cvGsUA direction-ltr align-start para-style-body"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none">Even when I’m busy, I always find time to cook and learn more.</span></p>
+
+  <h3>暗唱用</h3>
+  <div class="text-base my-auto mx-auto pb-10 [--thread-content-margin:--spacing(4)] thread-sm:[--thread-content-margin:--spacing(6)] thread-lg:[--thread-content-margin:--spacing(16)] px-(--thread-content-margin)">
+  <div class="[--thread-content-max-width:40rem] thread-lg:[--thread-content-max-width:48rem] mx-auto max-w-(--thread-content-max-width) flex-1 group/turn-messages focus-visible:outline-hidden relative flex w-full min-w-0 flex-col agent-turn" tabindex="-1">
+  <div class="flex max-w-full flex-col grow">
+  <div class="min-h-8 text-message relative flex w-full flex-col items-end gap-2 text-start break-words whitespace-normal [.text-message+&amp;]:mt-1" dir="auto" data-message-author-role="assistant" data-message-id="eb2a62b4-4f7a-4517-9cde-7e4b5a4bfd22" data-message-model-slug="gpt-5-instant">
+  <div class="flex w-full flex-col gap-1 empty:hidden first:pt-[1px]">
+  <div class="markdown prose dark:prose-invert w-full break-words light markdown-new-styling">
+  <p data-start="0" data-end="562" data-is-last-node="" data-is-only-node="">[open title="1"]Since I was little, I’ve always loved cooking.[/open]</p>
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/Since-I-was-little-Ive-always-loved-cooking.mp3"][/audio]
+  <p data-start="0" data-end="562" data-is-last-node="" data-is-only-node="">[open title="2"]As a kid, I loved helping in the kitchen.[/open]</p>
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/As-a-kid-I-loved-helping-in-the-kitchen.mp3"][/audio]
+  <p data-start="0" data-end="562" data-is-last-node="" data-is-only-node="">[open title="3"]Then as a teenager, I tried many new recipes.[/open]</p>
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/Then-as-a-teenager-I-tried-many-new-recipes.mp3"][/audio]
+  <p data-start="0" data-end="562" data-is-last-node="" data-is-only-node="">[open title="4"]Now, I teach people about healthy eating.[/open]</p>
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/Now-I-teach-people-about-healthy-eating.mp3"][/audio]
+  <p data-start="0" data-end="562" data-is-last-node="" data-is-only-node="">[open title="5"]Last year, I started my online gut-health diet program[/open]</p>
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/Last-year-I-started-my-online-gut-health-diet-program.mp3"][/audio]
+  <p data-start="0" data-end="562" data-is-last-node="" data-is-only-node="">[open title="6"]It has changed many women’s lives.[/open]</p>
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/It-has-changed-many-womens-lives.mp3"][/audio]
+  <p data-start="0" data-end="562" data-is-last-node="" data-is-only-node="">[open title="7"]It helps me feel happy and proud.[/open]</p>
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/It-helps-me-feel-happy-and-proud.mp3"][/audio]
+  <p data-start="0" data-end="562" data-is-last-node="" data-is-only-node="">[open title="8"]Even when I’m busy, I always find time to cook and learn more.[/open]</p>
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/Even-when-Im-busy-I-always-find-time-to-cook-and-learn-more.mp3"][/audio]
+
+  &nbsp;
+
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  <h2>#2 What’s your every day routine?</h2>
+  I drink herbal tea every morning because it wakes me up.
+  I usually eat fruit first to help with my digestion.
+  At night, I meditate instead of using my phone.
+  I've noticed that what I eat really affects my mood.
+  This month, I've been reading a lot about gut health.
+  On weekends, I go on day trips with my son.
+  These routines help me relax.
+  <h3>暗唱用</h3>
+  [open title="1"]I drink herbal tea every morning because it wakes me up.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/I-drink-herbal-tea-every-morning-because-it-wakes-me-up.mp3"][/audio]
+
+  &nbsp;
+
+  [open title="2"]I usually eat fruit first to help with my digestion.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/I-usually-eat-fruit-first-to-help-with-my-digestion.mp3"][/audio]
+
+  &nbsp;
+
+  [open title="3"]At night, I meditate instead of using my phone.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/At-night-I-meditate-instead-of-using-my-phone.mp3"][/audio]
+
+  &nbsp;
+
+  [open title="4"]I've noticed that what I eat really affects my mood.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/Ive-noticed-that-what-I-eat-really-affects-my-mood.mp3"][/audio]
+
+  &nbsp;
+
+  [open title="5"]This month, I've been reading a lot about gut health.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/This-month-Ive-been-reading-a-lot-about-gut-health.mp3"][/audio]
+
+  &nbsp;
+
+  [open title="6"]On weekends, I go on day trips with my son.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/On-weekends-I-go-on-day-trips-with-my-son.mp3"][/audio]
+
+  &nbsp;
+
+  [open title="7"]These routines help me relax.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/These-routines-help-me-relax.mp3"][/audio]
+
+  &nbsp;
+  <h2>#1 Please introduce yourself</h2>
+  I’m a diet coach. Most of my clients are women over forty, and I work with them online. I’ve worked in the health and nutrition field for over ten years. I lived in Phuket, but I moved to Bali two months ago to enjoy a laid-back lifestyle. I love teaching people how to eat well and feel good in their bodies. I also like visiting local markets and learning about Balinese herbs and food. Sometimes I write articles or make videos about diet and gut health.
+  <h3>暗唱用</h3>
+  [open title="1"]I’m a diet coach.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/Im-a-diet-coach.-.mp3"][/audio]
+
+  [open title="2"]Most of my clients are women over forty, and I work with them online. [/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/Most-of-my-clients-are-women-over-forty-and-I-work-with-them-online.-.mp3"][/audio]
+
+  [open title="3"]I’ve worked in the health and nutrition field for over ten years.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/Ive-worked-in-the-health-and-nutrition-field-for-over-ten-years.-.mp3"][/audio]
+
+  [open title="4"]I lived in Phuket, but I moved to Bali two months ago to enjoy a laid-back lifestyle.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/I-lived-in-Phuket-but-I-moved-to-Bali-two-months-ago-to-enjoy-a-laid-back-lifestyle.-.mp3"][/audio]
+
+  [open title="5"]I love teaching people how to eat well and feel good in their bodies.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/I-love-teaching-people-how-to-eat-well-and-feel-good-in-their-bodies.-.mp3"][/audio]
+
+  [open title="6"]I also like visiting local markets and learning about Balinese herbs and food.[/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/I-also-like-visiting-local-markets-and-learning-about-Balinese-herbs-and-food.-.mp3"][/audio]
+
+  [open title="7"]Sometimes I write articles or make videos about diet and gut health. [/open]
+
+  [audio mp3="https://www.eight-english.com/wp-content/uploads/2025/10/Sometimes-I-write-articles-or-make-videos-about-diet-and-gut-health.-.mp3"][/audio]
+  </script>
+
+  <script>
+    const LS_SETTINGS_KEY = "ai_playlist_41105_settings_v1";
+    const LS_PROGRESS_KEY = "ai_playlist_41105_progress_v1";
+
+    const sourceEl = document.getElementById("source");
+    const sectionBarEl = document.getElementById("sectionBar");
+    const listEl = document.getElementById("list");
+    const statusEl = document.getElementById("status");
+    const filterInfoEl = document.getElementById("filterInfo");
+    const starInfoEl = document.getElementById("starInfo");
+
+    const startBtn = document.getElementById("startBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const replayBtn = document.getElementById("replayBtn");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+    const gapSel = document.getElementById("gapSel");
+    const loopToggle = document.getElementById("loopToggle");
+    const searchInput = document.getElementById("searchInput");
+    const clearSearchBtn = document.getElementById("clearSearchBtn");
+    const reviewBtn = document.getElementById("reviewBtn");
+    const hideToggleBtn = document.getElementById("hideToggleBtn");
+
+    const nowSectionTag = document.getElementById("nowSectionTag");
+    const nowIndexTag = document.getElementById("nowIndexTag");
+    const nowStarTag = document.getElementById("nowStarTag");
+    const nowSentence = document.getElementById("nowSentence");
+    const nowHint = document.getElementById("nowHint");
+    const playBtn = document.getElementById("playBtn");
+    const toggleStarBtn = document.getElementById("toggleStarBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const toast = document.getElementById("toast");
+
+    const audio = new Audio();
+    audio.preload = "auto";
+
+    const defaultSettings = {
+      section: "all",
+      shuffle: false,
+      loop: false,
+      gapSec: 4,
+      hideText: false
+    };
+
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.style.display = "block";
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(()=>toast.style.display="none", 900);
+    }
+
+    function buildGapOptions(){
+      gapSel.innerHTML = "";
+      for (let s=0; s<=15; s++){
+        const opt = document.createElement("option");
+        opt.value = String(s);
+        opt.textContent = `${s}秒`;
+        gapSel.appendChild(opt);
+      }
+    }
+
+    function loadSettings(){
+      try{
+        const raw = localStorage.getItem(LS_SETTINGS_KEY);
+        return raw ? { ...defaultSettings, ...JSON.parse(raw) } : { ...defaultSettings };
+      } catch {
+        return { ...defaultSettings };
+      }
+    }
+
+    function saveSettings(){
+      localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(settings));
+    }
+
+    function loadProgress(){
+      try{
+        const raw = localStorage.getItem(LS_PROGRESS_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function saveProgress(){
+      localStorage.setItem(LS_PROGRESS_KEY, JSON.stringify(progress));
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function stripTags(str){
+      return String(str).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    }
+
+    function parseSource(raw){
+      const lines = raw.split(/\r?\n/);
+      const sections = [];
+      const items = [];
+      let currentSection = null;
+      let pendingSentence = null;
+      let pendingTitle = null;
+
+      for (const rawLine of lines){
+        const line = rawLine.trim();
+        if (!line) continue;
+
+        const headingMatch = line.match(/^<h2>(.*?)<\/h2>$/i);
+        if (headingMatch){
+          const headingText = stripTags(headingMatch[1]);
+          const sectionNumberMatch = headingText.match(/^#(\d+)/);
+          currentSection = {
+            key: sectionNumberMatch ? sectionNumberMatch[1] : headingText,
+            label: headingText,
+            raw: headingText
+          };
+          sections.push(currentSection);
+          pendingSentence = null;
+          pendingTitle = null;
+          continue;
+        }
+
+        const openMatch = line.match(/^\[open title="([^"]+)"\](.*?)\[\/open\]$/i);
+        if (openMatch){
+          pendingTitle = stripTags(openMatch[1]);
+          pendingSentence = stripTags(openMatch[2]);
+          continue;
+        }
+
+        const audioMatch = line.match(/^\[audio mp3="([^"]+)"\]\[\/audio\]$/i);
+        if (audioMatch && pendingSentence && currentSection){
+          const idx = items.filter(x => x.sectionKey === currentSection.key).length + 1;
+          items.push({
+            id: `${currentSection.key}-${idx}`,
+            sectionKey: currentSection.key,
+            sectionLabel: currentSection.label,
+            title: pendingTitle || String(idx),
+            sentence: pendingSentence,
+            audioUrl: audioMatch[1],
+            star: false
+          });
+          pendingSentence = null;
+          pendingTitle = null;
+          continue;
+        }
+      }
+
+      return { sections, items };
+    }
+
+    const settings = loadSettings();
+    const progress = loadProgress();
+    const parsed = parseSource(sourceEl.textContent || "");
+    let sections = parsed.sections
+      .slice()
+      .sort((a, b) => Number(b.key) - Number(a.key));
+    let items = parsed.items
+      .slice()
+      .sort((a, b) => {
+        const sa = sections.findIndex(s => s.key === a.sectionKey);
+        const sb = sections.findIndex(s => s.key === b.sectionKey);
+        if (sa !== sb) return sa - sb;
+        const na = Number(a.title);
+        const nb = Number(b.title);
+        if (Number.isFinite(na) && Number.isFinite(nb) && na !== nb) return na - nb;
+        return String(a.title).localeCompare(String(b.title), "en");
+      });
+    let playlist = [];
+    let index = -1;
+    let running = false;
+    let gapTimer = null;
+
+    function syncStarState(){
+      for (const item of items){
+        item.star = !!progress[item.id]?.starred;
+      }
+    }
+
+    function ensureProgress(){
+      for (const item of items){
+        if (!progress[item.id]){
+          progress[item.id] = {
+            starred: false,
+            played: 0,
+            lastPlayedAt: null
+          };
+        }
+      }
+      saveProgress();
+      syncStarState();
+    }
+
+    function normalizeSectionFilter(){
+      if (settings.section === "all" || settings.section === "review") return;
+      if (!sections.some(s => s.key === String(settings.section))){
+        settings.section = "all";
+        saveSettings();
+      }
+    }
+
+    function isStarred(id){
+      return !!progress[id]?.starred;
+    }
+
+    function currentSectionLabel(){
+      if (settings.section === "all") return "All";
+      if (settings.section === "review") return "REVIEW ★";
+      const found = sections.find(s => s.key === String(settings.section));
+      return found ? found.label : String(settings.section);
+    }
+
+    function toggleStar(id){
+      progress[id].starred = !progress[id].starred;
+      saveProgress();
+      syncStarState();
+      return progress[id].starred;
+    }
+
+    function inSection(item){
+      if (settings.section === "all") return true;
+      if (settings.section === "review") return isStarred(item.id);
+      return item.sectionKey === String(settings.section);
+    }
+
+    function getFilteredItems(){
+      const q = searchInput.value.trim().toLowerCase();
+      const base = items.filter(inSection);
+      if (!q) return base;
+      return base.filter(item =>
+        item.sectionLabel.toLowerCase().includes(q) ||
+        item.title.toLowerCase().includes(q) ||
+        item.sentence.toLowerCase().includes(q)
+      );
+    }
+
+    function renderSectionTabs(){
+      sectionBarEl.innerHTML = "";
+
+      const makeTab = (label, value) => {
+        const btn = document.createElement("button");
+        btn.className = "sectionTab" + (settings.section === value ? " active" : "");
+        btn.textContent = label;
+        btn.onclick = () => {
+          settings.section = value;
+          saveSettings();
+          normalizeSectionFilter();
+          syncStarState();
+          renderSectionTabs();
+          renderAll();
+          showToast(value === "review" ? "REVIEW表示" : "Section変更");
+        };
+        sectionBarEl.appendChild(btn);
+      };
+
+      makeTab("All", "all");
+      makeTab("REVIEW ★", "review");
+      for (const section of sections){
+        makeTab(section.label, section.key);
+      }
+    }
+
+    function updateCounters(){
+      const filtered = getFilteredItems();
+      const starredCount = items.filter(x => isStarred(x.id)).length;
+      statusEl.textContent = `cards ${filtered.length} / ${items.length}`;
+      filterInfoEl.textContent = `Section: ${currentSectionLabel()}`;
+      starInfoEl.textContent = `★ ${starredCount}`;
+      reviewBtn.classList.toggle("active", settings.section === "review");
+    }
+
+    function renderList(){
+      const filtered = getFilteredItems();
+      listEl.innerHTML = "";
+      if (!filtered.length){
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "該当するカードがありません。";
+        listEl.appendChild(empty);
+        return;
+      }
+
+      filtered.forEach((item, idx) => {
+        const row = document.createElement("article");
+        row.className = "item";
+        const starred = isStarred(item.id);
+        row.innerHTML = `
+          <div class="itemTop">
+            <p class="itemSentence"><strong>${escapeHtml(item.sectionLabel)}</strong> ${escapeHtml(item.sentence)}</p>
+            <div class="itemBtns">
+              <button class="miniBtn star ${starred ? "active" : ""}" data-star="${escapeHtml(item.id)}">${starred ? "★" : "☆"}</button>
+              <button class="miniBtn" data-play="${escapeHtml(item.id)}">▶︎</button>
+            </div>
+          </div>
+          <div class="itemMeta">
+            <span>${escapeHtml(item.title)}</span>
+            <span>•</span>
+            <span>${escapeHtml(item.sectionLabel)}</span>
+            <span>•</span>
+            <span>${idx + 1}/${filtered.length}</span>
+          </div>
+          <div class="audioBar">
+            <button class="miniBtn" data-open="${escapeHtml(item.id)}">今のカードへ</button>
+          </div>
+        `;
+        row.querySelectorAll("[data-star]").forEach(btn => {
+          btn.addEventListener("click", e => {
+            e.stopPropagation();
+            const nowStarred = toggleStar(item.id);
+            if (settings.section === "review" && !nowStarred){
+              renderSectionTabs();
+              renderAll();
+              showToast("★ を外しました");
+              return;
+            }
+            renderSectionTabs();
+            renderAll();
+            showToast(nowStarred ? "★ 追加" : "★ 削除");
+          });
+        });
+        row.querySelectorAll("[data-play]").forEach(btn => {
+          btn.addEventListener("click", e => {
+            e.stopPropagation();
+            const i = playlist.findIndex(x => x.id === item.id);
+            if (i >= 0) playAt(i);
+          });
+        });
+        row.querySelectorAll("[data-open]").forEach(btn => {
+          btn.addEventListener("click", e => {
+            e.stopPropagation();
+            const i = playlist.findIndex(x => x.id === item.id);
+            if (i >= 0) setCurrent(i);
+          });
+        });
+        row.addEventListener("click", () => {
+          const i = playlist.findIndex(x => x.id === item.id);
+          if (i >= 0) setCurrent(i);
+        });
+        listEl.appendChild(row);
+      });
+    }
+
+    function buildPlaylist(keepCurrent = false){
+      const filtered = getFilteredItems();
+      const currentId = keepCurrent && playlist[index]?.id ? playlist[index].id : null;
+      let arr = filtered.slice().sort((a, b) => sections.findIndex(s => s.key === a.sectionKey) - sections.findIndex(s => s.key === b.sectionKey) || a.title.localeCompare(b.title, "en"));
+
+      if (settings.shuffle){
+        if (currentId){
+          const current = arr.find(x => x.id === currentId);
+          arr = arr.filter(x => x.id !== currentId);
+          for (let i = arr.length - 1; i > 0; i--){
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+          }
+          if (current) arr.unshift(current);
+          index = 0;
+        } else {
+          for (let i = arr.length - 1; i > 0; i--){
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+          }
+        }
+      }
+
+      playlist = arr;
+      if (keepCurrent && currentId){
+        const foundIndex = playlist.findIndex(x => x.id === currentId);
+        index = foundIndex >= 0 ? foundIndex : (playlist.length ? 0 : -1);
+      } else if (playlist.length === 0){
+        index = -1;
+      } else if (index < 0 || index >= playlist.length){
+        index = 0;
+      }
+
+      updateButtons();
+      updateNowUI();
+    }
+
+    function updateButtons(){
+      const hasTracks = playlist.length > 0;
+      startBtn.disabled = !hasTracks;
+      pauseBtn.disabled = !running;
+      prevBtn.disabled = !hasTracks || index <= 0;
+      nextBtn.disabled = !hasTracks || index < 0;
+      replayBtn.disabled = !hasTracks || index < 0;
+      shuffleBtn.disabled = !hasTracks;
+      shuffleBtn.textContent = settings.shuffle ? "Shuffle: ON" : "Shuffle: OFF";
+      hideToggleBtn.textContent = settings.hideText ? "文字を隠す: ON" : "文字を隠す: OFF";
+      loopToggle.checked = !!settings.loop;
+      gapSel.value = String(settings.gapSec ?? 4);
+      toggleStarBtn.textContent = currentItem() && isStarred(currentItem().id) ? "★ Star" : "☆ Star";
+      toggleStarBtn.classList.toggle("active", !!(currentItem() && isStarred(currentItem().id)));
+      startBtn.textContent = running ? "▶︎ Running" : (index >= 0 ? "▶︎ Resume" : "▶︎ Start");
+    }
+
+    function currentItem(){
+      return playlist[index] || null;
+    }
+
+    function updateNowUI(){
+      const item = currentItem();
+      if (!item){
+        nowSectionTag.textContent = "—";
+        nowIndexTag.textContent = "—";
+        nowStarTag.textContent = "—";
+        nowSentence.textContent = "再生対象がありません";
+        nowSentence.classList.remove("hidden");
+        nowHint.textContent = "フィルタを変えるか、REVIEW ★ を外してみてください。";
+        updateButtons();
+        return;
+      }
+
+      const starred = isStarred(item.id);
+      nowSectionTag.textContent = item.sectionLabel;
+      nowIndexTag.textContent = `#${item.title}`;
+      nowStarTag.textContent = starred ? "★ starred" : "☆ not starred";
+      nowSentence.textContent = item.sentence;
+      nowSentence.classList.toggle("hidden", !!settings.hideText);
+      nowHint.textContent = `${item.audioUrl}`;
+      updateButtons();
+    }
+
+    function setCurrent(i){
+      index = i;
+      running = false;
+      updateNowUI();
+      updateButtons();
+    }
+
+    function clearGap(){
+      if (window._gapTimer) clearTimeout(window._gapTimer);
+      window._gapTimer = null;
+    }
+
+    async function playAt(i){
+      clearGap();
+      if (!playlist[i]) return;
+      index = i;
+      running = true;
+      updateNowUI();
+      const item = playlist[index];
+      try{
+        audio.src = item.audioUrl;
+        audio.currentTime = 0;
+        await audio.play();
+        progress[item.id].played += 1;
+        progress[item.id].lastPlayedAt = new Date().toISOString();
+        saveProgress();
+      } catch {
+        showToast("再生できません");
+        window._gapTimer = setTimeout(next, 700);
+      }
+      updateButtons();
+    }
+
+    function scheduleNext(){
+      clearGap();
+      const gapMs = Math.max(0, Number(settings.gapSec || 0)) * 1000;
+      window._gapTimer = setTimeout(next, gapMs);
+    }
+
+    function start(){
+      if (!playlist.length) return;
+      running = true;
+      updateButtons();
+      if (index < 0 || index >= playlist.length) index = 0;
+      playAt(index);
+    }
+
+    function pause(){
+      clearGap();
+      audio.pause();
+      running = false;
+      updateButtons();
+    }
+
+    function next(){
+      clearGap();
+      if (!playlist.length) return;
+      let n = index + 1;
+      if (n >= playlist.length){
+        if (loopToggle.checked){
+          n = 0;
+        } else {
+          running = false;
+          updateButtons();
+          showToast("完了");
+          return;
+        }
+      }
+      playAt(n);
+    }
+
+    function prev(){
+      clearGap();
+      if (!playlist.length) return;
+      const p = Math.max(0, index - 1);
+      playAt(p);
+    }
+
+    function replay(){
+      if (index < 0) return;
+      playAt(index);
+    }
+
+    function toggleShuffle(){
+      settings.shuffle = !settings.shuffle;
+      saveSettings();
+      buildPlaylist(true);
+      renderSectionTabs();
+      updateCounters();
+      showToast(settings.shuffle ? "Shuffle ON" : "Shuffle OFF");
+    }
+
+    function toggleReview(){
+      settings.section = settings.section === "review" ? "all" : "review";
+      saveSettings();
+      renderSectionTabs();
+      renderAll();
+      showToast(settings.section === "review" ? "REVIEW表示" : "All表示");
+    }
+
+    function toggleHideText(){
+      settings.hideText = !settings.hideText;
+      saveSettings();
+      updateNowUI();
+      renderList();
+    }
+
+    function renderAll(){
+      normalizeSectionFilter();
+      syncStarState();
+      updateCounters();
+      buildPlaylist(true);
+      renderList();
+      renderSectionTabs();
+      if (index < 0 && playlist.length) index = 0;
+      updateNowUI();
+    }
+
+    audio.addEventListener("ended", () => {
+      scheduleNext();
+    });
+
+    audio.addEventListener("error", () => {
+      showToast("読み込みエラー");
+      clearGap();
+      window._gapTimer = setTimeout(next, 800);
+    });
+
+    startBtn.addEventListener("click", start);
+    pauseBtn.addEventListener("click", pause);
+    prevBtn.addEventListener("click", prev);
+    nextBtn.addEventListener("click", next);
+    replayBtn.addEventListener("click", replay);
+    shuffleBtn.addEventListener("click", toggleShuffle);
+    reviewBtn.addEventListener("click", toggleReview);
+    hideToggleBtn.addEventListener("click", toggleHideText);
+    playBtn.addEventListener("click", () => {
+      const item = currentItem();
+      if (item) playAt(index);
+    });
+    toggleStarBtn.addEventListener("click", () => {
+      const item = currentItem();
+      if (!item) return;
+      const starred = toggleStar(item.id);
+      renderAll();
+      showToast(starred ? "★ 追加" : "★ 削除");
+    });
+    copyBtn.addEventListener("click", async () => {
+      const item = currentItem();
+      if (!item) return;
+      try{
+        await navigator.clipboard.writeText(item.sentence);
+        showToast("コピーしました");
+      } catch {
+        showToast("コピーできませんでした");
+      }
+    });
+
+    gapSel.addEventListener("change", () => {
+      settings.gapSec = Number(gapSel.value);
+      saveSettings();
+      updateButtons();
+      showToast("Gap保存");
+    });
+    loopToggle.addEventListener("change", () => {
+      settings.loop = !!loopToggle.checked;
+      saveSettings();
+      updateButtons();
+      showToast(settings.loop ? "Loop ON" : "Loop OFF");
+    });
+    searchInput.addEventListener("input", () => {
+      updateCounters();
+      buildPlaylist(true);
+      renderList();
+    });
+    clearSearchBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      updateCounters();
+      buildPlaylist(true);
+      renderList();
+    });
+
+    function initGap(){
+      gapSel.value = String(settings.gapSec ?? 4);
+      loopToggle.checked = !!settings.loop;
+      hideToggleBtn.textContent = settings.hideText ? "文字を隠す: ON" : "文字を隠す: OFF";
+    }
+
+    function boot(){
+      buildGapOptions();
+      ensureProgress();
+      normalizeSectionFilter();
+      initGap();
+      syncStarState();
+      renderSectionTabs();
+      updateCounters();
+      buildPlaylist(false);
+      renderList();
+      if (!playlist.length){
+        nowSentence.textContent = "原文が読み込めませんでした。";
+        nowHint.textContent = "source ブロックを確認してください。";
+      }
+      if (playlist.length) index = 0;
+      updateNowUI();
+    }
+
+    boot();
+  </script>
+</body>
+</html>
