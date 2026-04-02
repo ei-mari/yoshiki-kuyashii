@@ -2,217 +2,614 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>音声トレーナー | 悔しいフレーズリスト</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>音声トレーナー</title>
   <style>
     :root{
-      --bg:#f5f6f8;
-      --card:#fff;
-      --text:#111;
-      --muted:rgba(17,17,17,.62);
-      --line:rgba(17,17,17,.08);
-      --shadow:0 10px 30px rgba(0,0,0,.06);
-      --radius:16px;
+      --bg:#050505;
+      --panel:#131313;
+      --panel-soft:#1a1a1a;
+      --line:rgba(255,255,255,.13);
+      --text:#f5f7f6;
+      --muted:rgba(245,247,246,.72);
+      --green:#1ed760;
+      --green-soft:rgba(30,215,96,.22);
+      --shadow:0 22px 46px rgba(0,0,0,.42);
+      --radius:20px;
     }
+
+    *{ box-sizing:border-box; }
+
     body{
       margin:0;
-      background:var(--bg);
+      min-height:100vh;
+      background:
+        radial-gradient(1100px 650px at 20% -10%, #2f5946 0%, rgba(47,89,70,0) 48%),
+        radial-gradient(900px 500px at 90% -25%, #1c3b34 0%, rgba(28,59,52,0) 45%),
+        linear-gradient(180deg, #16261f 0%, #0b1411 48%, #070a09 100%);
       color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP",sans-serif;
-    }
-    .wrap{ max-width:760px; margin:0 auto; padding:16px; }
-    .title{ font-size:22px; font-weight:900; margin:6px 0 10px; }
-    .pill{
-      font-size:12px;
-      background:rgba(17,17,17,.06);
-      padding:7px 10px;
-      border-radius:999px;
-      color:var(--muted);
-    }
-    .row{
       display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      margin:10px 0 14px;
+      justify-content:center;
     }
-    .btn{
-      border:0;
-      padding:10px 12px;
-      border-radius:12px;
-      background:#111;
-      color:#fff;
-      font-weight:900;
-      cursor:pointer;
-    }
-    .btn.secondary{
-      background:rgba(17,17,17,.06);
-      color:#111;
-    }
-    .btn:disabled{
-      opacity:.45;
-      cursor:not-allowed;
-    }
-    select{
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:#fff;
-    }
-    .panel{
-      background:var(--card);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .panelHead{
-      padding:14px;
-      border-bottom:1px solid var(--line);
-    }
-    .panelBody{ padding:14px; }
 
-    .deckBar{
+    .stage{
+      width:100%;
+      display:flex;
+      justify-content:center;
+      min-height:100svh;
+      padding:14px 0;
+    }
+
+    .phone{
+      width:min(100vw,430px);
+      height:calc(100svh - 28px);
+      background:
+        linear-gradient(180deg, rgba(31,57,47,.92) 0%, rgba(18,31,26,.96) 32%, rgba(10,14,12,.99) 100%);
+      border-radius:30px;
+      border:1px solid rgba(255,255,255,.09);
+      box-shadow:var(--shadow);
+      padding:12px 12px calc(10px + env(safe-area-inset-bottom));
+      display:grid;
+      grid-template-rows:auto auto auto auto 1fr;
+      gap:10px;
+      overflow-x:hidden;
+      overflow-y:auto;
+    }
+
+    .topbar,
+    .deckPanel,
+    .currentPanel,
+    .listPanel,
+    .controlsPanel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+    }
+
+    .topbar{
+      padding:10px 12px;
+      background:linear-gradient(180deg, rgba(44,74,61,.95), rgba(25,43,35,.98));
+    }
+
+    .topline{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .homeLink{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      border-radius:999px;
+      font-size:12px;
+      padding:8px 11px;
+      text-decoration:none;
+      font-weight:800;
+      letter-spacing:.02em;
+      white-space:nowrap;
+    }
+
+    .statusWrap{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      min-width:0;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:5px 9px;
+      border-radius:999px;
+      background:rgba(255,255,255,.1);
+      border:1px solid var(--line);
+      font-size:11px;
+      font-weight:800;
+      color:var(--muted);
+      white-space:nowrap;
+      min-width:0;
+    }
+
+    .subtitle{
+      margin:8px 0 2px;
+      font-size:11px;
+      color:var(--muted);
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .title{
+      margin:0;
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:.02em;
+      line-height:1.2;
+    }
+
+    .deckPanel{
+      padding:9px;
+      background:linear-gradient(180deg, rgba(31,53,44,.95), rgba(20,34,29,.98));
+    }
+
+    .deckPicker{
       display:flex;
       gap:8px;
-      overflow:auto;
-      -webkit-overflow-scrolling:touch;
-      padding:4px 2px 8px;
+      align-items:center;
+      flex-wrap:nowrap;
+      min-width:0;
     }
+
     .deckTab{
       flex:0 0 auto;
       border:1px solid var(--line);
-      background:rgba(255,255,255,.9);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
       border-radius:999px;
-      padding:10px 12px;
-      font-weight:900;
+      padding:8px 12px;
+      font-weight:800;
       cursor:pointer;
       white-space:nowrap;
-      box-shadow: 0 6px 16px rgba(0,0,0,.05);
-    }
-    .deckTab.active{
-      background:#111;
-      color:#fff;
-      border-color:#111;
+      text-align:center;
+      font-size:12px;
     }
 
-    .now{
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:14px;
-      background:#fff;
+    .deckTab.active{
+      background:var(--green);
+      color:#052311;
+      border-color:transparent;
     }
-    .ja{
-      font-size:18px;
-      font-weight:900;
-      line-height:1.5;
-      margin:0 0 10px;
+
+    .unitPick{
+      margin-left:auto;
+      min-width:128px;
+      justify-content:flex-end;
     }
-    .subLabel{
+
+    .currentPanel{
+      padding:11px 12px;
+      background:linear-gradient(180deg, rgba(35,62,50,.98), rgba(20,36,30,.98));
+    }
+
+    .panelLabel{
+      margin:0 0 6px;
       font-size:11px;
       color:var(--muted);
-      margin:0 0 4px;
       font-weight:800;
-      letter-spacing:.04em;
+      letter-spacing:.09em;
       text-transform:uppercase;
     }
-    .origJaNote{
-      font-size:13px;
-      line-height:1.55;
-      color:var(--muted);
-      margin:0 0 12px;
-      padding:10px 12px;
-      border-radius:12px;
-      background:rgba(17,17,17,.04);
-      border:1px solid var(--line);
-    }
-    .en{
-      font-size:15px;
-      line-height:1.55;
-      margin:0 0 10px;
-      color:rgba(17,17,17,.9);
-    }
-    .meta{
-      font-size:12px;
-      color:var(--muted);
+
+    .nowEn{
       margin:0;
+      font-size:22px;
+      line-height:1.35;
+      font-weight:900;
+      color:var(--green);
     }
-    .hint{
+
+    .nowJa{
+      margin:8px 0 0;
+      font-size:17px;
+      line-height:1.5;
+      font-weight:700;
+      color:rgba(245,247,246,.93);
+    }
+
+    .nowIpa{
+      margin:8px 0 0;
+      font-size:14px;
+      line-height:1.5;
+      font-weight:700;
+      color:rgba(180,255,206,.9);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      word-break:break-word;
+    }
+
+    .meta{
+      margin:8px 0 0;
+      font-size:11px;
+      color:var(--muted);
+      letter-spacing:.04em;
+    }
+
+    .listPanel{
+      padding:9px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      background:linear-gradient(180deg, rgba(20,35,29,.97), rgba(14,20,18,.98));
+      min-height:0;
+    }
+
+    .trackList{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      overflow:auto;
+      min-height:0;
+      padding-right:2px;
+      scrollbar-width:thin;
+    }
+
+    .trackItem{
+      width:100%;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(96deg, rgba(46,74,61,.5), rgba(31,48,40,.35));
+      border-radius:16px;
+      padding:10px;
+      display:grid;
+      grid-template-columns:64px 1fr;
+      gap:10px;
+      color:inherit;
+      text-align:left;
+      cursor:pointer;
+    }
+
+    .trackItem.current{
+      border-color:rgba(30,215,96,.75);
+      box-shadow:0 0 0 1px rgba(30,215,96,.32) inset;
+      background:linear-gradient(96deg, rgba(51,93,72,.8), rgba(37,63,50,.55));
+    }
+
+    .trackThumb{
+      width:64px;
+      height:64px;
+      border-radius:12px;
+      background:linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.04));
+      display:grid;
+      place-items:center;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.08em;
+      color:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.22);
+    }
+
+    .trackBody{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+    }
+
+    .trackTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      min-width:0;
+    }
+
+    .trackNo{
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.08em;
+      color:var(--muted);
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+
+    .trackCurrent{
+      font-size:11px;
+      font-weight:900;
+      color:var(--green);
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+
+    .trackCurrent.hidden{ visibility:hidden; }
+
+    .trackEn,
+    .trackJa,
+    .trackMeta{
+      margin:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      display:-webkit-box;
+      -webkit-box-orient:vertical;
+    }
+
+    .trackEn{
+      -webkit-line-clamp:2;
+      font-size:19px;
+      line-height:1.32;
+      font-weight:900;
+      color:rgba(245,247,246,.97);
+    }
+
+    .trackItem.current .trackEn{ color:var(--green); }
+
+    .trackJa{
+      -webkit-line-clamp:2;
+      font-size:14px;
+      line-height:1.4;
+      color:rgba(245,247,246,.88);
+      font-weight:700;
+    }
+
+    .trackMeta{
+      -webkit-line-clamp:1;
+      font-size:11px;
+      color:var(--muted);
+      letter-spacing:.03em;
+    }
+
+    .emptyList{
+      border:1px dashed var(--line);
+      border-radius:14px;
+      padding:18px 12px;
+      color:var(--muted);
+      font-size:13px;
+      text-align:center;
+    }
+
+    .controlsPanel{
+      padding:10px 10px 8px;
+      background:linear-gradient(180deg, rgba(33,56,47,.97), rgba(18,29,25,.98));
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .progressRail{
+      width:100%;
+      height:14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.5);
+      background:rgba(255,255,255,.1);
+      position:relative;
+      overflow:hidden;
+      cursor:pointer;
+    }
+
+    .progressFill{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, rgba(30,215,96,.95), rgba(46,235,119,.95));
+      border-radius:999px;
+      position:relative;
+    }
+
+    .progressFill::after{
+      content:"";
+      position:absolute;
+      right:0;
+      top:50%;
+      width:16px;
+      height:16px;
+      border-radius:50%;
+      background:var(--green);
+      transform:translate(45%,-50%);
+      box-shadow:0 0 0 4px rgba(30,215,96,.2);
+    }
+
+    .timeRow{
+      display:flex;
+      justify-content:space-between;
+      margin-top:2px;
       font-size:12px;
       color:var(--muted);
-      margin-top:10px;
+      font-weight:800;
     }
+
+    .playRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:2px;
+    }
+
+    .iconBtn,
+    .playBtn,
+    .chipBtn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:900;
+    }
+
+    .iconBtn{
+      width:70px;
+      height:56px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+    }
+
+    .playBtn{
+      flex:1;
+      min-height:56px;
+      border-radius:20px;
+      background:var(--green);
+      color:#03210f;
+      display:grid;
+      place-items:center;
+    }
+
+    .iconBtn:disabled,
+    .playBtn:disabled,
+    .chipBtn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+    }
+
+    .iconSvg{
+      width:26px;
+      height:26px;
+      display:block;
+      fill:currentColor;
+    }
+
+    .playBtn .iconSvg{
+      width:30px;
+      height:30px;
+    }
+
+    .chipRow{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:2px;
+    }
+
+    .chipBtn{
+      min-height:34px;
+      border-radius:999px;
+      padding:0 12px;
+      font-size:12px;
+      letter-spacing:.02em;
+      background:rgba(255,255,255,.08);
+    }
+
+    .chipBtn.active{
+      background:var(--green-soft);
+      border-color:rgba(30,215,96,.7);
+      color:#b9ffd3;
+    }
+
     .small{
       font-size:12px;
       color:var(--muted);
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-weight:700;
+      white-space:nowrap;
     }
+
+    select{
+      min-height:32px;
+      padding:0 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:var(--panel-soft);
+      color:var(--text);
+      font-size:12px;
+      font-weight:700;
+      outline:none;
+    }
+
+    input[type="checkbox"]{
+      accent-color:var(--green);
+      transform:translateY(1px);
+    }
+
+    .hiddenControl{ display:none; }
 
     .toast{
       position:fixed;
       left:50%;
       transform:translateX(-50%);
-      bottom:20px;
-      background:rgba(17,17,17,.92);
+      bottom:18px;
+      background:rgba(10,12,11,.96);
       color:#fff;
-      padding:10px 12px;
+      padding:10px 14px;
       border-radius:999px;
       font-size:13px;
       display:none;
+      z-index:100;
+      border:1px solid var(--line);
+    }
+
+    @media (max-width: 520px){
+      .stage{ padding:0; }
+      .phone{
+        width:100vw;
+        height:100svh;
+        border-radius:0;
+        border:0;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="title">音声トレーナー</div>
-
-    <div class="row">
-      <span class="pill" id="status">loading…</span>
-      <span class="pill" id="filterInfo">Unit: All</span>
-      <a class="btn secondary" href="./index.html">← 戻る</a>
-    </div>
-
-    <div class="panel">
-      <div class="panelHead">
-        <div class="deckBar" id="deckBar"></div>
-
-        <div class="row" style="margin-top:10px;">
-          <button class="btn" id="startBtn">▶︎ Start</button>
-          <button class="btn secondary" id="pauseBtn" disabled>Pause</button>
-          <button class="btn secondary" id="shuffleBtn" disabled>Shuffle: OFF</button>
-          <button class="btn secondary" id="prevBtn" disabled>◀︎ Prev</button>
-          <button class="btn secondary" id="nextBtn" disabled>Next ▶︎</button>
-          <button class="btn secondary" id="replayBtn" disabled>↻ もう一度</button>
-        </div>
-
-        <div class="row" style="margin-top:6px;">
-          <label class="small">間隔
-            <select id="gapSel" style="margin-left:6px;"></select>
-          </label>
-
-          <label class="small">
-            <input id="loopToggle" type="checkbox" style="transform: translateY(1px); margin-right:6px;">
-            ループ
-          </label>
-        </div>
-
-        <div class="hint">
-          ※ iPhoneでは最初に「Start」をタップして開始してください。
-        </div>
-      </div>
-
-      <div class="panelBody">
-        <div class="now">
-          <p class="ja" id="nowJa">—</p>
-
-          <div id="origJaWrap" style="display:none;">
-            <div class="subLabel">元の日本語</div>
-            <p class="origJaNote" id="nowOriginalJa"></p>
+  <div class="stage">
+    <main class="phone">
+      <section class="topbar">
+        <div class="topline">
+          <a class="homeLink" href="./kuyashi.html">← HOME</a>
+          <div class="statusWrap">
+            <span class="pill" id="status">loading…</span>
+            <span class="pill" id="filterInfo">Unit: All</span>
           </div>
-
-          <p class="en" id="nowEn">—</p>
-          <p class="meta" id="nowMeta">—</p>
         </div>
-      </div>
-    </div>
+        <p class="subtitle">Audio Trainer</p>
+        <h1 class="title">音声トレーナー</h1>
+      </section>
+
+      <section class="controlsPanel">
+        <div class="progressRail" id="progressRail" role="slider" aria-label="再生位置" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progressFill" id="progressFill"></div>
+        </div>
+        <div class="timeRow">
+          <span id="currentTime">0:00</span>
+          <span id="durationTime">0:00</span>
+        </div>
+
+        <div class="playRow">
+          <button class="iconBtn" id="prevBtn" disabled aria-label="前へ">
+            <svg class="iconSvg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h2v12H8zM18 6 10 12l8 6z"/></svg>
+          </button>
+
+          <button class="playBtn" id="startBtn" disabled aria-label="再生"></button>
+
+          <button class="iconBtn" id="nextBtn" disabled aria-label="次へ">
+            <svg class="iconSvg" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6h2v12h-2zM6 6l8 6-8 6z"/></svg>
+          </button>
+        </div>
+
+        <button class="hiddenControl" id="pauseBtn" type="button">Pause</button>
+
+        <div class="chipRow">
+          <button class="chipBtn" id="shuffleBtn" disabled>Shuffle: OFF</button>
+          <button class="chipBtn" id="loopAllBtn" type="button">ALL LOOP</button>
+          <button class="chipBtn" id="loopSingleBtn" type="button">SINGLE LOOP</button>
+
+          <label class="small">間隔
+            <select id="gapSel"></select>
+          </label>
+
+          <span class="small">速度</span>
+          <button class="chipBtn speedBtn" type="button" data-speed="0.5">0.5x</button>
+          <button class="chipBtn speedBtn" type="button" data-speed="0.75">0.75x</button>
+          <button class="chipBtn speedBtn" type="button" data-speed="1">1.0x</button>
+        </div>
+      </section>
+
+      <section class="deckPanel">
+        <div class="deckPicker">
+          <button class="deckTab" id="allDeckBtn" type="button">ALL</button>
+          <button class="deckTab" id="reviewDeckBtn" type="button">REVIEW ★</button>
+          <label class="small unitPick">UNIT
+            <select id="unitSel"></select>
+          </label>
+        </div>
+      </section>
+
+      <section class="currentPanel">
+        <p class="panelLabel">Now Playing</p>
+        <p class="nowEn" id="nowEn">—</p>
+        <p class="nowIpa" id="nowIpa">—</p>
+        <p class="nowJa" id="nowJa">—</p>
+        <p class="meta" id="nowMeta">—</p>
+      </section>
+
+      <section class="listPanel">
+        <div class="trackList" id="trackList"></div>
+      </section>
+    </main>
   </div>
 
   <div class="toast" id="toast"></div>
@@ -224,7 +621,13 @@
     const LS_MAIN_SETTINGS_KEY = "yoshiki_kuyashii_settings_v1";
     const LS_PROGRESS_KEY = "yoshiki_kuyashii_progress_v1";
 
-    const deckBar = document.getElementById("deckBar");
+    const ICON_PLAY = '<svg class="iconSvg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6v12l10-6z"/></svg>';
+    const ICON_PAUSE = '<svg class="iconSvg" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 6h4v12H7zm6 0h4v12h-4z"/></svg>';
+
+    const allDeckBtn = document.getElementById("allDeckBtn");
+    const reviewDeckBtn = document.getElementById("reviewDeckBtn");
+    const unitSel = document.getElementById("unitSel");
+    const trackList = document.getElementById("trackList");
     const statusEl = document.getElementById("status");
     const filterInfo = document.getElementById("filterInfo");
 
@@ -233,15 +636,20 @@
     const shuffleBtn = document.getElementById("shuffleBtn");
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
-    const replayBtn = document.getElementById("replayBtn");
+
+    const progressRail = document.getElementById("progressRail");
+    const progressFill = document.getElementById("progressFill");
+    const currentTimeEl = document.getElementById("currentTime");
+    const durationTimeEl = document.getElementById("durationTime");
 
     const gapSel = document.getElementById("gapSel");
-    const loopToggle = document.getElementById("loopToggle");
+    const speedButtons = Array.from(document.querySelectorAll(".speedBtn"));
+    const loopSingleBtn = document.getElementById("loopSingleBtn");
+    const loopAllBtn = document.getElementById("loopAllBtn");
 
     const nowJa = document.getElementById("nowJa");
-    const origJaWrap = document.getElementById("origJaWrap");
-    const nowOriginalJa = document.getElementById("nowOriginalJa");
     const nowEn = document.getElementById("nowEn");
+    const nowIpa = document.getElementById("nowIpa");
     const nowMeta = document.getElementById("nowMeta");
 
     const toast = document.getElementById("toast");
@@ -251,6 +659,60 @@
       toast.style.display = "block";
       clearTimeout(showToast._t);
       showToast._t = setTimeout(()=>toast.style.display="none", 900);
+    }
+
+    function formatTime(totalSec){
+      const sec = Math.max(0, Math.floor(Number(totalSec) || 0));
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m}:${String(s).padStart(2, "0")}`;
+    }
+
+    function setProgress(current = 0, duration = 0){
+      const dur = Number(duration) || 0;
+      const cur = Math.min(Math.max(0, Number(current) || 0), dur || Infinity);
+      const ratio = dur > 0 ? (cur / dur) * 100 : 0;
+      progressFill.style.width = `${Math.max(0, Math.min(100, ratio))}%`;
+      progressRail.setAttribute("aria-valuenow", String(Math.round(Math.max(0, Math.min(100, ratio)))));
+      currentTimeEl.textContent = formatTime(cur);
+      durationTimeEl.textContent = formatTime(dur);
+    }
+
+    function setPlayButton(isPlaying){
+      startBtn.innerHTML = isPlaying ? ICON_PAUSE : ICON_PLAY;
+      startBtn.setAttribute("aria-label", isPlaying ? "一時停止" : "再生");
+    }
+    setPlayButton(false);
+
+    function updateLoopButtons(){
+      loopSingleBtn.classList.toggle("active", settings.loopMode === "single");
+      loopAllBtn.classList.toggle("active", settings.loopMode === "all");
+    }
+
+    function setLoopMode(mode, notify = false){
+      settings.loopMode = mode === "single" ? "single" : "all";
+      updateLoopButtons();
+      saveSettings();
+      if (notify){
+        showToast(settings.loopMode === "single" ? "SINGLE LOOP" : "ALL LOOP");
+      }
+    }
+
+    function updateSpeedButtons(){
+      speedButtons.forEach((btn)=>{
+        const n = Number(btn.dataset.speed);
+        btn.classList.toggle("active", settings.speed === n);
+      });
+    }
+
+    function setSpeed(value, notify = false){
+      settings.speed = normalizeSpeed(value);
+      audio.playbackRate = settings.speed;
+      updateSpeedButtons();
+      saveSettings();
+      if (notify){
+        showToast(`速度 ${settings.speed.toFixed(2)}x`);
+      }
     }
 
     function buildGapOptions(){
@@ -263,6 +725,13 @@
       }
     }
     buildGapOptions();
+
+    function normalizeSpeed(value){
+      const n = Number(value);
+      if (n === 0.5) return 0.5;
+      if (n === 0.75) return 0.75;
+      return 1;
+    }
 
     function loadMainSettings(){
       try{
@@ -299,9 +768,10 @@
     function saveSettings(){
       const s = {
         deck: settings.deck,
-        gapSec: Number(gapSel.value || 5),
+        gapSec: Number(gapSel.value || 3),
+        speed: settings.speed,
         shuffle: !!settings.shuffle,
-        loop: !!loopToggle.checked
+        loopMode: settings.loopMode
       };
       localStorage.setItem(LS_AUDIO_KEY, JSON.stringify(s));
     }
@@ -316,19 +786,22 @@
       }
     }
 
-    let settings = { deck: "all", shuffle: false };
+    let settings = { deck: "all", shuffle: false, loopMode: "all", speed: 1 };
     const saved = loadSettings();
     const mainSaved = loadMainSettings();
     if (saved){
       settings.deck = saved.deck ?? "all";
       settings.shuffle = !!saved.shuffle;
+      settings.speed = normalizeSpeed(saved.speed ?? 1);
     }
+    settings.loopMode = "all";
     if (mainSaved?.deck != null){
       settings.deck = String(mainSaved.deck);
     }
 
-    gapSel.value = String(saved?.gapSec ?? 5);
-    loopToggle.checked = saved?.loop ?? false;
+    gapSel.value = String(saved?.gapSec ?? 3);
+    updateLoopButtons();
+    updateSpeedButtons();
 
     let cards = [];
     let playlist = [];
@@ -336,6 +809,7 @@
 
     const audio = new Audio();
     audio.preload = "auto";
+    audio.playbackRate = settings.speed;
 
     let running = false;
     let gapTimer = null;
@@ -361,19 +835,77 @@
       shuffleBtn.textContent = settings.shuffle ? "Shuffle: ON" : "Shuffle: OFF";
     }
 
-    function hasOriginalJa(card){
-      return !!(card.originalJa && card.originalJa.trim() && card.originalJa.trim() !== card.ja.trim());
+    function updateTrackCurrent(scroll = false){
+      const items = trackList.querySelectorAll(".trackItem");
+      items.forEach((item)=>{
+        const isCurrent = Number(item.dataset.index) === idx;
+        item.classList.toggle("current", isCurrent);
+        const badge = item.querySelector(".trackCurrent");
+        if (badge) badge.classList.toggle("hidden", !isCurrent);
+      });
+
+      if (scroll && idx >= 0 && items[idx]){
+        items[idx].scrollIntoView({ block:"nearest", behavior:"smooth" });
+      }
     }
 
-    function buildPlaylist(keepCurrent=false){
+    function renderTrackList(){
+      if (!playlist.length){
+        trackList.innerHTML = '<div class="emptyList">この条件では再生できる音声がありません。</div>';
+        return;
+      }
+
+      trackList.innerHTML = playlist.map((t, i)=>{
+        const no = `TRACK ${i + 1}`;
+        const en = t.en || "(no en)";
+        const ja = t.ja || "(no ja)";
+        const meta = `UNIT ${String(t.unit).padStart(3,"0")} • ${t.id}`;
+        const currentClass = i === idx ? " current" : "";
+        const hiddenClass = i === idx ? "" : " hidden";
+
+        return `
+          <button class="trackItem${currentClass}" data-index="${i}" type="button">
+            <div class="trackThumb">${String(i + 1).padStart(2, "0")}</div>
+            <div class="trackBody">
+              <div class="trackTop">
+                <span class="trackNo">${no}</span>
+                <span class="trackCurrent${hiddenClass}">CURRENT</span>
+              </div>
+              <p class="trackEn">${en.replace(/</g, "&lt;")}</p>
+              <p class="trackJa">${ja.replace(/</g, "&lt;")}</p>
+              <p class="trackMeta">${meta}</p>
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      trackList.querySelectorAll(".trackItem").forEach((item)=>{
+        item.addEventListener("click", ()=>{
+          const i = Number(item.dataset.index);
+          if (!Number.isFinite(i) || !playlist[i]) return;
+
+          if (running){
+            playAt(i);
+          } else {
+            idx = i;
+            setNow(i, true);
+            setButtonsIdle();
+          }
+        });
+      });
+
+      updateTrackCurrent(false);
+    }
+
+    function buildPlaylist(keepCurrent = false){
       refreshProgress();
       const base = cards.filter(c => c.audioUrl && inDeck(c));
       base.sort((a,b)=> (a.unit-b.unit) || (a.idx-b.idx));
 
+      const currentId = keepCurrent && playlist[idx]?.id ? playlist[idx].id : null;
       let arr = base.slice();
 
       if (settings.shuffle){
-        const currentId = keepCurrent && playlist[idx]?.id ? playlist[idx].id : null;
         if (currentId){
           const cur = arr.find(x => x.id === currentId);
           arr = arr.filter(x => x.id !== currentId);
@@ -389,19 +921,25 @@
             [arr[i], arr[j]] = [arr[j], arr[i]];
           }
         }
+      } else if (currentId){
+        idx = arr.findIndex(x => x.id === currentId);
       }
 
       playlist = arr;
+
+      if (!playlist.length) idx = -1;
+      if (playlist.length > 0 && idx < 0) idx = 0;
+      if (idx >= playlist.length) idx = playlist.length - 1;
 
       statusEl.textContent = `tracks ${playlist.length}`;
       filterInfo.textContent = `Unit: ${unitFilterLabel()}`;
 
       const hasTracks = playlist.length > 0;
-      shuffleBtn.disabled = !hasTracks;
       prevBtn.disabled = !hasTracks;
       nextBtn.disabled = !hasTracks;
-      replayBtn.disabled = !(hasTracks && idx >= 0);
       updateShuffleButton();
+
+      renderTrackList();
     }
 
     function normalizeDeckSetting(units){
@@ -414,6 +952,21 @@
       return false;
     }
 
+    function applyDeck(value, toastMsg){
+      settings.deck = value;
+      saveSettings();
+      saveMainDeck(value);
+      renderDeckTabs();
+      idx = -1;
+      running = false;
+      audio.pause();
+      clearGap();
+      buildPlaylist(false);
+      setNow(idx, false);
+      setButtonsIdle();
+      if (toastMsg) showToast(toastMsg);
+    }
+
     function renderDeckTabs(){
       const units = [...new Set(cards.map(c => Number(c.unit)).filter(Number.isFinite))].sort((a,b)=>a-b);
       const normalized = normalizeDeckSetting(units);
@@ -422,60 +975,38 @@
         saveMainDeck(settings.deck);
       }
 
-      deckBar.innerHTML = "";
-      const make = (label, value) => {
-        const b = document.createElement("button");
-        b.className = "deckTab" + (settings.deck === value ? " active" : "");
-        b.textContent = label;
-        b.onclick = ()=>{
-          settings.deck = value;
-          saveSettings();
-          saveMainDeck(value);
-          renderDeckTabs();
-          idx = -1;
-          running = false;
-          audio.pause();
-          clearGap();
-          setNow(-1);
-          buildPlaylist(false);
-          setButtonsIdle();
-          showToast(value === "review" ? "REVIEW表示" : "Unit変更");
-        };
-        deckBar.appendChild(b);
-      };
+      allDeckBtn.classList.toggle("active", settings.deck === "all");
+      reviewDeckBtn.classList.toggle("active", settings.deck === "review");
 
-      make("All", "all");
-      make("REVIEW ★", "review");
-      for (const u of units){
-        make(`Unit ${u}`, String(u));
+      const selectedUnit = (settings.deck !== "all" && settings.deck !== "review") ? String(settings.deck) : "";
+      const opts = ['<option value="">選択</option>'].concat(units.map(u=>`<option value="${u}">Unit ${u}</option>`));
+      unitSel.innerHTML = opts.join("");
+      if (selectedUnit && units.includes(Number(selectedUnit))){
+        unitSel.value = selectedUnit;
+      } else {
+        unitSel.value = "";
       }
     }
 
-    function setNow(i){
+    function setNow(i, scroll = false){
       const t = playlist[i];
       if (!t){
-        nowJa.textContent = "—";
-        nowOriginalJa.textContent = "";
-        origJaWrap.style.display = "none";
         nowEn.textContent = "—";
+        nowIpa.textContent = "—";
+        nowJa.textContent = "—";
         nowMeta.textContent = "—";
-        replayBtn.disabled = true;
+        setProgress(0, 0);
+        updateTrackCurrent(false);
         return;
       }
 
+      nowEn.textContent = t.en || "(no en)";
+      nowIpa.textContent = t.ipa || "—";
       nowJa.textContent = t.ja || "(no ja)";
 
-      if (hasOriginalJa(t)){
-        nowOriginalJa.textContent = t.originalJa;
-        origJaWrap.style.display = "block";
-      } else {
-        nowOriginalJa.textContent = "";
-        origJaWrap.style.display = "none";
-      }
-
-      nowEn.textContent = t.en || "";
       nowMeta.textContent = `UNIT ${String(t.unit).padStart(3,"0")} • ${t.id}`;
-      replayBtn.disabled = false;
+      setProgress(audio.currentTime || 0, audio.duration || 0);
+      updateTrackCurrent(scroll);
     }
 
     async function playAt(i){
@@ -488,13 +1019,14 @@
         return;
       }
 
-      setNow(idx);
+      setNow(idx, true);
 
       const t = playlist[idx];
 
       try{
         audio.src = t.audioUrl;
         audio.currentTime = 0;
+        audio.playbackRate = settings.speed;
         await audio.play();
       } catch (e){
         showToast("再生できません（次へ）");
@@ -504,28 +1036,36 @@
 
     function scheduleNextAfterGap(){
       clearGap();
-      const gap = Math.max(0, Number(gapSel.value || 5)) * 1000;
+      const gap = Math.max(0, Number(gapSel.value || 3)) * 1000;
       gapTimer = setTimeout(()=>next(), gap);
     }
 
+    function scheduleReplayAfterGap(){
+      clearGap();
+      const gap = Math.max(0, Number(gapSel.value || 3)) * 1000;
+      gapTimer = setTimeout(()=>{
+        if (idx >= 0) playAt(idx);
+      }, gap);
+    }
+
     function setButtonsRunning(){
-      startBtn.disabled = true;
-      pauseBtn.disabled = false;
-      shuffleBtn.disabled = (playlist.length === 0);
-      prevBtn.disabled = (playlist.length === 0);
-      nextBtn.disabled = (playlist.length === 0);
-      replayBtn.disabled = (idx < 0);
-      startBtn.textContent = "▶︎ Start";
+      const hasTracks = playlist.length > 0;
+      startBtn.disabled = !hasTracks;
+      pauseBtn.disabled = true;
+      shuffleBtn.disabled = !hasTracks;
+      prevBtn.disabled = !hasTracks;
+      nextBtn.disabled = !hasTracks;
+      setPlayButton(true);
     }
 
     function setButtonsIdle(){
-      startBtn.disabled = (playlist.length === 0);
+      const hasTracks = playlist.length > 0;
+      startBtn.disabled = !hasTracks;
       pauseBtn.disabled = true;
-      shuffleBtn.disabled = (playlist.length === 0);
-      prevBtn.disabled = (playlist.length === 0);
-      nextBtn.disabled = (playlist.length === 0);
-      replayBtn.disabled = (idx < 0);
-      startBtn.textContent = (idx >= 0 ? "▶︎ Resume" : "▶︎ Start");
+      shuffleBtn.disabled = !hasTracks;
+      prevBtn.disabled = !hasTracks;
+      nextBtn.disabled = !hasTracks;
+      setPlayButton(false);
     }
 
     function start(){
@@ -553,16 +1093,7 @@
       if (playlist.length === 0) return;
 
       let n = idx + 1;
-      if (n >= playlist.length){
-        if (loopToggle.checked){
-          n = 0;
-        } else {
-          running = false;
-          setButtonsIdle();
-          showToast("完了");
-          return;
-        }
-      }
+      if (n >= playlist.length) n = 0;
       running = true;
       setButtonsRunning();
       playAt(n);
@@ -577,13 +1108,6 @@
       playAt(p);
     }
 
-    function replay(){
-      if (idx < 0) return;
-      running = true;
-      setButtonsRunning();
-      playAt(idx);
-    }
-
     function toggleShuffle(){
       if (playlist.length === 0) return;
 
@@ -594,14 +1118,27 @@
       const keep = (idx >= 0);
       buildPlaylist(keep);
 
-      if (keep) setNow(idx);
-      else setNow(-1);
+      if (keep && idx >= 0) setNow(idx, false);
+      else setNow(idx, false);
 
       showToast(settings.shuffle ? "Shuffle ON" : "Shuffle OFF");
     }
 
+    audio.addEventListener("loadedmetadata", ()=>{
+      setProgress(audio.currentTime || 0, audio.duration || 0);
+    });
+
+    audio.addEventListener("timeupdate", ()=>{
+      setProgress(audio.currentTime || 0, audio.duration || 0);
+    });
+
     audio.addEventListener("ended", ()=>{
-      scheduleNextAfterGap();
+      setProgress(audio.duration || 0, audio.duration || 0);
+      if (settings.loopMode === "single"){
+        scheduleReplayAfterGap();
+      } else {
+        scheduleNextAfterGap();
+      }
     });
 
     audio.addEventListener("error", ()=>{
@@ -610,23 +1147,58 @@
       gapTimer = setTimeout(()=>next(), 800);
     });
 
-    startBtn.addEventListener("click", ()=>{
-      saveSettings();
-      start();
+    progressRail.addEventListener("click", (e)=>{
+      if (!audio.duration || !Number.isFinite(audio.duration)) return;
+      const rect = progressRail.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / rect.width;
+      const clamped = Math.max(0, Math.min(1, ratio));
+      audio.currentTime = clamped * audio.duration;
+      setProgress(audio.currentTime, audio.duration);
     });
+
+    startBtn.addEventListener("click", ()=>{
+      if (running) pause();
+      else {
+        saveSettings();
+        start();
+      }
+    });
+
+    allDeckBtn.addEventListener("click", ()=>{
+      if (settings.deck === "all") return;
+      applyDeck("all", "ALL表示");
+    });
+
+    reviewDeckBtn.addEventListener("click", ()=>{
+      if (settings.deck === "review") return;
+      applyDeck("review", "REVIEW表示");
+    });
+
+    unitSel.addEventListener("change", ()=>{
+      const v = String(unitSel.value || "");
+      if (!v){
+        applyDeck("all", "ALL表示");
+      } else {
+        applyDeck(v, "Unit変更");
+      }
+    });
+
     pauseBtn.addEventListener("click", pause);
     nextBtn.addEventListener("click", ()=>{ saveSettings(); next(); });
     prevBtn.addEventListener("click", prev);
-    replayBtn.addEventListener("click", replay);
     shuffleBtn.addEventListener("click", toggleShuffle);
+    loopSingleBtn.addEventListener("click", ()=>setLoopMode("single", true));
+    loopAllBtn.addEventListener("click", ()=>setLoopMode("all", true));
 
     gapSel.addEventListener("change", ()=>{
       saveSettings();
       showToast("間隔を保存");
     });
-    loopToggle.addEventListener("change", ()=>{
-      saveSettings();
-      showToast(loopToggle.checked ? "ループON" : "ループOFF");
+
+    speedButtons.forEach((btn)=>{
+      btn.addEventListener("click", ()=>{
+        setSpeed(btn.dataset.speed, true);
+      });
     });
 
     async function loadCsv(){
@@ -641,14 +1213,14 @@
         idx:Number(r.idx),
         id:(r.id ?? "").trim(),
         ja:(r.ja ?? "").trim(),
-        originalJa:(r.originalJa ?? "").trim(),
         en:(r.en ?? "").trim(),
+        ipa:(r.ipa ?? "").trim(),
         audioUrl:(r.audioUrl ?? "").trim()
       })).filter(c => c.id && Number.isFinite(c.unit) && Number.isFinite(c.idx));
 
       renderDeckTabs();
       buildPlaylist(false);
-      setNow(-1);
+      setNow(idx, false);
       setButtonsIdle();
       updateShuffleButton();
     }
@@ -656,17 +1228,17 @@
     loadCsv().catch(err=>{
       console.error(err);
       statusEl.textContent = "CSV読み込み失敗";
-      nowJa.textContent = "cards.csv が見つからないか、読み込めませんでした。";
-      nowOriginalJa.textContent = "";
-      origJaWrap.style.display = "none";
-      nowEn.textContent = "";
+      nowEn.textContent = "cards.csv が見つからないか、読み込めませんでした。";
+      nowIpa.textContent = "";
+      nowJa.textContent = "";
       nowMeta.textContent = "";
+      trackList.innerHTML = '<div class="emptyList">cards.csv の読み込みに失敗しました。</div>';
+      setButtonsIdle();
       startBtn.disabled = true;
-      pauseBtn.disabled = true;
       shuffleBtn.disabled = true;
       prevBtn.disabled = true;
       nextBtn.disabled = true;
-      replayBtn.disabled = true;
+      setProgress(0, 0);
     });
   </script>
 </body>

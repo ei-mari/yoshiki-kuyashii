@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI Playlist 41105 | 暗唱トレーナー</title>
+  <title>MEMORIZE SUPPORTER | 暗唱トレーナー</title>
   <style>
+    html, body{
+      height:100%;
+    }
     :root{
       --bg1:#f7efe7;
       --bg2:#eef3f8;
@@ -29,12 +32,20 @@
         radial-gradient(circle at 85% 12%, rgba(15,23,42,.08), transparent 30%),
         linear-gradient(160deg, var(--bg1), var(--bg2));
       min-height:100vh;
+      overflow-x:hidden;
+      overflow-y:auto;
     }
     a{ color:inherit; }
     .wrap{
       max-width:1120px;
       margin:0 auto;
-      padding:18px 16px 92px;
+      padding:16px;
+      padding-bottom:340px;
+      min-height:100vh;
+      height:auto;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
     }
     .hero{
       background:rgba(255,255,255,.74);
@@ -45,6 +56,7 @@
       padding:18px;
       position:relative;
       overflow:hidden;
+      flex:0 0 auto;
     }
     .hero:before{
       content:"";
@@ -75,12 +87,6 @@
       font-size:clamp(28px, 4vw, 46px);
       line-height:1.06;
       letter-spacing:-.03em;
-    }
-    .lede{
-      margin:12px 0 0;
-      color:var(--muted);
-      line-height:1.7;
-      max-width:820px;
     }
     .navRow{
       display:flex;
@@ -133,11 +139,8 @@
     .controls{
       margin-top:14px;
       display:grid;
-      grid-template-columns: 1.2fr 1fr;
+      grid-template-columns:1fr;
       gap:12px;
-    }
-    @media (max-width:860px){
-      .controls{ grid-template-columns:1fr; }
     }
     .controlGroup{
       background:rgba(255,255,255,.82);
@@ -166,23 +169,95 @@
     }
     .sectionBar{
       display:flex;
-      gap:8px;
-      overflow:auto;
-      -webkit-overflow-scrolling:touch;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-end;
+      overflow:visible;
       padding:4px 2px 8px;
     }
-    .sectionTab{
-      flex:0 0 auto;
-      padding:10px 13px;
+    .picker{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      flex:1 1 240px;
+      min-width:220px;
+      font-size:12px;
+      font-weight:800;
+      color:var(--muted);
+      letter-spacing:.02em;
+    }
+    .picker select{
+      width:100%;
+      min-width:0;
+    }
+    .pickerLabel{
+      display:flex;
+      align-items:center;
+      gap:6px;
     }
     .panelGrid{
       display:grid;
-      grid-template-columns: 1.05fr .95fr;
+      grid-template-columns:1fr;
       gap:14px;
       align-items:start;
+      min-height:0;
+      flex:none;
     }
-    @media (max-width:980px){
-      .panelGrid{ grid-template-columns:1fr; }
+    .footerDock{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:60;
+      padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+      background:linear-gradient(180deg, rgba(247,239,231,.72), rgba(238,243,248,.92));
+      backdrop-filter:saturate(170%) blur(16px);
+      border-top:1px solid rgba(16,17,20,.08);
+      box-shadow:0 -8px 24px rgba(16,17,20,.08);
+    }
+    .footerDockInner{
+      max-width:1120px;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .mobileNav{
+      display:flex;
+      gap:8px;
+    }
+    .mobileNav .btn{
+      flex:1;
+      justify-content:center;
+    }
+    .searchPanel{
+      display:block;
+      max-height:0;
+      opacity:0;
+      overflow:hidden;
+      transform:translateY(8px);
+      pointer-events:none;
+      transition:max-height .22s ease, opacity .18s ease, transform .18s ease;
+    }
+    .searchPanelInner{
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(16,17,20,.08);
+      border-radius:22px;
+      box-shadow:var(--shadow2);
+      padding:12px;
+    }
+    body.search-open .searchPanel{
+      max-height:280px;
+      opacity:1;
+      transform:translateY(0);
+      pointer-events:auto;
+    }
+    .stage{
+      flex:none;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
     }
     .panel{
       background:rgba(255,255,255,.88);
@@ -190,19 +265,29 @@
       box-shadow:var(--shadow);
       border-radius:26px;
       overflow:hidden;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
     }
     .panelHead{
       padding:16px;
       border-bottom:1px solid var(--line);
+      flex:0 0 auto;
     }
-    .panelBody{ padding:16px; }
+    .panelBody{
+      padding:16px;
+      min-height:0;
+      flex:1;
+      overflow:visible;
+    }
     .nowCard{
       background:
         linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.84));
       border:1px solid var(--line);
       border-radius:22px;
       padding:18px;
-      min-height:230px;
+      min-height:0;
+      flex:1;
       display:flex;
       flex-direction:column;
       gap:12px;
@@ -228,6 +313,13 @@
       letter-spacing:-.02em;
       white-space:pre-wrap;
     }
+    .contextSentence{
+      margin:0;
+      font-size:13px;
+      line-height:1.55;
+      color:var(--muted);
+      white-space:pre-wrap;
+    }
     .nowSentence.hidden{
       color:transparent;
       text-shadow:0 0 0 rgba(16,17,20,.14);
@@ -240,6 +332,20 @@
       min-height:1.2em;
       background:repeating-linear-gradient(90deg, rgba(16,17,20,.10) 0 12px, transparent 12px 20px);
       border-radius:10px;
+    }
+    .clozeSentence .blankWord{
+      display:inline-block;
+      min-width:2.2em;
+      padding:0 .08em;
+      border-bottom:2px solid rgba(16,17,20,.24);
+      color:transparent;
+      user-select:none;
+      vertical-align:baseline;
+    }
+    .clozeSentence.revealed .blankWord{
+      color:inherit;
+      border-bottom-color:transparent;
+      user-select:text;
     }
     .small{
       font-size:12px;
@@ -273,30 +379,44 @@
       border-color:var(--star);
       color:#fff;
     }
+    .btn.learned.active{
+      background:#2c7a4b;
+      border-color:#2c7a4b;
+      color:#fff;
+    }
     .list{
       display:flex;
       flex-direction:column;
       gap:10px;
     }
     .item{
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.92));
+      border:1px solid rgba(16,17,20,.08);
+      border-radius:20px;
       padding:14px;
-      box-shadow:0 8px 20px rgba(16,17,20,.05);
+      box-shadow:0 10px 24px rgba(16,17,20,.06);
+      transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .item:hover{
+      transform:translateY(-1px);
+      box-shadow:0 14px 28px rgba(16,17,20,.08);
+      border-color:rgba(16,17,20,.12);
+    }
+    .item.selected{
+      border-color:rgba(155,91,61,.42);
+      box-shadow:0 16px 30px rgba(155,91,61,.10);
     }
     .itemTop{
       display:flex;
+      flex-direction:column;
       gap:10px;
-      align-items:flex-start;
-      justify-content:space-between;
     }
     .itemSentence{
       margin:0;
-      font-size:16px;
-      line-height:1.55;
-      flex:1;
+      font-size:15px;
+      line-height:1.68;
       letter-spacing:-.01em;
+      white-space:pre-wrap;
     }
     .itemSentence strong{
       color:var(--accent2);
@@ -305,7 +425,7 @@
       display:flex;
       gap:8px;
       align-items:center;
-      flex:0 0 auto;
+      flex-wrap:wrap;
     }
     .miniBtn{
       border:1px solid var(--line);
@@ -317,25 +437,47 @@
       cursor:pointer;
       white-space:nowrap;
     }
+    .itemBadgeRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      align-items:center;
+    }
+    .itemBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:11px;
+      padding:5px 9px;
+      border-radius:999px;
+      background:rgba(16,17,20,.06);
+      color:var(--muted);
+      font-weight:800;
+      letter-spacing:.02em;
+    }
+    .itemBadge.learned{
+      background:rgba(44,122,75,.12);
+      color:#2c7a4b;
+    }
+    .itemBadge.starred{
+      background:rgba(181,106,20,.12);
+      color:#a46012;
+    }
     .miniBtn.star.active{
       background:var(--star);
       border-color:var(--star);
       color:#fff;
     }
+    .miniBtn.learned.active{
+      background:#2c7a4b;
+      border-color:#2c7a4b;
+      color:#fff;
+    }
     .itemMeta{
-      margin-top:8px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
-      color:var(--muted);
-      font-size:12px;
+      display:none;
     }
     .audioBar{
-      display:flex;
-      gap:8px;
-      margin-top:10px;
-      flex-wrap:wrap;
+      display:none;
     }
     .empty{
       color:var(--muted);
@@ -365,6 +507,61 @@
       from{ opacity:0; transform:translateY(4px); }
       to{ opacity:1; transform:translateY(0); }
     }
+    @media (max-width:760px){
+      .wrap{
+        padding:10px;
+        gap:10px;
+      }
+      .hero{
+        border-radius:22px;
+        padding:14px;
+      }
+      .panelGrid{
+        gap:10px;
+      }
+      .nowSentence{
+        font-size:clamp(22px, 6vw, 30px);
+      }
+      .sectionBarWrap{
+        margin:0;
+      }
+      .item{
+        border-radius:24px;
+        padding:16px;
+      }
+      .itemSentence{
+        font-size:16px;
+        line-height:1.75;
+      }
+      .itemBtns{
+        gap:10px;
+      }
+      .miniBtn{
+        padding:9px 12px;
+        border-radius:999px;
+      }
+      .footerDock{
+        padding:10px 10px calc(10px + env(safe-area-inset-bottom));
+      }
+      .wrap{
+        padding-bottom:360px;
+      }
+    }
+    .audioControls{
+      display:none;
+    }
+    body.view-card .cardPanel{
+      display:flex;
+    }
+    body.view-card .listPanel{
+      display:none;
+    }
+    body.view-list .cardPanel{
+      display:none;
+    }
+    body.view-list .listPanel{
+      display:flex;
+    }
   </style>
 </head>
 <body>
@@ -372,69 +569,59 @@
     <header class="hero fadeIn">
       <div class="topRow">
         <div>
-          <p class="eyebrow">AI PLAYLIST 41105</p>
-          <h1>別ページの暗唱トレーナー</h1>
-          <p class="lede">
-            `#23` から `#1` までの例文を、セクション切り替え・連続再生・★レビューで回せるようにした専用ページです。
-          </p>
+          <p class="eyebrow">MEMORIZE SUPPORTER</p>
+          <h1>MEMORIZE SUPPORTER</h1>
         </div>
         <nav class="navRow">
-          <a class="linkBtn" href="./index.html">もとの一覧へ</a>
-          <a class="linkBtn" href="./player.html">音声トレーナーへ</a>
+          <a class="linkBtn" href="./index.html">HOME</a>
+          <a class="linkBtn" href="./kuyashi.html">悔しいフレーズへ</a>
         </nav>
       </div>
 
       <div class="heroBar">
         <div class="status">
           <span class="pill" id="status">loading…</span>
-          <span class="pill" id="filterInfo">Section: All</span>
+          <span class="pill" id="filterInfo">Unit: All</span>
           <span class="pill" id="starInfo">★ 0</span>
         </div>
       </div>
 
-      <div class="controls">
-        <div class="controlGroup">
-          <div class="controlRow">
-            <button class="btn" id="startBtn">▶︎ Start</button>
-            <button class="btn secondary" id="pauseBtn" disabled>Pause</button>
-            <button class="btn secondary" id="prevBtn" disabled>◀︎ Prev</button>
-            <button class="btn secondary" id="nextBtn" disabled>Next ▶︎</button>
-            <button class="btn secondary" id="replayBtn" disabled>↻ Replay</button>
-            <button class="btn secondary" id="shuffleBtn" disabled>Shuffle: OFF</button>
-            <button class="btn secondary" id="hideToggleBtn">文字を隠す: OFF</button>
-          </div>
-          <div class="controlRow">
-            <label class="small">
-              Gap
-              <select id="gapSel" style="margin-left:6px"></select>
-            </label>
-            <label class="small">
-              <input id="loopToggle" type="checkbox" style="transform: translateY(1px); margin-right:6px;">
-              Loop
-            </label>
-          </div>
-        </div>
-        <div class="controlGroup">
-          <div class="controlRow">
-            <input id="searchInput" type="search" placeholder="検索: section / sentence / title" />
-            <button class="btn secondary" id="clearSearchBtn">クリア</button>
-            <button class="btn secondary" id="reviewBtn">REVIEW ★</button>
-          </div>
-          <div class="footerNote">
-            クリックでカードを選択、`★` でレビュー対象に追加できます。`Start` はフィルタに応じた順番で再生します。
-          </div>
-        </div>
-      </div>
     </header>
 
-    <div class="sectionBarWrap fadeIn">
-      <div class="sectionBar" id="sectionBar"></div>
+    <div class="controls">
+      <div class="controlGroup audioControls">
+        <div class="controlRow">
+          <button class="btn" id="startBtn">▶︎ Start</button>
+          <button class="btn secondary" id="pauseBtn" disabled>Pause</button>
+          <button class="btn secondary" id="prevBtn" disabled>◀︎ Prev</button>
+          <button class="btn secondary" id="nextBtn" disabled>Next ▶︎</button>
+          <button class="btn secondary" id="replayBtn" disabled>↻ Replay</button>
+          <button class="btn secondary" id="shuffleBtn" disabled>Shuffle: OFF</button>
+          <button class="btn secondary" id="hideToggleBtn">文字を隠す: OFF</button>
+          <button class="btn secondary" id="clozeBtn">穴埋め: ON</button>
+          <button class="btn secondary" id="listToggleBtn">一覧: OFF</button>
+        </div>
+        <div class="controlRow">
+          <label class="small">
+            Gap
+            <select id="gapSel" style="margin-left:6px"></select>
+          </label>
+          <label class="small">
+            <input id="loopToggle" type="checkbox" style="transform: translateY(1px); margin-right:6px;">
+            Loop
+          </label>
+        </div>
+      </div>
     </div>
 
-    <main class="panelGrid fadeIn">
-      <section class="panel">
+    <div class="stage fadeIn">
+      <div class="sectionBarWrap">
+        <div class="sectionBar" id="sectionBar"></div>
+      </div>
+      <main class="panelGrid">
+      <section class="panel cardPanel">
         <div class="panelHead">
-          <div class="small">Now Playing</div>
+          <div class="small">Card</div>
         </div>
         <div class="panelBody">
           <div class="nowCard">
@@ -442,13 +629,22 @@
               <span class="tag" id="nowSectionTag">—</span>
               <span class="tag" id="nowIndexTag">—</span>
               <span class="tag" id="nowStarTag">—</span>
+              <span class="tag" id="nowLearnedTag">—</span>
             </div>
-            <p class="nowSentence" id="nowSentence">—</p>
+            <p class="contextSentence" id="nowPrevSentence">—</p>
+            <p class="nowSentence clozeSentence" id="nowSentence">—</p>
             <div>
               <div class="nowActions">
-                <button class="btn" id="playBtn">▶︎ Play</button>
+                <button class="btn" id="markLearnedBtn">覚えた</button>
+                <button class="btn secondary" id="markUnlearnedBtn">まだ</button>
+                <button class="btn secondary" id="toggleRevealBtn">全文/穴埋め</button>
+                <button class="btn secondary" id="nextQuickBtn">次へ</button>
+              </div>
+              <div class="nowActions" style="margin-top:8px;">
+                <button class="btn secondary" id="playBtn">▶︎ Play</button>
                 <button class="btn secondary" id="toggleStarBtn">☆ Star</button>
                 <button class="btn secondary" id="copyBtn">Copy</button>
+                <button class="btn secondary" id="mobileListQuickBtn">一覧へ</button>
               </div>
               <div class="small" id="nowHint" style="margin-top:10px;">—</div>
             </div>
@@ -456,15 +652,38 @@
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel listPanel">
         <div class="panelHead">
-          <div class="small">Sentence List</div>
+          <div class="small">Cards</div>
         </div>
         <div class="panelBody">
           <div class="list" id="list"></div>
         </div>
       </section>
-    </main>
+      </main>
+    </div>
+
+    <footer class="footerDock">
+      <div class="mobileNav footerDockInner">
+        <button class="btn secondary" id="searchToggleBtn">検索</button>
+        <button class="btn secondary" id="mobileCardBtn">カード</button>
+        <button class="btn secondary" id="mobileListBtn">一覧</button>
+      </div>
+      <div class="searchPanel" id="searchPanel">
+        <div class="footerDockInner">
+          <div class="searchPanelInner">
+            <div class="controlRow">
+              <input id="searchInput" type="search" placeholder="検索: unit / question / sentence" />
+              <button class="btn secondary" id="clearSearchBtn">クリア</button>
+              <button class="btn secondary" id="reviewBtn">REVIEW ★</button>
+            </div>
+            <div class="footerNote">
+              クリックでカードを選択、`★` でレビュー対象に追加できます。`覚えた / まだ` で学習状態も記録します。
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
   </div>
 
   <div class="toast" id="toast"></div>
@@ -1225,19 +1444,32 @@
     const shuffleBtn = document.getElementById("shuffleBtn");
     const gapSel = document.getElementById("gapSel");
     const loopToggle = document.getElementById("loopToggle");
+    const searchToggleBtn = document.getElementById("searchToggleBtn");
+    const searchPanel = document.getElementById("searchPanel");
     const searchInput = document.getElementById("searchInput");
     const clearSearchBtn = document.getElementById("clearSearchBtn");
     const reviewBtn = document.getElementById("reviewBtn");
     const hideToggleBtn = document.getElementById("hideToggleBtn");
+    const clozeBtn = document.getElementById("clozeBtn");
+    const listToggleBtn = document.getElementById("listToggleBtn");
+    const mobileCardBtn = document.getElementById("mobileCardBtn");
+    const mobileListBtn = document.getElementById("mobileListBtn");
 
     const nowSectionTag = document.getElementById("nowSectionTag");
     const nowIndexTag = document.getElementById("nowIndexTag");
     const nowStarTag = document.getElementById("nowStarTag");
+    const nowLearnedTag = document.getElementById("nowLearnedTag");
+    const nowPrevSentence = document.getElementById("nowPrevSentence");
     const nowSentence = document.getElementById("nowSentence");
     const nowHint = document.getElementById("nowHint");
+    const markLearnedBtn = document.getElementById("markLearnedBtn");
+    const markUnlearnedBtn = document.getElementById("markUnlearnedBtn");
+    const toggleRevealBtn = document.getElementById("toggleRevealBtn");
+    const nextQuickBtn = document.getElementById("nextQuickBtn");
     const playBtn = document.getElementById("playBtn");
     const toggleStarBtn = document.getElementById("toggleStarBtn");
     const copyBtn = document.getElementById("copyBtn");
+    const mobileListQuickBtn = document.getElementById("mobileListQuickBtn");
     const toast = document.getElementById("toast");
 
     const audio = new Audio();
@@ -1245,10 +1477,14 @@
 
     const defaultSettings = {
       section: "all",
+      questionId: "",
       shuffle: false,
       loop: false,
       gapSec: 4,
-      hideText: false
+      hideText: false,
+      cloze: true,
+      mobileView: "card",
+      searchOpen: false
     };
 
     function showToast(msg){
@@ -1271,9 +1507,20 @@
     function loadSettings(){
       try{
         const raw = localStorage.getItem(LS_SETTINGS_KEY);
-        return raw ? { ...defaultSettings, ...JSON.parse(raw) } : { ...defaultSettings };
+        const parsed = raw ? JSON.parse(raw) : {};
+        const merged = { ...defaultSettings, ...parsed };
+        if (typeof parsed.cloze !== "boolean") merged.cloze = true;
+        if (merged.mobileView !== "card" && merged.mobileView !== "list") merged.mobileView = "card";
+        if (typeof merged.questionId !== "string") merged.questionId = "";
+        if (typeof merged.searchOpen !== "boolean") merged.searchOpen = false;
+        return merged;
       } catch {
-        return { ...defaultSettings };
+        return {
+          ...defaultSettings,
+          cloze: true,
+          mobileView: "card",
+          searchOpen: false
+        };
       }
     }
 
@@ -1304,6 +1551,36 @@
 
     function stripTags(str){
       return String(str).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    }
+
+    function escapeHtmlText(str){
+      return escapeHtml(str).replaceAll("'", "&#39;");
+    }
+
+    function makeClozeHtml(sentence, reveal = false){
+      const tokens = String(sentence).match(/\s+|[^\s]+/g) || [String(sentence)];
+      const wordTokens = tokens.filter(token => /\S/.test(token) && /[A-Za-z]/.test(token));
+      let wordIndex = 0;
+
+      return tokens.map(token => {
+        if (/^\s+$/.test(token)) return token;
+
+        const match = token.match(/^([^A-Za-z0-9']*)([A-Za-z0-9][A-Za-z0-9'’-]*)([^A-Za-z0-9']*)$/);
+        if (!match) return escapeHtmlText(token);
+
+        const [, prefix, core, suffix] = match;
+        const currentWord = wordTokens[wordIndex] || core;
+        const isFirst = wordIndex === 0;
+        const isLast = wordIndex === wordTokens.length - 1;
+        wordIndex += 1;
+
+        if (reveal || isFirst || isLast || currentWord.length <= 4){
+          return `${escapeHtmlText(prefix)}${escapeHtmlText(core)}${escapeHtmlText(suffix)}`;
+        }
+
+        const mask = "_____";
+        return `${escapeHtmlText(prefix)}<span class="blankWord">${mask}</span>${escapeHtmlText(suffix)}`;
+      }).join("");
     }
 
     function parseSource(raw){
@@ -1394,9 +1671,12 @@
         if (!progress[item.id]){
           progress[item.id] = {
             starred: false,
+            learned: false,
             played: 0,
             lastPlayedAt: null
           };
+        } else if (typeof progress[item.id].learned !== "boolean"){
+          progress[item.id].learned = false;
         }
       }
       saveProgress();
@@ -1415,6 +1695,10 @@
       return !!progress[id]?.starred;
     }
 
+    function isLearned(id){
+      return !!progress[id]?.learned;
+    }
+
     function currentSectionLabel(){
       if (settings.section === "all") return "All";
       if (settings.section === "review") return "REVIEW ★";
@@ -1422,11 +1706,49 @@
       return found ? found.label : String(settings.section);
     }
 
+    function scopeItemsForSelection(){
+      return getFilteredItems();
+    }
+
+    function shortSentence(sentence, maxLen = 44){
+      const text = String(sentence).replace(/\s+/g, " ").trim();
+      if (text.length <= maxLen) return text;
+      return `${text.slice(0, maxLen - 1)}…`;
+    }
+
+    function syncQuestionSelection(nextId = ""){
+      const scope = scopeItemsForSelection();
+      const targetId = nextId || settings.questionId || scope[0]?.id || "";
+      if (targetId && scope.some(item => item.id === targetId)){
+        settings.questionId = targetId;
+        const found = playlist.findIndex(item => item.id === targetId);
+        if (found >= 0) index = found;
+      } else {
+        settings.questionId = scope[0]?.id || "";
+        if (settings.questionId){
+          const found = playlist.findIndex(item => item.id === settings.questionId);
+          if (found >= 0) index = found;
+        }
+      }
+      saveSettings();
+    }
+
     function toggleStar(id){
       progress[id].starred = !progress[id].starred;
       saveProgress();
       syncStarState();
       return progress[id].starred;
+    }
+
+    function toggleLearned(id, forcedValue){
+      if (!progress[id]) return false;
+      if (typeof forcedValue === "boolean"){
+        progress[id].learned = forcedValue;
+      } else {
+        progress[id].learned = !progress[id].learned;
+      }
+      saveProgress();
+      return progress[id].learned;
     }
 
     function inSection(item){
@@ -1447,37 +1769,78 @@
     }
 
     function renderSectionTabs(){
-      sectionBarEl.innerHTML = "";
+      sectionBarEl.innerHTML = `
+        <label class="picker">
+          <span class="pickerLabel">UNIT</span>
+          <select id="unitSelect"></select>
+        </label>
+        <label class="picker">
+          <span class="pickerLabel">QUESTION</span>
+          <select id="questionSelect"></select>
+        </label>
+      `;
 
-      const makeTab = (label, value) => {
-        const btn = document.createElement("button");
-        btn.className = "sectionTab" + (settings.section === value ? " active" : "");
-        btn.textContent = label;
-        btn.onclick = () => {
-          settings.section = value;
-          saveSettings();
-          normalizeSectionFilter();
-          syncStarState();
-          renderSectionTabs();
-          renderAll();
-          showToast(value === "review" ? "REVIEW表示" : "Section変更");
-        };
-        sectionBarEl.appendChild(btn);
-      };
+      const unitSelect = sectionBarEl.querySelector("#unitSelect");
+      const questionSelect = sectionBarEl.querySelector("#questionSelect");
+      const scope = scopeItemsForSelection();
 
-      makeTab("All", "all");
-      makeTab("REVIEW ★", "review");
-      for (const section of sections){
-        makeTab(section.label, section.key);
+      const unitOptions = [
+        { value: "all", label: "All" },
+        { value: "review", label: "REVIEW ★" },
+        ...sections.map(section => ({ value: section.key, label: section.label }))
+      ];
+
+      unitSelect.innerHTML = unitOptions
+        .map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`)
+        .join("");
+      unitSelect.value = settings.section;
+
+      questionSelect.innerHTML = scope.length
+        ? scope.map(item => {
+            const label = `${item.sectionLabel} · #${item.title} · ${shortSentence(item.sentence, 48)}`;
+            return `<option value="${escapeHtml(item.id)}">${escapeHtml(label)}</option>`;
+          }).join("")
+        : `<option value="">該当する質問がありません</option>`;
+
+      if (!scope.some(item => item.id === settings.questionId)){
+        settings.questionId = scope[0]?.id || "";
+        saveSettings();
       }
+      questionSelect.value = settings.questionId || "";
+      questionSelect.disabled = !scope.length;
+
+      unitSelect.addEventListener("change", () => {
+        settings.section = unitSelect.value;
+        const nextScope = scopeItemsForSelection();
+        settings.questionId = nextScope[0]?.id || "";
+        saveSettings();
+        normalizeSectionFilter();
+        syncStarState();
+        renderAll();
+        showToast(unitSelect.value === "review" ? "REVIEW表示" : "UNIT変更");
+      });
+
+      questionSelect.addEventListener("change", () => {
+        const targetId = questionSelect.value;
+        const nextIndex = playlist.findIndex(item => item.id === targetId);
+        if (nextIndex >= 0){
+          settings.questionId = targetId;
+          saveSettings();
+          setCurrent(nextIndex);
+          renderList();
+          renderSectionTabs();
+        }
+      });
     }
 
     function updateCounters(){
       const filtered = getFilteredItems();
       const starredCount = items.filter(x => isStarred(x.id)).length;
+      const learnedCount = items.filter(x => isLearned(x.id)).length;
       statusEl.textContent = `cards ${filtered.length} / ${items.length}`;
-      filterInfoEl.textContent = `Section: ${currentSectionLabel()}`;
+      filterInfoEl.textContent = `Unit: ${currentSectionLabel()}`;
       starInfoEl.textContent = `★ ${starredCount}`;
+      nowLearnedTag.textContent = `覚えた ${learnedCount}`;
       reviewBtn.classList.toggle("active", settings.section === "review");
     }
 
@@ -1492,27 +1855,24 @@
         return;
       }
 
-      filtered.forEach((item, idx) => {
+      filtered.forEach(item => {
         const row = document.createElement("article");
         row.className = "item";
         const starred = isStarred(item.id);
+        const learned = isLearned(item.id);
+        row.classList.toggle("selected", currentItem()?.id === item.id);
         row.innerHTML = `
           <div class="itemTop">
-            <p class="itemSentence"><strong>${escapeHtml(item.sectionLabel)}</strong> ${escapeHtml(item.sentence)}</p>
+            <div class="itemBadgeRow">
+              <span class="itemBadge">${escapeHtml(item.sectionLabel)} · #${escapeHtml(item.title)}</span>
+              <span class="itemBadge ${learned ? "learned" : ""}">${learned ? "覚えた" : "まだ"}</span>
+              <span class="itemBadge ${starred ? "starred" : ""}">${starred ? "★" : "☆"}</span>
+            </div>
+            <p class="itemSentence">${escapeHtml(item.sentence)}</p>
             <div class="itemBtns">
               <button class="miniBtn star ${starred ? "active" : ""}" data-star="${escapeHtml(item.id)}">${starred ? "★" : "☆"}</button>
-              <button class="miniBtn" data-play="${escapeHtml(item.id)}">▶︎</button>
+              <button class="miniBtn learned ${learned ? "active" : ""}" data-learn="${escapeHtml(item.id)}">${learned ? "覚えた" : "まだ"}</button>
             </div>
-          </div>
-          <div class="itemMeta">
-            <span>${escapeHtml(item.title)}</span>
-            <span>•</span>
-            <span>${escapeHtml(item.sectionLabel)}</span>
-            <span>•</span>
-            <span>${idx + 1}/${filtered.length}</span>
-          </div>
-          <div class="audioBar">
-            <button class="miniBtn" data-open="${escapeHtml(item.id)}">今のカードへ</button>
           </div>
         `;
         row.querySelectorAll("[data-star]").forEach(btn => {
@@ -1530,18 +1890,13 @@
             showToast(nowStarred ? "★ 追加" : "★ 削除");
           });
         });
-        row.querySelectorAll("[data-play]").forEach(btn => {
+        row.querySelectorAll("[data-learn]").forEach(btn => {
           btn.addEventListener("click", e => {
             e.stopPropagation();
-            const i = playlist.findIndex(x => x.id === item.id);
-            if (i >= 0) playAt(i);
-          });
-        });
-        row.querySelectorAll("[data-open]").forEach(btn => {
-          btn.addEventListener("click", e => {
-            e.stopPropagation();
-            const i = playlist.findIndex(x => x.id === item.id);
-            if (i >= 0) setCurrent(i);
+            const nowLearned = toggleLearned(item.id);
+            renderSectionTabs();
+            renderAll();
+            showToast(nowLearned ? "覚えた" : "まだ");
           });
         });
         row.addEventListener("click", () => {
@@ -1554,7 +1909,7 @@
 
     function buildPlaylist(keepCurrent = false){
       const filtered = getFilteredItems();
-      const currentId = keepCurrent && playlist[index]?.id ? playlist[index].id : null;
+      const currentId = settings.questionId || (keepCurrent && playlist[index]?.id ? playlist[index].id : null);
       let arr = filtered.slice().sort((a, b) => sections.findIndex(s => s.key === a.sectionKey) - sections.findIndex(s => s.key === b.sectionKey) || a.title.localeCompare(b.title, "en"));
 
       if (settings.shuffle){
@@ -1576,15 +1931,21 @@
       }
 
       playlist = arr;
-      if (keepCurrent && currentId){
+      if (currentId && playlist.some(item => item.id === currentId)){
         const foundIndex = playlist.findIndex(x => x.id === currentId);
         index = foundIndex >= 0 ? foundIndex : (playlist.length ? 0 : -1);
+        settings.questionId = currentId;
       } else if (playlist.length === 0){
         index = -1;
+        settings.questionId = "";
       } else if (index < 0 || index >= playlist.length){
         index = 0;
+        settings.questionId = playlist[0].id;
+      } else {
+        settings.questionId = playlist[index]?.id || "";
       }
 
+      saveSettings();
       updateButtons();
       updateNowUI();
     }
@@ -1603,11 +1964,68 @@
       gapSel.value = String(settings.gapSec ?? 4);
       toggleStarBtn.textContent = currentItem() && isStarred(currentItem().id) ? "★ Star" : "☆ Star";
       toggleStarBtn.classList.toggle("active", !!(currentItem() && isStarred(currentItem().id)));
+      const learned = currentItem() ? isLearned(currentItem().id) : false;
+      markLearnedBtn.classList.toggle("active", learned);
+      markLearnedBtn.textContent = learned ? "覚えた✓" : "覚えた";
+      markUnlearnedBtn.classList.toggle("active", !learned);
+      markUnlearnedBtn.textContent = learned ? "まだ" : "まだ";
+      nextQuickBtn.disabled = !hasTracks || index < 0;
+      toggleRevealBtn.classList.toggle("active", !!settings.cloze && !answerVisible);
+      toggleRevealBtn.textContent = settings.cloze ? (answerVisible ? "穴埋めへ" : "全文") : "全文";
+      mobileCardBtn.classList.toggle("active", settings.mobileView === "card");
+      mobileListBtn.classList.toggle("active", settings.mobileView === "list");
+      searchToggleBtn.classList.toggle("active", !!settings.searchOpen);
+      searchToggleBtn.textContent = settings.searchOpen ? "検索を閉じる" : "検索";
+      mobileListQuickBtn.textContent = "一覧へ";
+      const unitSelect = sectionBarEl.querySelector("#unitSelect");
+      const questionSelect = sectionBarEl.querySelector("#questionSelect");
+      if (unitSelect) unitSelect.value = settings.section;
+      if (questionSelect) questionSelect.value = settings.questionId || "";
       startBtn.textContent = running ? "▶︎ Running" : (index >= 0 ? "▶︎ Resume" : "▶︎ Start");
     }
 
     function currentItem(){
       return playlist[index] || null;
+    }
+
+    let answerVisible = false;
+
+    function updateViewportMode(){
+      document.body.classList.toggle("view-card", settings.mobileView === "card");
+      document.body.classList.toggle("view-list", settings.mobileView === "list");
+      document.body.classList.toggle("search-open", !!settings.searchOpen);
+      listToggleBtn.style.display = "none";
+      mobileCardBtn.classList.toggle("active", settings.mobileView === "card");
+      mobileListBtn.classList.toggle("active", settings.mobileView === "list");
+      searchToggleBtn.classList.toggle("active", !!settings.searchOpen);
+      searchToggleBtn.textContent = settings.searchOpen ? "検索を閉じる" : "検索";
+    }
+
+    function renderCurrentPrompt(){
+      const item = currentItem();
+      if (!item){
+        nowPrevSentence.textContent = "—";
+        nowSentence.textContent = "—";
+        nowSentence.classList.remove("clozeSentence");
+        nowSentence.classList.remove("revealed");
+        nowHint.textContent = "再生対象がありません";
+        return;
+      }
+
+      const prev = playlist[index - 1];
+      const learned = isLearned(item.id);
+      nowPrevSentence.textContent = prev ? `前の文: ${prev.sentence}` : "前の文: —";
+      nowLearnedTag.textContent = learned ? "覚えた" : "まだ";
+      nowSentence.classList.add("clozeSentence");
+      nowSentence.classList.toggle("revealed", answerVisible || !settings.cloze);
+      if (settings.cloze && !answerVisible){
+        nowSentence.innerHTML = makeClozeHtml(item.sentence, false);
+      } else {
+        nowSentence.textContent = item.sentence;
+      }
+      nowHint.textContent = settings.cloze
+        ? (answerVisible ? "全文表示中。文をタップすると穴埋めに戻ります。" : "穴埋め表示。文をタップすると全文を見られます。")
+        : "全文表示中。";
     }
 
     function updateNowUI(){
@@ -1616,8 +2034,10 @@
         nowSectionTag.textContent = "—";
         nowIndexTag.textContent = "—";
         nowStarTag.textContent = "—";
+        nowLearnedTag.textContent = "—";
         nowSentence.textContent = "再生対象がありません";
         nowSentence.classList.remove("hidden");
+        nowPrevSentence.textContent = "前の文: —";
         nowHint.textContent = "フィルタを変えるか、REVIEW ★ を外してみてください。";
         updateButtons();
         return;
@@ -1627,15 +2047,21 @@
       nowSectionTag.textContent = item.sectionLabel;
       nowIndexTag.textContent = `#${item.title}`;
       nowStarTag.textContent = starred ? "★ starred" : "☆ not starred";
-      nowSentence.textContent = item.sentence;
       nowSentence.classList.toggle("hidden", !!settings.hideText);
-      nowHint.textContent = `${item.audioUrl}`;
+      renderCurrentPrompt();
+      if (settings.hideText){
+        nowSentence.innerHTML = '<span class="mask"></span>';
+        nowHint.textContent = "文字を隠しています。もう一度押すと表示に戻れます。";
+      }
       updateButtons();
     }
 
     function setCurrent(i){
       index = i;
+      settings.questionId = playlist[index]?.id || "";
+      saveSettings();
       running = false;
+      answerVisible = false;
       updateNowUI();
       updateButtons();
     }
@@ -1649,7 +2075,10 @@
       clearGap();
       if (!playlist[i]) return;
       index = i;
+      settings.questionId = playlist[index]?.id || "";
+      saveSettings();
       running = true;
+      answerVisible = false;
       updateNowUI();
       const item = playlist[index];
       try{
@@ -1677,6 +2106,7 @@
       running = true;
       updateButtons();
       if (index < 0 || index >= playlist.length) index = 0;
+      answerVisible = false;
       playAt(index);
     }
 
@@ -1701,6 +2131,7 @@
           return;
         }
       }
+      answerVisible = false;
       playAt(n);
     }
 
@@ -1708,11 +2139,13 @@
       clearGap();
       if (!playlist.length) return;
       const p = Math.max(0, index - 1);
+      answerVisible = false;
       playAt(p);
     }
 
     function replay(){
       if (index < 0) return;
+      answerVisible = false;
       playAt(index);
     }
 
@@ -1740,6 +2173,31 @@
       renderList();
     }
 
+    function toggleCloze(){
+      settings.cloze = !settings.cloze;
+      answerVisible = false;
+      saveSettings();
+      updateNowUI();
+      showToast(settings.cloze ? "穴埋め ON" : "全文表示");
+    }
+
+    function toggleList(){
+      settings.mobileView = settings.mobileView === "card" ? "list" : "card";
+      saveSettings();
+      updateViewportMode();
+      renderAll();
+      showToast(settings.mobileView === "list" ? "一覧" : "カード");
+    }
+
+    function toggleSearchPanel(forceOpen){
+      settings.searchOpen = typeof forceOpen === "boolean" ? forceOpen : !settings.searchOpen;
+      saveSettings();
+      updateViewportMode();
+      if (settings.searchOpen){
+        setTimeout(() => searchInput.focus(), 50);
+      }
+    }
+
     function renderAll(){
       normalizeSectionFilter();
       syncStarState();
@@ -1747,6 +2205,7 @@
       buildPlaylist(true);
       renderList();
       renderSectionTabs();
+      updateViewportMode();
       if (index < 0 && playlist.length) index = 0;
       updateNowUI();
     }
@@ -1769,9 +2228,55 @@
     shuffleBtn.addEventListener("click", toggleShuffle);
     reviewBtn.addEventListener("click", toggleReview);
     hideToggleBtn.addEventListener("click", toggleHideText);
+    clozeBtn.addEventListener("click", toggleCloze);
+    listToggleBtn.addEventListener("click", toggleList);
+    searchToggleBtn.addEventListener("click", () => toggleSearchPanel());
+    mobileCardBtn.addEventListener("click", () => {
+      settings.mobileView = "card";
+      saveSettings();
+      updateViewportMode();
+      renderAll();
+    });
+    mobileListBtn.addEventListener("click", () => {
+      settings.mobileView = "list";
+      saveSettings();
+      updateViewportMode();
+      renderAll();
+    });
     playBtn.addEventListener("click", () => {
       const item = currentItem();
       if (item) playAt(index);
+    });
+    markLearnedBtn.addEventListener("click", () => {
+      const item = currentItem();
+      if (!item) return;
+      toggleLearned(item.id, true);
+      updateCounters();
+      renderList();
+      updateNowUI();
+      showToast("覚えた");
+    });
+    markUnlearnedBtn.addEventListener("click", () => {
+      const item = currentItem();
+      if (!item) return;
+      toggleLearned(item.id, false);
+      updateCounters();
+      renderList();
+      updateNowUI();
+      showToast("まだ");
+    });
+    toggleRevealBtn.addEventListener("click", () => {
+      if (!currentItem()) return;
+      if (!settings.cloze) return;
+      answerVisible = !answerVisible;
+      updateNowUI();
+    });
+    nextQuickBtn.addEventListener("click", next);
+    nowSentence.addEventListener("click", () => {
+      if (!currentItem()) return;
+      if (!settings.cloze) return;
+      answerVisible = !answerVisible;
+      updateNowUI();
     });
     toggleStarBtn.addEventListener("click", () => {
       const item = currentItem();
@@ -1790,6 +2295,12 @@
         showToast("コピーできませんでした");
       }
     });
+    mobileListQuickBtn.addEventListener("click", () => {
+      settings.mobileView = "list";
+      saveSettings();
+      updateViewportMode();
+      renderAll();
+    });
 
     gapSel.addEventListener("change", () => {
       settings.gapSec = Number(gapSel.value);
@@ -1807,18 +2318,22 @@
       updateCounters();
       buildPlaylist(true);
       renderList();
+      renderSectionTabs();
     });
     clearSearchBtn.addEventListener("click", () => {
       searchInput.value = "";
       updateCounters();
       buildPlaylist(true);
       renderList();
+      renderSectionTabs();
     });
 
     function initGap(){
       gapSel.value = String(settings.gapSec ?? 4);
       loopToggle.checked = !!settings.loop;
       hideToggleBtn.textContent = settings.hideText ? "文字を隠す: ON" : "文字を隠す: OFF";
+      clozeBtn.textContent = settings.cloze ? "穴埋め: ON" : "穴埋め: OFF";
+      listToggleBtn.style.display = "none";
     }
 
     function boot(){
@@ -1827,10 +2342,11 @@
       normalizeSectionFilter();
       initGap();
       syncStarState();
+      buildPlaylist(false);
       renderSectionTabs();
       updateCounters();
-      buildPlaylist(false);
       renderList();
+      updateViewportMode();
       if (!playlist.length){
         nowSentence.textContent = "原文が読み込めませんでした。";
         nowHint.textContent = "source ブロックを確認してください。";
@@ -1838,6 +2354,10 @@
       if (playlist.length) index = 0;
       updateNowUI();
     }
+
+    window.addEventListener("resize", () => {
+      renderCurrentPrompt();
+    });
 
     boot();
   </script>
