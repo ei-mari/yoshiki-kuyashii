@@ -1108,8 +1108,12 @@
 
         item.onclick = () => {
           const isOpen = expanded.has(c.id);
-          if (isOpen) expanded.delete(c.id);
-          else expanded.add(c.id);
+          if (isOpen) {
+            expanded.delete(c.id);
+          } else {
+            expanded.add(c.id);
+            if (c.audioUrl) safePlayFromUrl(c.audioUrl);
+          }
           ans.style.display = expanded.has(c.id) ? "block" : "none";
         };
 
