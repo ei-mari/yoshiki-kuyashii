@@ -574,7 +574,19 @@
     const GRADUATING_DAYS = 1;
     const EASY_GRADUATING_DAYS = 4;
 
-    const CSV_URL = "./cards.csv";
+    const CSV_URL = "./cards-unit7.csv";
+    const UNIT7_CARDS = [
+      { unit:7, idx:1, theme:"日常・家族", ja:"時々バリの夢を見るんです。毎回リンディックを弾いています。", originalJa:"時々バリの夢を見るんです。毎回リンディックを弾いています。", en:"I sometimes dream about Bali. In those dreams, I’m always playing the rindik.", ipa:"/aɪ ˈsʌmtaɪmz drim əˈbaʊt ˈbɑli. ɪn ðoʊz drimz, aɪm ˈɔlweɪz ˈpleɪɪŋ ðə ˈrɪndɪk/", audioUrl:"./kuyashi-audio/07/07-01.wav", id:"u07_001" },
+      { unit:7, idx:2, theme:"日常・家族", ja:"リンディックの記憶は、私にとって特別なのだと思います。", originalJa:"リンディックの記憶は、私にとって特別なのだと思います。", en:"I think my memories of the rindik are very special to me.", ipa:"/aɪ θɪŋk maɪ ˈmɛmɚiz əv ðə ˈrɪndɪk ɑr ˈvɛri ˈspɛʃəl tə mi/", audioUrl:"./kuyashi-audio/07/07-02.wav", id:"u07_002" },
+      { unit:7, idx:3, theme:"日常・家族", ja:"これからは自分が食べた後の食器をそれぞれ洗うことにしませんか？", originalJa:"これからは自分が食べた後の食器をそれぞれ洗うことにしませんか？", en:"From now on, how about we each wash our own dishes after eating?", ipa:"/frəm naʊ ɑn, haʊ əˈbaʊt wi itʃ wɑʃ aʊr oʊn ˈdɪʃɪz ˈæftɚ ˈitɪŋ/", audioUrl:"./kuyashi-audio/07/07-03.wav", id:"u07_003" },
+      { unit:7, idx:4, theme:"日常・家族", ja:"今週の土曜日空いていますか？よかったら子供たちも一緒に川に遊びに行きませんか？", originalJa:"今週の土曜日空いていますか？よかったら子供たちも一緒に川に遊びに行きませんか？", en:"Are you free this Saturday? If you’d like, why don’t we take the kids to the river together?", ipa:"/ɑr ju fri ðɪs ˈsætɚdeɪ? ɪf jud laɪk, waɪ doʊnt wi teɪk ðə kɪdz tə ðə ˈrɪvɚ təˈɡɛðɚ/", audioUrl:"./kuyashi-audio/07/07-04.wav", id:"u07_004" },
+      { unit:7, idx:5, theme:"日常・家族", ja:"この椅子を売りに出してください。もう使わないので。", originalJa:"この椅子を売りに出してください。もう使わないので。", en:"Please put this chair up for sale. We don’t use it anymore.", ipa:"/pliz pʊt ðɪs tʃɛr ʌp fər seɪl. wi doʊnt juz ɪt ˌɛniˈmɔr/", audioUrl:"./kuyashi-audio/07/07-05.wav", id:"u07_005" },
+      { unit:7, idx:6, theme:"日常・家族", ja:"お風呂掃除してお湯を入れておいてくれる？", originalJa:"お風呂掃除してお湯を入れておいてくれる？", en:"Could you clean the bathtub and fill it with hot water?", ipa:"/kʊd ju klin ðə ˈbæθtʌb ənd fɪl ɪt wɪð hɑt ˈwɔtɚ/", audioUrl:"./kuyashi-audio/07/07-06.wav", id:"u07_006" },
+      { unit:7, idx:7, theme:"日常・家族", ja:"あなたがお腹が空いてるなら、夕食の時間を早くしますよ。", originalJa:"あなたがお腹が空いてるなら、夕食の時間を早くしますよ。", en:"If you’re hungry, I can make dinner earlier than planned.", ipa:"/ɪf jʊr ˈhʌŋɡri, aɪ kən meɪk ˈdɪnɚ ˈɝliɚ ðæn plænd/", audioUrl:"./kuyashi-audio/07/07-07.wav", id:"u07_007" },
+      { unit:7, idx:8, theme:"日常・家族", ja:"今日は雨だから、ゴミを燃やすのは晴れてる時にして", originalJa:"今日は雨だから、ゴミを燃やすのは晴れてる時にして", en:"It’s raining today, so please wait until it clears up before burning the trash.", ipa:"/ɪts ˈreɪnɪŋ təˈdeɪ, soʊ pliz weɪt ənˈtɪl ɪt klɪrz ʌp bɪˈfɔr ˈbɝnɪŋ ðə træʃ/", audioUrl:"./kuyashi-audio/07/07-08.wav", id:"u07_008" },
+      { unit:7, idx:9, theme:"日常・家族", ja:"眠たいからもう寝ますね。", originalJa:"眠たいからもう寝ますね。", en:"I’m sleepy, so I’m going to bed now.", ipa:"/aɪm ˈslipi, soʊ aɪm ˈɡoʊɪŋ tə bɛd naʊ/", audioUrl:"./kuyashi-audio/07/07-09.wav", id:"u07_009" },
+      { unit:7, idx:10, theme:"日常・家族", ja:"忙しいところ悪いんだけど、Faxの使い方を教えて下さい。", originalJa:"忙しいところ悪いんだけど、Faxの使い方を教えて下さい。", en:"Sorry to bother you when you’re busy, but could you show me how to use the fax machine?", ipa:"/ˈsɑri tə ˈbɑðɚ ju wɛn jʊr ˈbɪzi, bət kʊd ju ʃoʊ mi haʊ tə juz ðə fæks məˈʃin/", audioUrl:"./kuyashi-audio/07/07-10.wav", id:"u07_010" }
+    ];
 
     const LS_PROGRESS_KEY = "yoshiki_kuyashii_progress_v1";
     const LS_SETTINGS_KEY = "yoshiki_kuyashii_settings_v1";
@@ -1326,6 +1338,10 @@
         audioUrl:(r.audioUrl??"").trim(),
         id:(r.id??"").trim(),
       })).filter(c=>c.id && c.ja && c.en);
+      const existingIds = new Set(cards.map(c => c.id));
+      for (const card of UNIT7_CARDS) {
+        if (!existingIds.has(card.id)) cards.push(card);
+      }
 
       for (const c of cards) ensureStateForCard(c.id);
       saveProgress();

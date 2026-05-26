@@ -616,7 +616,19 @@
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
-    const CSV_URL = "./cards.csv";
+    const CSV_URL = "./cards-unit7.csv";
+    const UNIT7_CARDS = [
+      { unit:7, idx:1, id:"u07_001", ja:"時々バリの夢を見るんです。毎回リンディックを弾いています。", en:"I sometimes dream about Bali. In those dreams, I’m always playing the rindik.", ipa:"/aɪ ˈsʌmtaɪmz drim əˈbaʊt ˈbɑli. ɪn ðoʊz drimz, aɪm ˈɔlweɪz ˈpleɪɪŋ ðə ˈrɪndɪk/", audioUrl:"./kuyashi-audio/07/07-01.wav" },
+      { unit:7, idx:2, id:"u07_002", ja:"リンディックの記憶は、私にとって特別なのだと思います。", en:"I think my memories of the rindik are very special to me.", ipa:"/aɪ θɪŋk maɪ ˈmɛmɚiz əv ðə ˈrɪndɪk ɑr ˈvɛri ˈspɛʃəl tə mi/", audioUrl:"./kuyashi-audio/07/07-02.wav" },
+      { unit:7, idx:3, id:"u07_003", ja:"これからは自分が食べた後の食器をそれぞれ洗うことにしませんか？", en:"From now on, how about we each wash our own dishes after eating?", ipa:"/frəm naʊ ɑn, haʊ əˈbaʊt wi itʃ wɑʃ aʊr oʊn ˈdɪʃɪz ˈæftɚ ˈitɪŋ/", audioUrl:"./kuyashi-audio/07/07-03.wav" },
+      { unit:7, idx:4, id:"u07_004", ja:"今週の土曜日空いていますか？よかったら子供たちも一緒に川に遊びに行きませんか？", en:"Are you free this Saturday? If you’d like, why don’t we take the kids to the river together?", ipa:"/ɑr ju fri ðɪs ˈsætɚdeɪ? ɪf jud laɪk, waɪ doʊnt wi teɪk ðə kɪdz tə ðə ˈrɪvɚ təˈɡɛðɚ/", audioUrl:"./kuyashi-audio/07/07-04.wav" },
+      { unit:7, idx:5, id:"u07_005", ja:"この椅子を売りに出してください。もう使わないので。", en:"Please put this chair up for sale. We don’t use it anymore.", ipa:"/pliz pʊt ðɪs tʃɛr ʌp fər seɪl. wi doʊnt juz ɪt ˌɛniˈmɔr/", audioUrl:"./kuyashi-audio/07/07-05.wav" },
+      { unit:7, idx:6, id:"u07_006", ja:"お風呂掃除してお湯を入れておいてくれる？", en:"Could you clean the bathtub and fill it with hot water?", ipa:"/kʊd ju klin ðə ˈbæθtʌb ənd fɪl ɪt wɪð hɑt ˈwɔtɚ/", audioUrl:"./kuyashi-audio/07/07-06.wav" },
+      { unit:7, idx:7, id:"u07_007", ja:"あなたがお腹が空いてるなら、夕食の時間を早くしますよ。", en:"If you’re hungry, I can make dinner earlier than planned.", ipa:"/ɪf jʊr ˈhʌŋɡri, aɪ kən meɪk ˈdɪnɚ ˈɝliɚ ðæn plænd/", audioUrl:"./kuyashi-audio/07/07-07.wav" },
+      { unit:7, idx:8, id:"u07_008", ja:"今日は雨だから、ゴミを燃やすのは晴れてる時にして", en:"It’s raining today, so please wait until it clears up before burning the trash.", ipa:"/ɪts ˈreɪnɪŋ təˈdeɪ, soʊ pliz weɪt ənˈtɪl ɪt klɪrz ʌp bɪˈfɔr ˈbɝnɪŋ ðə træʃ/", audioUrl:"./kuyashi-audio/07/07-08.wav" },
+      { unit:7, idx:9, id:"u07_009", ja:"眠たいからもう寝ますね。", en:"I’m sleepy, so I’m going to bed now.", ipa:"/aɪm ˈslipi, soʊ aɪm ˈɡoʊɪŋ tə bɛd naʊ/", audioUrl:"./kuyashi-audio/07/07-09.wav" },
+      { unit:7, idx:10, id:"u07_010", ja:"忙しいところ悪いんだけど、Faxの使い方を教えて下さい。", en:"Sorry to bother you when you’re busy, but could you show me how to use the fax machine?", ipa:"/ˈsɑri tə ˈbɑðɚ ju wɛn jʊr ˈbɪzi, bət kʊd ju ʃoʊ mi haʊ tə juz ðə fæks məˈʃin/", audioUrl:"./kuyashi-audio/07/07-10.wav" }
+    ];
     const LS_AUDIO_KEY = "yoshiki_kuyashii_audio_settings_v1";
     const LS_MAIN_SETTINGS_KEY = "yoshiki_kuyashii_settings_v1";
     const LS_PROGRESS_KEY = "yoshiki_kuyashii_progress_v1";
@@ -1217,6 +1229,10 @@
         ipa:(r.ipa ?? "").trim(),
         audioUrl:(r.audioUrl ?? "").trim()
       })).filter(c => c.id && Number.isFinite(c.unit) && Number.isFinite(c.idx));
+      const existingIds = new Set(cards.map(c => c.id));
+      for (const card of UNIT7_CARDS) {
+        if (!existingIds.has(card.id)) cards.push(card);
+      }
 
       renderDeckTabs();
       buildPlaylist(false);
