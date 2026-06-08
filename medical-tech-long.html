@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>医療・テクノロジー1 長文</title>
+  <style>
+    :root{
+      --bg:#e9eef2;
+      --phone:#fbfcfd;
+      --ink:#15191d;
+      --muted:#69727c;
+      --line:rgba(21,25,29,.1);
+      --blue:#2563eb;
+      --cyan:#0891b2;
+      --green:#16a34a;
+      --amber:#d97706;
+      --red:#dc2626;
+      --soft:#f2f5f7;
+      --shadow:0 22px 60px rgba(18,30,44,.18);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ min-height:100%; }
+    body{
+      margin:0;
+      min-height:100svh;
+      display:flex;
+      justify-content:center;
+      background:
+        linear-gradient(180deg, #d8e4ed 0%, #eef3f6 46%, #dce7ed 100%);
+      color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP",sans-serif;
+    }
+
+    .stage{
+      width:100%;
+      min-height:100svh;
+      display:flex;
+      justify-content:center;
+      padding:10px 0;
+    }
+
+    .phone{
+      width:min(100vw,430px);
+      height:calc(100svh - 20px);
+      background:var(--phone);
+      border:1px solid rgba(255,255,255,.8);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:grid;
+      grid-template-rows:auto auto 1fr auto;
+    }
+
+    .top{
+      padding:16px 16px 12px;
+      background:
+        linear-gradient(135deg, rgba(37,99,235,.98), rgba(8,145,178,.94));
+      color:#fff;
+    }
+
+    .count{
+      width:max-content;
+      margin-left:auto;
+      margin-bottom:14px;
+      font-size:12px;
+      font-weight:900;
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.17);
+    }
+
+    .kicker{
+      margin:0 0 6px;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:.82;
+    }
+
+    h1{
+      margin:0;
+      font-size:24px;
+      line-height:1.15;
+      letter-spacing:0;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      padding:10px 12px;
+      background:#fff;
+      border-bottom:1px solid var(--line);
+    }
+
+    .stat{
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:8px 6px;
+      text-align:center;
+      background:var(--soft);
+    }
+
+    .stat b{
+      display:block;
+      font-size:17px;
+      line-height:1;
+    }
+
+    .stat span{
+      display:block;
+      margin-top:4px;
+      font-size:11px;
+      color:var(--muted);
+      font-weight:800;
+    }
+
+    .main{
+      min-height:0;
+      overflow:auto;
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      background:#f7f9fb;
+    }
+
+    .card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:8px;
+      box-shadow:0 10px 28px rgba(18,30,44,.08);
+      padding:14px;
+    }
+
+    .cardHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .speaker{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:900;
+    }
+
+    .statusBadge{
+      min-width:42px;
+      height:34px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--line);
+      background:var(--soft);
+      font-size:20px;
+    }
+
+    .sentence{
+      margin:0;
+      font-size:23px;
+      line-height:1.42;
+      font-weight:850;
+      letter-spacing:0;
+    }
+
+    .sentence.hidden{
+      min-height:98px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px dashed rgba(37,99,235,.28);
+      border-radius:8px;
+      background:linear-gradient(180deg, #f8fbff, #eef5ff);
+      color:#64748b;
+      font-size:15px;
+      font-weight:900;
+      text-align:center;
+      padding:18px;
+    }
+
+    .reveal{
+      width:100%;
+      min-height:46px;
+      margin-top:12px;
+      border:0;
+      border-radius:8px;
+      background:#e0f2fe;
+      color:#0f4f66;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .meaningPanel{
+      display:none;
+      margin-top:12px;
+      border:1px solid rgba(217,119,6,.28);
+      border-radius:8px;
+      background:#fff7ed;
+      padding:12px;
+    }
+
+    .meaningPanel.show{
+      display:block;
+    }
+
+    .meaningLabel{
+      margin:0 0 6px;
+      color:#9a5311;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .meaningText{
+      margin:0;
+      color:#231a11;
+      font-size:16px;
+      line-height:1.55;
+      font-weight:800;
+    }
+
+    .nextAudio{
+      width:100%;
+      min-height:48px;
+      margin-top:10px;
+      border:0;
+      border-radius:8px;
+      background:#15191d;
+      color:#fff;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .audioRow{
+      display:grid;
+      grid-template-columns:54px 1fr;
+      gap:10px;
+      align-items:center;
+      margin-top:14px;
+    }
+
+    .play{
+      width:54px;
+      height:54px;
+      border:0;
+      border-radius:999px;
+      background:var(--blue);
+      color:#fff;
+      font-size:20px;
+      font-weight:900;
+      box-shadow:0 10px 22px rgba(37,99,235,.24);
+    }
+
+    .play:disabled{
+      background:#cbd5e1;
+      box-shadow:none;
+      color:#64748b;
+    }
+
+    .audioNote{
+      min-width:0;
+      font-size:12px;
+      line-height:1.45;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .judge{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      margin-top:14px;
+    }
+
+    .judge button{
+      min-height:58px;
+      border:1px solid var(--line);
+      border-radius:8px;
+      background:#fff;
+      font-size:24px;
+      font-weight:900;
+      box-shadow:0 6px 14px rgba(18,30,44,.06);
+    }
+
+    .judge button.active.ok{ border-color:rgba(22,163,74,.55); background:rgba(22,163,74,.1); }
+    .judge button.active.mid{ border-color:rgba(217,119,6,.55); background:rgba(217,119,6,.12); }
+    .judge button.active.ng{ border-color:rgba(220,38,38,.55); background:rgba(220,38,38,.1); }
+
+    .list{
+      display:grid;
+      gap:8px;
+    }
+
+    .item{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:8px;
+      padding:10px;
+      text-align:left;
+      display:grid;
+      grid-template-columns:32px 1fr 34px;
+      align-items:center;
+      gap:8px;
+    }
+
+    .item.active{
+      outline:2px solid rgba(37,99,235,.35);
+      border-color:rgba(37,99,235,.45);
+    }
+
+    .num{
+      width:30px;
+      height:30px;
+      border-radius:999px;
+      background:var(--soft);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .preview{
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      font-size:13px;
+      font-weight:750;
+    }
+
+    .mark{
+      text-align:center;
+      font-size:18px;
+    }
+
+    .bottom{
+      padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+      background:#fff;
+      border-top:1px solid var(--line);
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
+    .move{
+      border:0;
+      border-radius:8px;
+      background:#15191d;
+      color:#fff;
+      padding:13px 12px;
+      font-weight:900;
+      font-size:15px;
+    }
+
+    .move.secondary{
+      background:#e9eef2;
+      color:#15191d;
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <main class="phone">
+      <header class="top">
+        <div class="count" id="counter">1 / 14</div>
+        <p class="kicker">MEDICAL & TECHNOLOGY 1</p>
+        <h1>医療・テクノロジー1：長文</h1>
+      </header>
+
+      <section class="stats" aria-label="学習状況">
+        <div class="stat"><b id="okCount">0</b><span>⭕️</span></div>
+        <div class="stat"><b id="midCount">0</b><span>🔺</span></div>
+        <div class="stat"><b id="ngCount">0</b><span>❌</span></div>
+      </section>
+
+      <section class="main">
+        <article class="card">
+          <div class="cardHead">
+            <div class="speaker" id="speaker">Doctor</div>
+            <div class="statusBadge" id="currentMark">未</div>
+          </div>
+          <p class="sentence" id="sentence"></p>
+          <button class="reveal" id="revealBtn" type="button">英文を表示</button>
+          <div class="meaningPanel" id="meaningPanel">
+            <p class="meaningLabel">日本語訳</p>
+            <p class="meaningText" id="meaningText"></p>
+            <button class="nextAudio" id="nextAudioBtn" type="button">次の音声を再生</button>
+          </div>
+          <div class="audioRow">
+            <button class="play" id="playBtn" type="button" aria-label="音声を再生">▶</button>
+            <div class="audioNote" id="audioNote">音声ファイルを追加すると再生できます。</div>
+          </div>
+          <div class="judge">
+            <button class="ok" type="button" data-status="ok">⭕️</button>
+            <button class="mid" type="button" data-status="mid">🔺</button>
+            <button class="ng" type="button" data-status="ng">❌</button>
+          </div>
+        </article>
+
+        <div class="list" id="list" aria-label="文リスト"></div>
+      </section>
+
+      <footer class="bottom">
+        <button class="move secondary" id="prevBtn" type="button">前へ</button>
+        <button class="move" id="nextBtn" type="button">次へ</button>
+      </footer>
+    </main>
+  </div>
+
+  <audio id="audio"></audio>
+
+  <script>
+    const STORAGE_KEY = "medical-tech-long-1-status";
+    const lines = [
+      { speaker:"Doctor", text:"What seems to be the problem, Mrs. Jones?", ja:"どこが悪いのですか、ジョーンズさん。", audio:"./iryo_natural_blocks/01_What_seems_to_be_the_problem_Mrs_Jones.mp3" },
+      { speaker:"Mrs. Jones", text:"Recently, Doctor, I’ve become prone to getting headaches.", ja:"先生、最近、頭痛になりやすいんです。", audio:"./iryo_natural_blocks/02_Recently_Doctor_Ive_become_prone_to_getting_headaches.mp3" },
+      { speaker:"Mrs. Jones", text:"Sometimes they wear off quite quickly, but at other times they linger all day.", ja:"すぐに治るときもあるのですが、一日中続くときもあります。", audio:"./iryo_natural_blocks/03_Sometimes_they_wear_off_quite_quickly_but_at_other_time.mp3" },
+      { speaker:"Doctor", text:"I see. Let me ask you a few questions. Do you find yourself vomiting or becoming dizzy?", ja:"分かりました。いくつか質問をさせてください。吐いたり、めまいがしたりしますか。", audio:"./iryo_natural_blocks/04_I_see_Let_me_ask_you_a_few_questions_Do_you_find_yourse.mp3" },
+      { speaker:"Mrs. Jones", text:"No. It’s more like a severe pain all around my head.", ja:"いいえ。それよりも頭全体に激痛が走る感じです。", audio:"./iryo_natural_blocks/05_No_Its_more_like_a_severe_pain_all_around_my_head.mp3" },
+      { speaker:"Doctor", text:"It’s most likely you are suffering from tension headaches.", ja:"緊張性頭痛で苦しまれている可能性が一番高いですね。", audio:"./iryo_natural_blocks/06_Its_most_likely_you_are_suffering_from_tension_headache.mp3" },
+      { speaker:"Doctor", text:"To be honest, no one knows what causes them, although some speculate that the problem is chemical.", ja:"正直に申しますと、その原因は分かっていないのです。もっとも、問題は化学作用によるものだと推測する人もいます。", audio:"./iryo_natural_blocks/07_To_be_honest_no_one_knows_what_causes_them_although_som.mp3" },
+      { speaker:"Doctor", text:"Diverse factors can trigger this kind of headache. Luckily, they are usually harmless, although painful, of course.", ja:"さまざまな要因がこの種の頭痛を誘発し得ます。幸いにして、普通は害はありません。もちろん、痛みはありますが。", audio:"./iryo_natural_blocks/08_Diverse_factors_can_trigger_this_kind_of_headache_Lucki.mp3" },
+      { speaker:"Mrs. Jones", text:"Could it be an allergy?", ja:"アレルギーの可能性はありますか。", audio:"./iryo_natural_blocks/09_Could_it_be_an_allergy.mp3" },
+      { speaker:"Doctor", text:"It might be. Sometimes chocolate or cheese can bring on these headaches, though it is more likely to be stress or exhaustion.", ja:"あり得ますね。チョコレートやチーズがこういった頭痛を引き起こすことがあります。もっとも、ストレスや極度の疲労による可能性の方が高いのですが。", audio:"./iryo_natural_blocks/10_It_might_be_Sometimes_chocolate_or_cheese_can_bring_on.mp3" },
+      { speaker:"Mrs. Jones", text:"I have been having difficulty sleeping and I am very busy at work.", ja:"最近よく眠れないし、仕事がとても忙しいんです。", audio:"./iryo_natural_blocks/11_I_have_been_having_difficulty_sleeping_and_I_am_very_bu.mp3" },
+      { speaker:"Doctor", text:"I’ll prescribe some painkillers and sleeping pills for you.", ja:"痛み止めと睡眠薬を処方しておきましょう。", audio:"./iryo_natural_blocks/12_Ill_prescribe_some_painkillers_and_sleeping_pills_for_y.mp3" },
+      { speaker:"Doctor", text:"I would also advise you to abstain from alcohol and tobacco, as these can aggravate the pain.", ja:"それからお酒とたばこを控えることを勧めます。痛みを悪化させる可能性がありますからね。", audio:"./iryo_natural_blocks/13_I_would_also_advise_you_to_abstain_from_alcohol_and_tob.mp3" },
+      { speaker:"Doctor", text:"Overall, try and relax. You might also find getting neck massages helpful. If these do not help, come back and see me again.", ja:"概してリラックスするように努めてください。首のマッサージをしてもらうのも役に立つかもしれませんね。もしそれでも効果がなければ、また来て診察を受けてください。", audio:"./iryo_natural_blocks/14_Overall_try_and_relax_You_might_also_find_getting_neck.mp3" }
+    ];
+
+    const marks = { ok:"⭕️", mid:"🔺", ng:"❌" };
+    const labels = { ok:"覚えた", mid:"もう少し", ng:"未定着" };
+    let index = 0;
+    let status = loadStatus();
+
+    const sentence = document.getElementById("sentence");
+    const revealBtn = document.getElementById("revealBtn");
+    const meaningPanel = document.getElementById("meaningPanel");
+    const meaningText = document.getElementById("meaningText");
+    const nextAudioBtn = document.getElementById("nextAudioBtn");
+    const speaker = document.getElementById("speaker");
+    const counter = document.getElementById("counter");
+    const currentMark = document.getElementById("currentMark");
+    const audio = document.getElementById("audio");
+    const playBtn = document.getElementById("playBtn");
+    const audioNote = document.getElementById("audioNote");
+    const list = document.getElementById("list");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const judgeButtons = Array.from(document.querySelectorAll(".judge button"));
+    let isTextVisible = false;
+    let isMeaningVisible = false;
+
+    function loadStatus(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      }catch{
+        return {};
+      }
+    }
+
+    function saveStatus(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(status));
+    }
+
+    function setIndex(next){
+      index = Math.max(0, Math.min(lines.length - 1, next));
+      isTextVisible = false;
+      isMeaningVisible = false;
+      render();
+    }
+
+    function setStatus(value){
+      status[index] = value;
+      saveStatus();
+      if(value === "ok"){
+        if(index < lines.length - 1) index += 1;
+        isTextVisible = false;
+        isMeaningVisible = false;
+      }else{
+        isTextVisible = true;
+        isMeaningVisible = true;
+      }
+      render();
+    }
+
+    function playCurrentAudio(){
+      if(!audio.src) return;
+      audio.currentTime = 0;
+      audio.play();
+    }
+
+    function goNextAndPlay(){
+      if(index < lines.length - 1){
+        index += 1;
+        isTextVisible = false;
+        isMeaningVisible = false;
+        render();
+        playCurrentAudio();
+      }
+    }
+
+    function render(){
+      const line = lines[index];
+      const current = status[index];
+      speaker.textContent = line.speaker;
+      sentence.textContent = isTextVisible ? line.text : "音声を聞いて、思い出してから表示";
+      sentence.classList.toggle("hidden", !isTextVisible);
+      revealBtn.textContent = isTextVisible ? "英文を隠す" : "英文を表示";
+      meaningText.textContent = line.ja;
+      meaningPanel.classList.toggle("show", isMeaningVisible);
+      nextAudioBtn.disabled = index === lines.length - 1;
+      nextAudioBtn.textContent = index === lines.length - 1 ? "最後の音声です" : "次の音声を再生";
+      counter.textContent = `${index + 1} / ${lines.length}`;
+      currentMark.textContent = current ? marks[current] : "未";
+      audio.src = line.audio || "";
+      playBtn.disabled = !line.audio;
+      audioNote.textContent = line.audio ? `${labels[current] || "未判定"} ・ 音声あり` : "音声ファイルを追加すると再生できます。";
+      prevBtn.disabled = index === 0;
+      nextBtn.disabled = index === lines.length - 1;
+
+      judgeButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.status === current);
+      });
+
+      renderStats();
+      renderList();
+    }
+
+    function renderStats(){
+      document.getElementById("okCount").textContent = Object.values(status).filter(v => v === "ok").length;
+      document.getElementById("midCount").textContent = Object.values(status).filter(v => v === "mid").length;
+      document.getElementById("ngCount").textContent = Object.values(status).filter(v => v === "ng").length;
+    }
+
+    function renderList(){
+      list.innerHTML = "";
+      lines.forEach((line, i) => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = `item${i === index ? " active" : ""}`;
+        item.innerHTML = `
+          <span class="num">${i + 1}</span>
+          <span class="preview">${line.text}</span>
+          <span class="mark">${status[i] ? marks[status[i]] : "・"}</span>
+        `;
+        item.addEventListener("click", () => setIndex(i));
+        list.appendChild(item);
+      });
+    }
+
+    playBtn.addEventListener("click", () => {
+      playCurrentAudio();
+    });
+
+    revealBtn.addEventListener("click", () => {
+      isTextVisible = !isTextVisible;
+      render();
+    });
+
+    judgeButtons.forEach((button) => {
+      button.addEventListener("click", () => setStatus(button.dataset.status));
+    });
+
+    prevBtn.addEventListener("click", () => setIndex(index - 1));
+    nextBtn.addEventListener("click", () => setIndex(index + 1));
+    nextAudioBtn.addEventListener("click", goNextAndPlay);
+
+    render();
+  </script>
+</body>
+</html>
