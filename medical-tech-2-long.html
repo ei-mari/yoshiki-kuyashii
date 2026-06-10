@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>医療・テクノロジー1 長文</title>
+  <title>医療・テクノロジー2 長文</title>
   <style>
     :root{
       --bg:#e9eef2;
@@ -510,10 +510,10 @@
             <a class="topLink" href="./index.html">TOP</a>
             <button class="reviewToggle" id="reviewToggle" type="button">REVIEW</button>
           </div>
-          <div class="count" id="counter">1 / 14</div>
+          <div class="count" id="counter">1 / 15</div>
         </div>
-        <p class="kicker">MEDICAL & TECHNOLOGY 1</p>
-        <h1>医療・テクノロジー1</h1>
+        <p class="kicker">MEDICAL & TECHNOLOGY 2</p>
+        <h1>医療・テクノロジー2</h1>
       </header>
 
       <section class="reviewPanel" id="reviewPanel" aria-label="復習モード">
@@ -579,22 +579,23 @@
       }
     });
 
-    const STORAGE_KEY = "medical-tech-long-1-status";
+    const STORAGE_KEY = "medical-tech-long-2-status";
     const lines = [
-      { speaker:"Doctor", text:"What seems to be the problem, Mrs. Jones?", ja:"どこが悪いのですか、ジョーンズさん。", audio:"./iryo_natural_blocks/01_What_seems_to_be_the_problem_Mrs_Jones.mp3" },
-      { speaker:"Mrs. Jones", text:"Recently, Doctor, I’ve become prone to getting headaches.", ja:"先生、最近、頭痛になりやすいんです。", audio:"./iryo_natural_blocks/02_Recently_Doctor_Ive_become_prone_to_getting_headaches.mp3" },
-      { speaker:"Mrs. Jones", text:"Sometimes they wear off quite quickly, but at other times they linger all day.", ja:"すぐに治るときもあるのですが、一日中続くときもあります。", audio:"./iryo_natural_blocks/03_Sometimes_they_wear_off_quite_quickly_but_at_other_time.mp3" },
-      { speaker:"Doctor", text:"I see. Let me ask you a few questions. Do you find yourself vomiting or becoming dizzy?", ja:"分かりました。いくつか質問をさせてください。吐いたり、めまいがしたりしますか。", audio:"./iryo_natural_blocks/04_I_see_Let_me_ask_you_a_few_questions_Do_you_find_yourse.mp3" },
-      { speaker:"Mrs. Jones", text:"No. It’s more like a severe pain all around my head.", ja:"いいえ。それよりも頭全体に激痛が走る感じです。", audio:"./iryo_natural_blocks/05_No_Its_more_like_a_severe_pain_all_around_my_head.mp3" },
-      { speaker:"Doctor", text:"It’s most likely you are suffering from tension headaches.", ja:"緊張性頭痛で苦しまれている可能性が一番高いですね。", audio:"./iryo_natural_blocks/06_Its_most_likely_you_are_suffering_from_tension_headache.mp3" },
-      { speaker:"Doctor", text:"To be honest, no one knows what causes them, although some speculate that the problem is chemical.", ja:"正直に申しますと、その原因は分かっていないのです。もっとも、問題は化学作用によるものだと推測する人もいます。", audio:"./iryo_natural_blocks/07_To_be_honest_no_one_knows_what_causes_them_although_som.mp3" },
-      { speaker:"Doctor", text:"Diverse factors can trigger this kind of headache. Luckily, they are usually harmless, although painful, of course.", ja:"さまざまな要因がこの種の頭痛を誘発し得ます。幸いにして、普通は害はありません。もちろん、痛みはありますが。", audio:"./iryo_natural_blocks/08_Diverse_factors_can_trigger_this_kind_of_headache_Lucki.mp3" },
-      { speaker:"Mrs. Jones", text:"Could it be an allergy?", ja:"アレルギーの可能性はありますか。", audio:"./iryo_natural_blocks/09_Could_it_be_an_allergy.mp3" },
-      { speaker:"Doctor", text:"It might be. Sometimes chocolate or cheese can bring on these headaches, though it is more likely to be stress or exhaustion.", ja:"あり得ますね。チョコレートやチーズがこういった頭痛を引き起こすことがあります。もっとも、ストレスや極度の疲労による可能性の方が高いのですが。", audio:"./iryo_natural_blocks/10_It_might_be_Sometimes_chocolate_or_cheese_can_bring_on.mp3" },
-      { speaker:"Mrs. Jones", text:"I have been having difficulty sleeping and I am very busy at work.", ja:"最近よく眠れないし、仕事がとても忙しいんです。", audio:"./iryo_natural_blocks/11_I_have_been_having_difficulty_sleeping_and_I_am_very_bu.mp3" },
-      { speaker:"Doctor", text:"I’ll prescribe some painkillers and sleeping pills for you.", ja:"痛み止めと睡眠薬を処方しておきましょう。", audio:"./iryo_natural_blocks/12_Ill_prescribe_some_painkillers_and_sleeping_pills_for_y.mp3" },
-      { speaker:"Doctor", text:"I would also advise you to abstain from alcohol and tobacco, as these can aggravate the pain.", ja:"それからお酒とたばこを控えることを勧めます。痛みを悪化させる可能性がありますからね。", audio:"./iryo_natural_blocks/13_I_would_also_advise_you_to_abstain_from_alcohol_and_tob.mp3" },
-      { speaker:"Doctor", text:"Overall, try and relax. You might also find getting neck massages helpful. If these do not help, come back and see me again.", ja:"概してリラックスするように努めてください。首のマッサージをしてもらうのも役に立つかもしれませんね。もしそれでも効果がなければ、また来て診察を受けてください。", audio:"./iryo_natural_blocks/14_Overall_try_and_relax_You_might_also_find_getting_neck.mp3" }
+      { speaker:"A", text:"Ross, you are studying pharmacy, right?", ja:"ロス、あなたは薬学を勉強しているんですよね。", audio:"./iryo_tech2_audio/01_Ross_you_are_studying_pharmacy_right.mp3" },
+      { speaker:"A", text:"I have a question. Recently, eating yogurt has become quite trendy among consumers.", ja:"質問があります。最近、消費者の間でヨーグルトを食べることがかなり流行しています。", audio:"./iryo_tech2_audio/02_I_have_a_question_Recently_eating_yogurt.mp3" },
+      { speaker:"A", text:"Some companies advertise that their yogurts endow you with more vitality and help you with your digestion. Are these claims true?", ja:"自社のヨーグルトは活力を高め、消化を助けると宣伝している会社もあります。こうした主張は本当ですか。", audio:"./iryo_tech2_audio/03_Some_companies_advertise_claims_true.mp3" },
+      { speaker:"Ross", text:"Actually, the evidence is a bit contradictory.", ja:"実は、証拠は少し矛盾しています。", audio:"./iryo_tech2_audio/04_Actually_the_evidence_is_contradictory.mp3" },
+      { speaker:"Ross", text:"Some experts are saying these companies are exaggerating and that it is difficult to find any tangible evidence that yogurt makes you healthier.", ja:"こうした会社は誇張しており、ヨーグルトが健康にするという明確な証拠を見つけるのは難しいと言う専門家もいます。", audio:"./iryo_tech2_audio/05_Some_experts_are_saying_companies_exaggerating.mp3" },
+      { speaker:"A", text:"So it’s really a lot of fuss about nothing, then?", ja:"では、実際には大したことではないのに大騒ぎしているだけなのですか。", audio:"./iryo_tech2_audio/06_Fuss_about_nothing_then.mp3" },
+      { speaker:"Ross", text:"Well, one recent study has shown that yogurt can help old people who take antibiotics.", ja:"そうですね、最近のある研究では、ヨーグルトは抗生物質を服用している高齢者に役立つことが示されています。", audio:"./iryo_tech2_audio/07_Yogurt_can_help_old_people_antibiotics.mp3" },
+      { speaker:"Ross", text:"One of the attendant hazards of taking antibiotics is that it can cause an upset stomach.", ja:"抗生物質を服用することに伴う危険の一つは、胃の不調を引き起こすことです。", audio:"./iryo_tech2_audio/08_Attendant_hazards_of_taking_antibiotics.mp3" },
+      { speaker:"Ross", text:"This is because antibiotics have a very drastic effect, destroying good as well as harmful bacteria in the stomach.", ja:"これは、抗生物質が非常に強い作用を持ち、胃の中の有害な細菌だけでなく良い細菌も破壊してしまうからです。", audio:"./iryo_tech2_audio/09_Antibiotics_have_a_drastic_effect.mp3" },
+      { speaker:"A", text:"What does this have to do with yogurt?", ja:"それはヨーグルトとどんな関係があるのですか。", audio:"./iryo_tech2_audio/10_What_does_this_have_to_do_with_yogurt.mp3" },
+      { speaker:"Ross", text:"Some researchers showed that eating yogurt can replace the good bacteria destroyed by antibiotics.", ja:"ヨーグルトを食べることで、抗生物質によって破壊された良い細菌を補えることを示した研究者もいます。", audio:"./iryo_tech2_audio/11_Eating_yogurt_can_replace_good_bacteria.mp3" },
+      { speaker:"Ross", text:"Moreover, as a form of treatment, it is relatively inexpensive.", ja:"さらに、治療法の一つとしては比較的安価です。", audio:"./iryo_tech2_audio/12_Relatively_inexpensive_treatment.mp3" },
+      { speaker:"A", text:"So it is good for you?", ja:"では、体に良いということですか。", audio:"./iryo_tech2_audio/13_So_it_is_good_for_you.mp3" },
+      { speaker:"Ross", text:"It can complement the diet of old people.", ja:"高齢者の食事を補うことはできます。", audio:"./iryo_tech2_audio/14_Complement_the_diet_of_old_people.mp3" },
+      { speaker:"Ross", text:"But it is probably irrelevant to healthy young people, who can fight off most illnesses without its help.", ja:"しかし、ヨーグルトの助けがなくてもほとんどの病気を撃退できる健康な若者には、おそらく関係がありません。", audio:"./iryo_tech2_audio/15_Irrelevant_to_healthy_young_people.mp3" }
     ];
 
     const marks = { ok:"⭕️", mid:"🔺", ng:"❌" };

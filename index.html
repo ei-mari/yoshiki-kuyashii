@@ -97,6 +97,58 @@
       line-height:1.8;
       font-size:15px;
     }
+    .categoryPanel{
+      background:rgba(255,255,255,.9);
+      border:1px solid rgba(255,255,255,.56);
+      border-radius:24px;
+      padding:16px;
+      box-shadow:var(--shadow2);
+      display:grid;
+      gap:12px;
+    }
+    .categoryHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .categoryTitle{
+      margin:0;
+      font-size:15px;
+      font-weight:900;
+      color:var(--text);
+    }
+    .categoryNote{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+    }
+    .categoryButtons{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .categoryBtn{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      min-height:62px;
+      padding:14px;
+      border-radius:8px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--text);
+      text-decoration:none;
+      box-shadow:0 8px 18px rgba(15,23,42,.08);
+      font-weight:900;
+    }
+    .categoryBtn span{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+    }
     .grid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -104,6 +156,7 @@
     }
     @media (max-width:860px){
       .grid{ grid-template-columns:1fr; }
+      .categoryButtons{ grid-template-columns:1fr; }
       .hero{ padding:22px; border-radius:28px; }
     }
     .card{
@@ -217,78 +270,117 @@
       font-weight:800;
       border-bottom:1px solid rgba(255,255,255,.24);
     }
+    body.locked .wrap{ display:none; }
+    .lockScreen{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:linear-gradient(160deg, #0f172a, #164e63);
+      z-index:20;
+    }
+    body.locked .lockScreen{ display:flex; }
+    .lockBox{
+      width:min(100%, 390px);
+      background:#fff;
+      border-radius:18px;
+      padding:22px;
+      box-shadow:0 24px 70px rgba(0,0,0,.28);
+    }
+    .lockBox h2{
+      margin:0 0 8px;
+      font-size:24px;
+      letter-spacing:0;
+      font-family:inherit;
+    }
+    .lockBox p{
+      margin:0 0 14px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+      font-weight:700;
+    }
+    .lockBox input{
+      width:100%;
+      height:48px;
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:0 12px;
+      font-size:16px;
+      font-weight:800;
+    }
+    .lockBox button{
+      width:100%;
+      height:48px;
+      margin-top:10px;
+      border:0;
+      border-radius:8px;
+      background:#101114;
+      color:#fff;
+      font-size:15px;
+      font-weight:900;
+    }
+    .lockError{
+      min-height:20px;
+      margin-top:8px;
+      color:#dc2626;
+      font-size:12px;
+      font-weight:800;
+    }
   </style>
 </head>
-<body>
+<body class="locked">
+  <section class="lockScreen" aria-label="パスワード入力">
+    <form class="lockBox" id="lockForm">
+      <h2>パスワード</h2>
+      <p>学習ページを見るにはパスワードを入力してください。</p>
+      <input id="lockInput" type="password" autocomplete="current-password" inputmode="text" />
+      <button type="submit">開く</button>
+      <div class="lockError" id="lockError"></div>
+    </form>
+  </section>
   <div class="wrap">
     <main class="shell">
       <section class="hero">
         <p class="eyebrow">HOME</p>
-        <h1>学習ページを選ぶ</h1>
+        <h1>リスニング問題</h1>
         <p class="lede">
-          ここを入口にして、用途の違う2つの学習ページへ降ります。
-          「悔しいフレーズ」と「50 QUESTIONS」は同じ階層ではなく、home から分かれる構造にしました。
+          文単準１級の長文音声を、1文ずつ聞いて判定できます。
         </p>
       </section>
 
-      <section class="grid" aria-label="学習ページ">
-        <a class="card kuyashi" href="./kuyashi.html">
-          <div>
-            <div class="cardMeta">
-              <span class="badge">PHRASES</span>
-              <span class="mini">復習 / 一覧 / 音声</span>
-            </div>
-            <h2 class="cardTitle">悔しいフレーズ</h2>
-            <p class="cardText">
-              ふだんのフレーズ学習はこちら。カード、一覧、星、学習状態をまとめて扱います。
-            </p>
-          </div>
-          <div class="cardFoot">
-            <span class="mini">一覧からすぐ確認したいときに使うページ</span>
-            <span class="action">開く →</span>
-          </div>
-        </a>
-
-        <a class="card questions" href="./50-questions.html">
-          <div>
-            <div class="cardMeta">
-              <span class="badge">QUESTIONS</span>
-            <span class="mini">暗唱 / カード / UNIT</span>
-          </div>
-            <h2 class="cardTitle">MEMORIZE SUPPORTER</h2>
-            <p class="cardText">
-              いま編集している暗唱アプリはこちら。UNIT と QUESTION を分けて、穴埋めとカードで回せます。
-            </p>
-          </div>
-          <div class="cardFoot">
-            <span class="mini">HOME から入るメインの暗唱ページ</span>
-            <span class="action">開く →</span>
-          </div>
-        </a>
-
-        <a class="card medical" href="./medical-tech-long.html">
-          <div>
-            <div class="cardMeta">
-              <span class="badge">LONG AUDIO</span>
-              <span class="mini">⭕️ / 🔺 / ❌</span>
-            </div>
-            <h2 class="cardTitle">医療・テクノロジー1：長文</h2>
-            <p class="cardText">
-              1文ずつ音声を聞いて、覚えたかどうかを判定するスマホ固定の学習ページです。
-            </p>
-          </div>
-          <div class="cardFoot">
-            <span class="mini">音声ファイルは後から追加できます</span>
-            <span class="action">開く →</span>
-          </div>
-        </a>
+      <section class="categoryPanel" aria-label="カテゴリ選択">
+        <div class="categoryHead">
+          <h2 class="categoryTitle">医療・テクノロジー</h2>
+          <span class="categoryNote">長文音声トレーナー</span>
+        </div>
+        <div class="categoryButtons">
+          <a class="categoryBtn" href="./medical-tech-long.html">MT1 <span>頭痛 / 診察</span></a>
+          <a class="categoryBtn" href="./medical-tech-2-long.html">MT2 <span>ヨーグルト / 抗生物質</span></a>
+        </div>
       </section>
 
       <div class="foot">
-        <span>ローカルではそのまま動作します。</span>
-        <a href="./kuyashi.html">悔しいフレーズへ</a>
+        <span>パスワード入力後に学習できます。</span>
       </div>
     </main>
   </div>
+  <script>
+    const PAGE_PASSWORD = "ys2026";
+    const AUTH_KEY = "mt-simple-password-ok";
+    const unlock = () => document.body.classList.remove("locked");
+    if(localStorage.getItem(AUTH_KEY) === "yes") unlock();
+    document.getElementById("lockForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      if(document.getElementById("lockInput").value === PAGE_PASSWORD){
+        localStorage.setItem(AUTH_KEY, "yes");
+        unlock();
+      }else{
+        document.getElementById("lockError").textContent = "パスワードが違います。";
+      }
+    });
+  </script>
 </body>
 </html>
