@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Q01 Please introduce yourself. | Speaking Practice</title>
+  <style>
+    :root{
+      --ink:#1e1512;
+      --paper:#fffdf8;
+      --yellow:#f3ef36;
+      --yellow2:#fff36a;
+      --gray:#efefed;
+      --line:#201815;
+      --muted:rgba(30,21,18,.62);
+    }
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP",sans-serif;
+      background:#dedbd1;
+    }
+    button, input{ font:inherit; }
+    .page{
+      position:relative;
+      width:390px;
+      max-width:100%;
+      min-height:100vh;
+      margin:0 auto;
+      padding:18px 10px 28px 32px;
+      overflow:hidden;
+      background:
+        linear-gradient(90deg, var(--ink) 0 22px, transparent 22px),
+        repeating-linear-gradient(0deg, rgba(30,21,18,.045) 0 1px, transparent 1px 34px),
+        var(--paper);
+      box-shadow:0 0 0 1px rgba(30,21,18,.12), 0 24px 70px rgba(30,21,18,.20);
+    }
+    .rule{
+      border-top:2px solid var(--line);
+      border-bottom:2px solid var(--line);
+      padding:10px 0;
+    }
+    .topline{
+      display:flex;
+      align-items:flex-start;
+      justify-content:flex-start;
+      flex-direction:column;
+      gap:8px;
+      font-weight:900;
+      letter-spacing:.02em;
+      font-size:14px;
+      line-height:1.35;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      min-height:34px;
+      padding:5px 11px;
+      background:var(--yellow);
+      border:2px solid var(--line);
+      font-size:13px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+    .hero{
+      position:relative;
+      min-height:520px;
+      display:grid;
+      align-items:start;
+      overflow:hidden;
+      border-bottom:2px solid var(--line);
+      padding:28px 0 18px;
+    }
+    .mega{
+      position:absolute;
+      inset:74px auto auto -8px;
+      z-index:0;
+      font-weight:950;
+      font-size:340px;
+      line-height:.78;
+      letter-spacing:-.08em;
+      color:var(--yellow);
+      transform:skew(-3deg);
+      user-select:none;
+    }
+    .heroText{
+      position:relative;
+      z-index:1;
+      width:100%;
+      margin:0 auto;
+      text-align:center;
+      display:grid;
+      justify-items:center;
+      gap:22px;
+    }
+    h1{
+      margin:0;
+      font-size:56px;
+      line-height:.96;
+      letter-spacing:0;
+      font-weight:950;
+    }
+    .question{
+      display:inline-block;
+      background:var(--gray);
+      border:2px solid rgba(30,21,18,.15);
+      padding:6px 10px 7px;
+      font-weight:950;
+      font-size:21px;
+    }
+    .handwrite{
+      max-width:330px;
+      margin:0;
+      transform:rotate(-2deg);
+      font-family:"Bradley Hand","Comic Sans MS","Segoe Print",cursive;
+      font-size:34px;
+      line-height:1.12;
+      font-weight:900;
+      text-align:left;
+    }
+    .pen{
+      position:absolute;
+      right:-155px;
+      bottom:30px;
+      width:350px;
+      height:180px;
+      z-index:2;
+      opacity:.36;
+      transform:rotate(-18deg);
+      pointer-events:none;
+    }
+    .pen:before{
+      content:"";
+      position:absolute;
+      right:0;
+      top:72px;
+      width:100%;
+      height:42px;
+      background:#fff;
+      border:5px solid var(--line);
+      transform:skewX(-28deg);
+    }
+    .pen:after{
+      content:"";
+      position:absolute;
+      left:0;
+      top:57px;
+      width:86px;
+      height:72px;
+      background:var(--paper);
+      border:5px solid var(--line);
+      clip-path:polygon(0 50%, 100% 0, 100% 100%);
+    }
+    .step{
+      margin-top:18px;
+      border:2px solid var(--line);
+      display:grid;
+      grid-template-columns:1fr;
+      align-items:center;
+      gap:12px;
+      padding:14px;
+      background:#fff;
+    }
+    .stepYellow{
+      background:var(--yellow);
+    }
+    .stepKicker{
+      display:inline-block;
+      width:max-content;
+      background:var(--ink);
+      color:#fff;
+      padding:5px 9px 6px;
+      font-size:13px;
+      line-height:1;
+      font-weight:950;
+      letter-spacing:.08em;
+    }
+    .step h2{
+      margin:0;
+      font-size:34px;
+      line-height:1.15;
+      letter-spacing:0;
+      font-weight:950;
+    }
+    .step p{
+      margin:8px 0 0;
+      font-weight:850;
+      font-size:13px;
+      line-height:1.55;
+    }
+    .speedButtons{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:8px;
+      margin-top:12px;
+    }
+    .speedBtn{
+      min-height:46px;
+      border:2px solid var(--line);
+      background:var(--ink);
+      color:var(--yellow);
+      font-size:16px;
+      font-weight:950;
+      cursor:pointer;
+      box-shadow:4px 4px 0 rgba(30,21,18,.16);
+    }
+    .step .fullScript{
+      margin:14px 0 0;
+      border:2px solid rgba(30,21,18,.24);
+      background:#fffdf8;
+      padding:12px;
+      font-size:20px;
+      line-height:1.62;
+      font-weight:850;
+    }
+    audio{
+      width:100%;
+      margin-top:16px;
+      display:block;
+      accent-color:var(--ink);
+    }
+    .lines{
+      display:grid;
+      gap:10px;
+      margin-top:18px;
+    }
+    .chunk{
+      border:2px solid rgba(30,21,18,.16);
+      background:#fffdf8;
+      padding:11px 12px;
+    }
+    .chunkText{
+      font-size:18px;
+      line-height:1.38;
+      font-weight:850;
+    }
+    .chunk audio{
+      margin-top:10px;
+    }
+    .chunkDetails{
+      margin-top:10px;
+      border-top:2px solid rgba(30,21,18,.12);
+      padding-top:8px;
+    }
+    .chunkDetails + .chunkDetails{
+      margin-top:8px;
+      border-top:0;
+      padding-top:0;
+    }
+    .chunkDetails summary{
+      cursor:pointer;
+      width:max-content;
+      max-width:100%;
+      background:var(--yellow);
+      border:2px solid rgba(30,21,18,.18);
+      padding:6px 9px;
+      font-size:13px;
+      line-height:1.2;
+      font-weight:950;
+    }
+    .chunkMeta{
+      display:grid;
+      gap:6px;
+      margin-top:9px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+      font-weight:800;
+    }
+    .chunkMeta b{
+      color:var(--ink);
+    }
+    .answerPrompt{
+      margin:2px 0 0;
+      border:2px solid var(--line);
+      background:var(--gray);
+      padding:12px;
+      font-size:18px;
+      line-height:1.35;
+      font-weight:950;
+    }
+    .hintList{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+    .hint{
+      border:2px solid rgba(30,21,18,.18);
+      background:#fffdf8;
+    }
+    .hintToggle{
+      width:100%;
+      min-height:54px;
+      border:0;
+      background:var(--yellow);
+      color:var(--ink);
+      padding:10px 12px;
+      text-align:left;
+      font-size:16px;
+      line-height:1.35;
+      font-weight:950;
+      cursor:pointer;
+    }
+    .hintAnswer{
+      display:none;
+      border-top:2px solid rgba(30,21,18,.18);
+      padding:12px;
+      font-size:18px;
+      line-height:1.45;
+      font-weight:850;
+    }
+    .hint.open .hintAnswer{
+      display:block;
+    }
+    .footerNote{
+      margin:18px 0 0;
+      border-top:3px solid var(--line);
+      padding-top:14px;
+      color:var(--muted);
+      font-weight:850;
+      line-height:1.7;
+    }
+    @media (max-width:390px){
+      .page{ width:100%; }
+      h1{ font-size:14.4vw; }
+      .handwrite{ font-size:8.7vw; }
+      .step h2{ font-size:8.7vw; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="rule">
+      <div class="topline">
+        <div>How to Express Yourself by Answering 50 Questions in Simple English</div>
+        <div class="pill">Q01 Speaking Practice</div>
+      </div>
+    </section>
+
+    <section class="hero" aria-labelledby="main-title">
+      <div class="mega">01</div>
+      <div class="heroText">
+        <h1 id="main-title">Introduce<br>Yourself</h1>
+        <div class="question">Q. Please introduce yourself.</div>
+        <p class="handwrite">I’m a diet coach.<br>Most of my clients are women over forty.</p>
+      </div>
+      <div class="pen" aria-hidden="true"></div>
+    </section>
+
+    <section class="step stepYellow">
+      <div>
+        <span class="stepKicker">STEP 01</span>
+        <h2>全文を聞こう</h2>
+        <p>まずは止めずに最後まで聞いて、全体の流れをつかもう。</p>
+        <audio id="mainAudio" controls src="assets/q01-introduce-yourself.mp3"></audio>
+        <div class="speedButtons" aria-label="再生速度">
+          <button class="speedBtn" type="button" data-rate="0.5">x0.5</button>
+          <button class="speedBtn" type="button" data-rate="0.75">x0.75</button>
+          <button class="speedBtn" type="button" data-rate="1">x1.0</button>
+        </div>
+        <p class="fullScript">
+          I’m a diet coach.<br>
+          Most of my clients are women over forty, and I work with them online. I’ve worked in the health and nutrition field for over ten years.<br><br>
+          I lived in Phuket, but I moved to Bali two months ago to enjoy a laid-back lifestyle.<br><br>
+          I love teaching people how to eat well and feel good in their bodies. I also like visiting local markets and learning about Balinese herbs and food.<br>
+          Sometimes I write articles or make videos about diet and gut health.
+        </p>
+      </div>
+    </section>
+
+    <section class="step" aria-label="Step 02">
+      <div>
+        <span class="stepKicker">STEP 02</span>
+        <h2>チャンクごとに滑らかに読めるように練習しよう</h2>
+        <p>全文音声から切り出した音声を聞いて、同じリズムで読もう。</p>
+      </div>
+      <div class="lines" id="chunkList">
+        <article class="chunk">
+          <div class="chunkText">I’m a diet coach.</div>
+          <audio controls src="assets/q01-chunks/01.mp3"></audio>
+          <details class="chunkDetails">
+            <summary>発音記号</summary>
+            <div class="chunkMeta">
+              <div>/aɪm ə ˈdaɪət koʊtʃ/</div>
+            </div>
+          </details>
+          <details class="chunkDetails">
+            <summary>日本語</summary>
+            <div class="chunkMeta">
+              <div>私はダイエットコーチです。</div>
+            </div>
+          </details>
+        </article>
+        <article class="chunk">
+          <div class="chunkText">Most of my clients are women over forty, and I work with them online.</div>
+          <audio controls src="assets/q01-chunks/02.mp3"></audio>
+          <details class="chunkDetails">
+            <summary>発音記号</summary>
+            <div class="chunkMeta">
+              <div>/moʊst əv maɪ ˈklaɪənts ər ˈwɪmɪn ˈoʊvər ˈfɔrti, ənd aɪ wɝk wɪð ðem ˈɑnˌlaɪn/</div>
+            </div>
+          </details>
+          <details class="chunkDetails">
+            <summary>日本語</summary>
+            <div class="chunkMeta">
+              <div>私のクライアントのほとんどは40代以上の女性で、オンラインでサポートしています。</div>
+            </div>
+          </details>
+        </article>
+        <article class="chunk">
+          <div class="chunkText">I’ve worked in the health and nutrition field for over ten years.</div>
+          <audio controls src="assets/q01-chunks/03.mp3"></audio>
+          <details class="chunkDetails">
+            <summary>発音記号</summary>
+            <div class="chunkMeta">
+              <div>/aɪv wɝkt ɪn ðə hɛlθ ənd nuˈtrɪʃən fild fər ˈoʊvər tɛn jɪrz/</div>
+            </div>
+          </details>
+          <details class="chunkDetails">
+            <summary>日本語</summary>
+            <div class="chunkMeta">
+              <div>健康と栄養の分野で10年以上働いてきました。</div>
+            </div>
+          </details>
+        </article>
+        <article class="chunk">
+          <div class="chunkText">I lived in Phuket, but I moved to Bali two months ago to enjoy a laid-back lifestyle.</div>
+          <audio controls src="assets/q01-chunks/04.mp3"></audio>
+          <details class="chunkDetails">
+            <summary>発音記号</summary>
+            <div class="chunkMeta">
+              <div>/aɪ lɪvd ɪn puːˈkɛt, bət aɪ muvd tə ˈbɑli tu mʌnθs əˈgoʊ tə ɛnˈdʒɔɪ ə ˌleɪdˈbæk ˈlaɪfˌstaɪl/</div>
+            </div>
+          </details>
+          <details class="chunkDetails">
+            <summary>日本語</summary>
+            <div class="chunkMeta">
+              <div>プーケットに住んでいましたが、ゆったりした暮らしを楽しむために2か月前にバリへ移りました。</div>
+            </div>
+          </details>
+        </article>
+        <article class="chunk">
+          <div class="chunkText">I love teaching people how to eat well and feel good in their bodies.</div>
+          <audio controls src="assets/q01-chunks/05.mp3"></audio>
+          <details class="chunkDetails">
+            <summary>発音記号</summary>
+            <div class="chunkMeta">
+              <div>/aɪ lʌv ˈtitʃɪŋ ˈpipəl haʊ tu it wɛl ænd fil gʊd ɪn ðer ˈbɑdiz/</div>
+            </div>
+          </details>
+          <details class="chunkDetails">
+            <summary>日本語</summary>
+            <div class="chunkMeta">
+              <div>体にいい食べ方と、自分の体を心地よく感じる方法を教えるのが好きです。</div>
+            </div>
+          </details>
+        </article>
+        <article class="chunk">
+          <div class="chunkText">I also like visiting local markets and learning about Balinese herbs and food.</div>
+          <audio controls src="assets/q01-chunks/06.mp3"></audio>
+          <details class="chunkDetails">
+            <summary>発音記号</summary>
+            <div class="chunkMeta">
+              <div>/aɪ ˈɔlsoʊ laɪk ˈvɪzɪtɪŋ ˈloʊkəl ˈmɑrkəts ənd ˈlɝnɪŋ əˈbaʊt ˌbɑləˈniz hɝbz ænd fud/</div>
+            </div>
+          </details>
+          <details class="chunkDetails">
+            <summary>日本語</summary>
+            <div class="chunkMeta">
+              <div>地元の市場に行って、バリのハーブや食べ物について学ぶのも好きです。</div>
+            </div>
+          </details>
+        </article>
+        <article class="chunk">
+          <div class="chunkText">Sometimes I write articles or make videos about diet and gut health.</div>
+          <audio controls src="assets/q01-chunks/07.mp3"></audio>
+          <details class="chunkDetails">
+            <summary>発音記号</summary>
+            <div class="chunkMeta">
+              <div>/ˈsʌmˌtaɪmz aɪ raɪt ˈɑrtəkəlz ɔr meɪk ˈvɪdioʊz əˈbaʊt ˈdaɪət ənd gʌt hɛlθ/</div>
+            </div>
+          </details>
+          <details class="chunkDetails">
+            <summary>日本語</summary>
+            <div class="chunkMeta">
+              <div>時々、ダイエットや腸の健康について記事を書いたり動画を作ったりします。</div>
+            </div>
+          </details>
+        </article>
+      </div>
+    </section>
+
+    <section class="step" aria-label="Step 03">
+      <div>
+        <span class="stepKicker">STEP 03</span>
+        <h2>Q. Please introduce yourself.</h2>
+      </div>
+      <p class="answerPrompt">問題に答えよう。忘れたらヒントを使ってOK.</p>
+      <div class="hintList" aria-label="Hints">
+        <div class="hint">
+          <button class="hintToggle" type="button">Hint 01: 仕事</button>
+          <div class="hintAnswer">I’m a diet coach.</div>
+        </div>
+        <div class="hint">
+          <button class="hintToggle" type="button">Hint 02: クライアントと働き方</button>
+          <div class="hintAnswer">Most of my clients are women over forty, and I work with them online.</div>
+        </div>
+        <div class="hint">
+          <button class="hintToggle" type="button">Hint 03: 経験</button>
+          <div class="hintAnswer">I’ve worked in the health and nutrition field for over ten years.</div>
+        </div>
+        <div class="hint">
+          <button class="hintToggle" type="button">Hint 04: 移住</button>
+          <div class="hintAnswer">I lived in Phuket, but I moved to Bali two months ago to enjoy a laid-back lifestyle.</div>
+        </div>
+        <div class="hint">
+          <button class="hintToggle" type="button">Hint 05: 好きなこと</button>
+          <div class="hintAnswer">I love teaching people how to eat well and feel good in their bodies.</div>
+        </div>
+        <div class="hint">
+          <button class="hintToggle" type="button">Hint 06: バリで学んでいること</button>
+          <div class="hintAnswer">I also like visiting local markets and learning about Balinese herbs and food.</div>
+        </div>
+        <div class="hint">
+          <button class="hintToggle" type="button">Hint 07: 発信</button>
+          <div class="hintAnswer">Sometimes I write articles or make videos about diet and gut health.</div>
+        </div>
+      </div>
+      <p class="footerNote">ヒントを全部閉じた状態で、最後にもう一度60秒で答えてみよう。</p>
+    </section>
+  </main>
+
+  <script>
+    const audio = document.getElementById('mainAudio');
+
+    document.querySelectorAll('.speedBtn').forEach((button) => {
+      button.addEventListener('click', () => {
+        audio.playbackRate = Number(button.dataset.rate);
+        audio.currentTime = 0;
+        audio.play();
+      });
+    });
+
+    document.querySelectorAll('.hintToggle').forEach((button) => {
+      button.addEventListener('click', () => {
+        button.closest('.hint').classList.toggle('open');
+      });
+    });
+  </script>
+</body>
+</html>
