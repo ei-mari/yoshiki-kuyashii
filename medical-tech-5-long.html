@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>医療・テクノロジー5 長文</title>
+  <style>
+    :root{
+      --bg:#e9eef2;
+      --phone:#fbfcfd;
+      --ink:#15191d;
+      --muted:#69727c;
+      --line:rgba(21,25,29,.1);
+      --blue:#2563eb;
+      --cyan:#0891b2;
+      --green:#16a34a;
+      --amber:#d97706;
+      --red:#dc2626;
+      --soft:#f2f5f7;
+      --shadow:0 22px 60px rgba(18,30,44,.18);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ min-height:100%; }
+    body{
+      margin:0;
+      min-height:100svh;
+      display:flex;
+      justify-content:center;
+      background:
+        linear-gradient(180deg, #d8e4ed 0%, #eef3f6 46%, #dce7ed 100%);
+      color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP",sans-serif;
+    }
+
+    .stage{
+      width:100%;
+      min-height:100svh;
+      display:flex;
+      justify-content:center;
+      padding:10px 0;
+    }
+
+    .phone{
+      width:min(100vw,430px);
+      height:calc(100svh - 20px);
+      background:var(--phone);
+      border:1px solid rgba(255,255,255,.8);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:grid;
+      grid-template-rows:auto auto auto 1fr auto;
+    }
+
+    .top{
+      padding:16px 16px 12px;
+      background:
+        linear-gradient(135deg, rgba(37,99,235,.98), rgba(8,145,178,.94));
+      color:#fff;
+    }
+
+    .count{
+      width:max-content;
+      margin-left:auto;
+      margin-bottom:14px;
+      font-size:12px;
+      font-weight:900;
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.17);
+    }
+
+    .topRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .topLink{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:34px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.28);
+      background:rgba(255,255,255,.14);
+      color:#fff;
+      text-decoration:none;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .topRow .count{
+      margin:0;
+    }
+
+    .topActions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .reviewToggle{
+      min-height:34px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.28);
+      background:rgba(255,255,255,.14);
+      color:#fff;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .reviewPanel{
+      display:none;
+      grid-template-columns:repeat(3, 1fr);
+      gap:8px;
+      padding:10px 12px;
+      background:#fff;
+      border-bottom:1px solid var(--line);
+    }
+
+    .reviewPanel.show{ display:grid; }
+
+    .reviewPanel button{
+      min-height:40px;
+      border:1px solid var(--line);
+      border-radius:8px;
+      background:var(--soft);
+      color:var(--ink);
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .reviewPanel button.active{
+      background:#15191d;
+      color:#fff;
+      border-color:#15191d;
+    }
+
+    .kicker{
+      margin:0 0 6px;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:.82;
+    }
+
+    h1{
+      margin:0;
+      font-size:24px;
+      line-height:1.15;
+      letter-spacing:0;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      padding:10px 12px;
+      background:#fff;
+      border-bottom:1px solid var(--line);
+    }
+
+    .stat{
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:8px 6px;
+      text-align:center;
+      background:var(--soft);
+    }
+
+    .stat b{
+      display:block;
+      font-size:17px;
+      line-height:1;
+    }
+
+    .stat span{
+      display:block;
+      margin-top:4px;
+      font-size:11px;
+      color:var(--muted);
+      font-weight:800;
+    }
+
+    .main{
+      min-height:0;
+      overflow:auto;
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      background:#f7f9fb;
+    }
+
+    .card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:8px;
+      box-shadow:0 10px 28px rgba(18,30,44,.08);
+      padding:14px;
+    }
+
+    .cardHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .speaker{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:900;
+    }
+
+    .statusBadge{
+      min-width:42px;
+      height:34px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--line);
+      background:var(--soft);
+      font-size:20px;
+    }
+
+    .sentence{
+      margin:0;
+      font-size:23px;
+      line-height:1.42;
+      font-weight:850;
+      letter-spacing:0;
+    }
+
+    .sentence.hidden{
+      min-height:98px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px dashed rgba(37,99,235,.28);
+      border-radius:8px;
+      background:linear-gradient(180deg, #f8fbff, #eef5ff);
+      color:#64748b;
+      font-size:15px;
+      font-weight:900;
+      text-align:center;
+      padding:18px;
+    }
+
+    .reveal{
+      width:100%;
+      min-height:46px;
+      margin-top:12px;
+      border:0;
+      border-radius:8px;
+      background:#e0f2fe;
+      color:#0f4f66;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .meaningPanel{
+      display:none;
+      margin-top:12px;
+      border:1px solid rgba(217,119,6,.28);
+      border-radius:8px;
+      background:#fff7ed;
+      padding:12px;
+    }
+
+    .meaningPanel.show{
+      display:block;
+    }
+
+    .meaningLabel{
+      margin:0 0 6px;
+      color:#9a5311;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .meaningText{
+      margin:0;
+      color:#231a11;
+      font-size:16px;
+      line-height:1.55;
+      font-weight:800;
+    }
+
+    .nextAudio{
+      width:100%;
+      min-height:48px;
+      margin-top:10px;
+      border:0;
+      border-radius:8px;
+      background:#15191d;
+      color:#fff;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .audioRow{
+      display:grid;
+      grid-template-columns:54px 1fr;
+      gap:10px;
+      align-items:center;
+      margin-top:14px;
+    }
+
+    .play{
+      width:54px;
+      height:54px;
+      border:0;
+      border-radius:999px;
+      background:var(--blue);
+      color:#fff;
+      font-size:20px;
+      font-weight:900;
+      box-shadow:0 10px 22px rgba(37,99,235,.24);
+    }
+
+    .play:disabled{
+      background:#cbd5e1;
+      box-shadow:none;
+      color:#64748b;
+    }
+
+    .audioNote{
+      min-width:0;
+      font-size:12px;
+      line-height:1.45;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .judge{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      margin-top:14px;
+    }
+
+    .judge button{
+      min-height:58px;
+      border:1px solid var(--line);
+      border-radius:8px;
+      background:#fff;
+      font-size:24px;
+      font-weight:900;
+      box-shadow:0 6px 14px rgba(18,30,44,.06);
+    }
+
+    .judge button.active.ok{ border-color:rgba(22,163,74,.55); background:rgba(22,163,74,.1); }
+    .judge button.active.mid{ border-color:rgba(217,119,6,.55); background:rgba(217,119,6,.12); }
+    .judge button.active.ng{ border-color:rgba(220,38,38,.55); background:rgba(220,38,38,.1); }
+
+    .list{
+      display:grid;
+      gap:8px;
+    }
+
+    .item{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:8px;
+      padding:10px;
+      text-align:left;
+      display:grid;
+      grid-template-columns:32px 1fr 34px;
+      align-items:center;
+      gap:8px;
+    }
+
+    .item.active{
+      outline:2px solid rgba(37,99,235,.35);
+      border-color:rgba(37,99,235,.45);
+    }
+
+    .num{
+      width:30px;
+      height:30px;
+      border-radius:999px;
+      background:var(--soft);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .preview{
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      font-size:13px;
+      font-weight:750;
+    }
+
+    .mark{
+      text-align:center;
+      font-size:18px;
+    }
+
+    .bottom{
+      padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+      background:#fff;
+      border-top:1px solid var(--line);
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
+    .move{
+      border:0;
+      border-radius:8px;
+      background:#15191d;
+      color:#fff;
+      padding:13px 12px;
+      font-weight:900;
+      font-size:15px;
+    }
+
+    .move.secondary{
+      background:#e9eef2;
+      color:#15191d;
+    }
+
+    body.locked .stage{ display:none; }
+    .lockScreen{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:linear-gradient(160deg, #0f172a, #164e63);
+      z-index:20;
+    }
+    body.locked .lockScreen{ display:flex; }
+    .lockBox{
+      width:min(100%, 390px);
+      background:#fff;
+      border-radius:18px;
+      padding:22px;
+      box-shadow:0 24px 70px rgba(0,0,0,.28);
+    }
+    .lockBox h2{ margin:0 0 8px; font-size:24px; }
+    .lockBox p{
+      margin:0 0 14px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+      font-weight:700;
+    }
+    .lockBox input{
+      width:100%;
+      height:48px;
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:0 12px;
+      font-size:16px;
+      font-weight:800;
+    }
+    .lockBox button{
+      width:100%;
+      height:48px;
+      margin-top:10px;
+      border:0;
+      border-radius:8px;
+      background:#15191d;
+      color:#fff;
+      font-size:15px;
+      font-weight:900;
+    }
+    .lockError{
+      min-height:20px;
+      margin-top:8px;
+      color:var(--red);
+      font-size:12px;
+      font-weight:800;
+    }
+  </style>
+</head>
+<body class="locked">
+  <section class="lockScreen" aria-label="パスワード入力">
+    <form class="lockBox" id="lockForm">
+      <h2>パスワード</h2>
+      <p>学習ページを見るにはパスワードを入力してください。</p>
+      <input id="lockInput" type="password" autocomplete="current-password" inputmode="text" />
+      <button type="submit">開く</button>
+      <div class="lockError" id="lockError"></div>
+    </form>
+  </section>
+  <div class="stage">
+    <main class="phone">
+      <header class="top">
+        <div class="topRow">
+          <div class="topActions">
+            <a class="topLink" href="./index.html">TOP</a>
+            <button class="reviewToggle" id="reviewToggle" type="button">REVIEW</button>
+          </div>
+          <div class="count" id="counter">1 / 15</div>
+        </div>
+        <p class="kicker">MEDICAL & TECHNOLOGY 5</p>
+        <h1>医療・テクノロジー5</h1>
+      </header>
+
+      <section class="reviewPanel" id="reviewPanel" aria-label="復習モード">
+        <button type="button" data-review="all">ALL</button>
+        <button type="button" data-review="ng">❌</button>
+        <button type="button" data-review="mid">🔺</button>
+      </section>
+
+      <section class="stats" aria-label="学習状況">
+        <div class="stat"><b id="okCount">0</b><span>⭕️</span></div>
+        <div class="stat"><b id="midCount">0</b><span>🔺</span></div>
+        <div class="stat"><b id="ngCount">0</b><span>❌</span></div>
+      </section>
+
+      <section class="main">
+        <article class="card">
+          <div class="cardHead">
+            <div class="speaker" id="speaker">Doctor</div>
+            <div class="statusBadge" id="currentMark">未</div>
+          </div>
+          <p class="sentence" id="sentence"></p>
+          <button class="reveal" id="revealBtn" type="button">英文を表示</button>
+          <div class="meaningPanel" id="meaningPanel">
+            <p class="meaningLabel">日本語訳</p>
+            <p class="meaningText" id="meaningText"></p>
+            <button class="nextAudio" id="nextAudioBtn" type="button">次の音声を再生</button>
+          </div>
+          <div class="audioRow">
+            <button class="play" id="playBtn" type="button" aria-label="音声を再生">▶</button>
+            <div class="audioNote" id="audioNote">音声ファイルを追加すると再生できます。</div>
+          </div>
+          <div class="judge">
+            <button class="ok" type="button" data-status="ok">⭕️</button>
+            <button class="mid" type="button" data-status="mid">🔺</button>
+            <button class="ng" type="button" data-status="ng">❌</button>
+          </div>
+        </article>
+
+        <div class="list" id="list" aria-label="文リスト"></div>
+      </section>
+
+      <footer class="bottom">
+        <button class="move secondary" id="prevBtn" type="button">前へ</button>
+        <button class="move" id="nextBtn" type="button">次へ</button>
+      </footer>
+    </main>
+  </div>
+
+  <audio id="audio"></audio>
+
+  <script>
+    const PAGE_PASSWORD = "ys2026";
+    const AUTH_KEY = "mt-simple-password-ok";
+    const unlockPage = () => document.body.classList.remove("locked");
+    if(localStorage.getItem(AUTH_KEY) === "yes") unlockPage();
+    document.getElementById("lockForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      if(document.getElementById("lockInput").value === PAGE_PASSWORD){
+        localStorage.setItem(AUTH_KEY, "yes");
+        unlockPage();
+      }else{
+        document.getElementById("lockError").textContent = "パスワードが違います。";
+      }
+    });
+
+    const STORAGE_KEY = "medical-tech-long-5-status";
+    const lines = [
+      { speaker:"Narrator", text:"In recent years, the price of many foods has increased dramatically, and people in some parts of the world are not only hungry but even verging on starvation.", ja:"近年、多くの食品の価格は高騰しており、世界の一部の地域の人々は、腹をすかせているどころか、餓死寸前ですらあります。", audio:"./iryo_tech5_audio/01_Food_prices_and_starvation.mp3" },
+      { speaker:"Narrator", text:"Yet, in many affluent countries, people dump a large part of the food they buy.", ja:"しかし、多くの裕福な国々では、人々は自分たちの買った食品の多くを廃棄しています。", audio:"./iryo_tech5_audio/02_Affluent_countries_dump_food.mp3" },
+      { speaker:"Narrator", text:"One reason for this is use-by dates — deadlines by which food must be eaten — which companies print on virtually all food packaging.", ja:"その理由の1つは消費期限、つまり食品が消費されるべき期日であり、企業はほとんどすべての食品の包装にそれを印刷しています。", audio:"./iryo_tech5_audio/03_Use_by_dates_on_packaging.mp3" },
+      { speaker:"Narrator", text:"In doing this, the companies are merely complying with government regulations.", ja:"こうすることによって、企業は政府の規則を遵守しているにすぎません。", audio:"./iryo_tech5_audio/04_Complying_with_government_regulations.mp3" },
+      { speaker:"Narrator", text:"As the end of the shelf life of items approaches, stores often mark down such food, but the food which remains unsold also has to be thrown away.", ja:"商品の保存期間が終わりに近づくと、店舗はそういった食品を値下げすることが多いですが、売れなかった食品は廃棄もされなくてはなりません。", audio:"./iryo_tech5_audio/05_Shelf_life_and_unsold_food.mp3" },
+      { speaker:"Narrator", text:"Yet, many experts say that much of this food, while technically out of date, is in truth both tasty and nutritious.", ja:"しかし、多くの専門家たちは、こういった食品の多くは、厳密には期限が切れているものの、実際にはおいしくもあり、栄養もあると言います。", audio:"./iryo_tech5_audio/06_Out_of_date_but_tasty_and_nutritious.mp3" },
+      { speaker:"Narrator", text:"Why, then, is it classified as unsafe?", ja:"では、なぜそれが安全ではないと分類されているのでしょうか。", audio:"./iryo_tech5_audio/07_Why_classified_as_unsafe.mp3" },
+      { speaker:"Narrator", text:"This is because of the way in which use-by dates are decided.", ja:"その理由は、消費期限の決定方法にあります。", audio:"./iryo_tech5_audio/08_How_use_by_dates_are_decided.mp3" },
+      { speaker:"Narrator", text:"These are based on standard studies and represent the earliest possible time that a food may go bad.", ja:"消費期限は標準的研究に基づいており、食品が腐る可能性のある最も早い期日を表しています。", audio:"./iryo_tech5_audio/09_Standard_studies_and_earliest_spoilage.mp3" },
+      { speaker:"Narrator", text:"However, when it actually spoils depends upon how it is handled before it reaches the customer.", ja:"しかし、実際にいつ腐るかは、食品が消費者の元に届く前にどのように扱われるかによります。", audio:"./iryo_tech5_audio/10_Handling_before_reaching_customer.mp3" },
+      { speaker:"Narrator", text:"Many people, although they may waver before throwing away food that looks perfectly alright, feel discouraged from eating it by media reports of food poisoning.", ja:"多くの人々は、見た目がまったく問題ない食品を廃棄するときにためらうかもしれませんが、マスコミによる食中毒の報道を聞くと、食べるのに尻込みしてしまいます。", audio:"./iryo_tech5_audio/11_Media_reports_of_food_poisoning.mp3" },
+      { speaker:"Narrator", text:"Experts, though, say people should use their discretion.", ja:"しかし、専門家たちは、人々は自分たちの思慮分別を活用すべきだと言います。", audio:"./iryo_tech5_audio/12_Use_discretion.mp3" },
+      { speaker:"Narrator", text:"If the food smells or tastes bad, it should be avoided.", ja:"もし食品の臭いや味が悪かったら、食べるべきではありません。", audio:"./iryo_tech5_audio/13_Avoid_bad_smell_or_taste.mp3" },
+      { speaker:"Narrator", text:"Otherwise, it is fine to eat it.", ja:"そうでなければ、食べることに問題はありません。", audio:"./iryo_tech5_audio/14_Fine_to_eat_otherwise.mp3" },
+      { speaker:"Narrator", text:"The validity of use-by dates is relative, and if we follow them blindly, we will throw away food that is perfectly edible.", ja:"消費期限の有効性は相対的なものであり、もしわれわれがそれに盲目的に従うならば、十分に食べることのできる食品を廃棄することになってしまうでしょう。", audio:"./iryo_tech5_audio/15_Use_by_dates_are_relative.mp3" }
+    ];
+
+    const marks = { ok:"⭕️", mid:"🔺", ng:"❌" };
+    const labels = { ok:"覚えた", mid:"もう少し", ng:"未定着" };
+    let index = 0;
+    let status = loadStatus();
+
+    const sentence = document.getElementById("sentence");
+    const revealBtn = document.getElementById("revealBtn");
+    const meaningPanel = document.getElementById("meaningPanel");
+    const meaningText = document.getElementById("meaningText");
+    const nextAudioBtn = document.getElementById("nextAudioBtn");
+    const speaker = document.getElementById("speaker");
+    const counter = document.getElementById("counter");
+    const currentMark = document.getElementById("currentMark");
+    const audio = document.getElementById("audio");
+    const playBtn = document.getElementById("playBtn");
+    const audioNote = document.getElementById("audioNote");
+    const list = document.getElementById("list");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const reviewToggle = document.getElementById("reviewToggle");
+    const reviewPanel = document.getElementById("reviewPanel");
+    const reviewButtons = Array.from(document.querySelectorAll("[data-review]"));
+    const judgeButtons = Array.from(document.querySelectorAll(".judge button"));
+    let isTextVisible = false;
+    let isMeaningVisible = false;
+    let reviewFilter = null;
+
+    function getReviewQueue(){
+      if(!reviewFilter) return lines.map((_, i) => i);
+      return lines
+        .map((_, i) => i)
+        .filter((i) => reviewFilter === "all" ? ["mid", "ng"].includes(status[i]) : status[i] === reviewFilter);
+    }
+
+    function setReviewFilter(filter){
+      reviewFilter = reviewFilter === filter ? null : filter;
+      isTextVisible = false;
+      isMeaningVisible = false;
+      const queue = getReviewQueue();
+      if(reviewFilter && queue.length && !queue.includes(index)) index = queue[0];
+      render();
+    }
+
+    function moveInQueue(step){
+      const queue = getReviewQueue();
+      if(!queue.length) return;
+      const pos = queue.indexOf(index);
+      const base = pos === -1 ? 0 : pos + step;
+      setIndex(queue[Math.max(0, Math.min(queue.length - 1, base))]);
+    }
+
+    function loadStatus(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      }catch{
+        return {};
+      }
+    }
+
+    function saveStatus(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(status));
+    }
+
+    function setIndex(next){
+      index = Math.max(0, Math.min(lines.length - 1, next));
+      isTextVisible = false;
+      isMeaningVisible = false;
+      render();
+    }
+
+    function setStatus(value){
+      status[index] = value;
+      saveStatus();
+      if(value === "ok"){
+        if(index < lines.length - 1) index += 1;
+        isTextVisible = false;
+        isMeaningVisible = false;
+      }else{
+        isTextVisible = true;
+        isMeaningVisible = true;
+      }
+      render();
+    }
+
+    function playCurrentAudio(){
+      if(!audio.src) return;
+      audio.currentTime = 0;
+      audio.play();
+    }
+
+    function goNextAndPlay(){
+      const queue = getReviewQueue();
+      const pos = queue.indexOf(index);
+      if(pos < queue.length - 1){
+        index = queue[pos + 1];
+        isTextVisible = false;
+        isMeaningVisible = false;
+        render();
+        playCurrentAudio();
+      }
+    }
+
+    function render(){
+      const line = lines[index];
+      const current = status[index];
+      speaker.textContent = line.speaker;
+      sentence.textContent = isTextVisible ? line.text : "音声を聞いて、思い出してから表示";
+      sentence.classList.toggle("hidden", !isTextVisible);
+      revealBtn.textContent = isTextVisible ? "英文を隠す" : "英文を表示";
+      meaningText.textContent = line.ja;
+      meaningPanel.classList.toggle("show", isMeaningVisible);
+      const queue = getReviewQueue();
+      const queuePos = queue.indexOf(index);
+      const isLastInQueue = queuePos === queue.length - 1;
+      nextAudioBtn.disabled = isLastInQueue;
+      nextAudioBtn.textContent = isLastInQueue ? "最後の音声です" : "次の音声を再生";
+      counter.textContent = reviewFilter ? `${Math.max(queuePos + 1, 0)} / ${queue.length}` : `${index + 1} / ${lines.length}`;
+      currentMark.textContent = current ? marks[current] : "未";
+      audio.src = line.audio || "";
+      playBtn.disabled = !line.audio;
+      audioNote.textContent = line.audio ? `${labels[current] || "未判定"} ・ 音声あり` : "音声ファイルを追加すると再生できます。";
+      prevBtn.disabled = queuePos <= 0;
+      nextBtn.disabled = isLastInQueue;
+      reviewToggle.textContent = reviewFilter ? `REVIEW ${reviewFilter === "all" ? "ALL" : marks[reviewFilter]}` : "REVIEW";
+
+      judgeButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.status === current);
+      });
+
+      reviewButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.review === reviewFilter);
+      });
+
+      renderStats();
+      renderList();
+    }
+
+    function renderStats(){
+      document.getElementById("okCount").textContent = Object.values(status).filter(v => v === "ok").length;
+      document.getElementById("midCount").textContent = Object.values(status).filter(v => v === "mid").length;
+      document.getElementById("ngCount").textContent = Object.values(status).filter(v => v === "ng").length;
+    }
+
+    function renderList(){
+      list.innerHTML = "";
+      getReviewQueue().forEach((i) => {
+        const line = lines[i];
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = `item${i === index ? " active" : ""}`;
+        item.innerHTML = `
+          <span class="num">${i + 1}</span>
+          <span class="preview">${line.text}</span>
+          <span class="mark">${status[i] ? marks[status[i]] : "・"}</span>
+        `;
+        item.addEventListener("click", () => setIndex(i));
+        list.appendChild(item);
+      });
+    }
+
+    playBtn.addEventListener("click", () => {
+      playCurrentAudio();
+    });
+
+    revealBtn.addEventListener("click", () => {
+      isTextVisible = !isTextVisible;
+      render();
+    });
+
+    judgeButtons.forEach((button) => {
+      button.addEventListener("click", () => setStatus(button.dataset.status));
+    });
+
+    reviewToggle.addEventListener("click", () => { window.location.href = "./review.html"; });
+    reviewButtons.forEach((button) => {
+      button.addEventListener("click", () => setReviewFilter(button.dataset.review));
+    });
+    prevBtn.addEventListener("click", () => moveInQueue(-1));
+    nextBtn.addEventListener("click", () => moveInQueue(1));
+    nextAudioBtn.addEventListener("click", goNextAndPlay);
+
+    render();
+  </script>
+</body>
+</html>
