@@ -192,7 +192,7 @@
     }
     .speedButtons{
       display:grid;
-      grid-template-columns:repeat(3, 1fr);
+      grid-template-columns:repeat(4, 1fr);
       gap:8px;
       margin-top:12px;
     }
@@ -356,6 +356,7 @@
         <p>まずは止めずに最後まで聞いて、全体の流れをつかもう。</p>
         <audio id="mainAudio" controls src="assets/q02-everyday-routine.mp3"></audio>
         <div class="speedButtons" aria-label="再生速度">
+          <button class="speedBtn" type="button" data-rate="0.25">x0.25</button>
           <button class="speedBtn" type="button" data-rate="0.5">x0.5</button>
           <button class="speedBtn" type="button" data-rate="0.75">x0.75</button>
           <button class="speedBtn" type="button" data-rate="1">x1.0</button>
@@ -535,10 +536,32 @@
   </main>
 
   <script>
-    const audio = document.getElementById('mainAudio');
+    const speedRates = [0.25, 0.5, 0.75, 1];
+
+    document.querySelectorAll('audio').forEach((audio, index) => {
+      if (!audio.id) audio.id = `practiceAudio${index + 1}`;
+
+      let controls = audio.nextElementSibling;
+      if (!controls?.classList.contains('speedButtons')) {
+        controls = document.createElement('div');
+        controls.className = 'speedButtons';
+        controls.setAttribute('aria-label', '再生速度');
+        controls.innerHTML = speedRates.map((rate) =>
+          `<button class="speedBtn" type="button" data-rate="${rate}">x${rate === 1 ? '1.0' : rate}</button>`
+        ).join('');
+        audio.insertAdjacentElement('afterend', controls);
+      }
+
+      controls.dataset.audioTarget = audio.id;
+      controls.querySelectorAll('.speedBtn').forEach((button) => {
+        button.setAttribute('aria-controls', audio.id);
+      });
+    });
 
     document.querySelectorAll('.speedBtn').forEach((button) => {
       button.addEventListener('click', () => {
+        const targetId = button.closest('.speedButtons').dataset.audioTarget;
+        const audio = document.getElementById(targetId);
         audio.playbackRate = Number(button.dataset.rate);
         audio.currentTime = 0;
         audio.play();
